@@ -19,11 +19,12 @@ public class CommandManager {
 
     public CommandManager(SQLConnector sqlConnector) {
         addCommand(new HelpCommand(this));
-        addCommand(new PingCommand());
+        addCommand(new PingCommand(sqlConnector));
         addCommand(new FilterWordAddCommand(sqlConnector));
         addCommand(new FilterWordRemoveCommand(sqlConnector));
         addCommand(new MuteCommand(sqlConnector));
         addCommand(new UnMuteCommand(sqlConnector));
+        addCommand(new MessagePinCommand(sqlConnector));
 
         /*
         addCommand(new JoinCommand());
@@ -110,14 +111,15 @@ public class CommandManager {
     }
 
     public void handleCommand(@NotNull GuildMessageReceivedEvent event) {
+        System.out.println("a");
         final TextChannel channel = event.getChannel();
         final String[] split = event.getMessage().getContentRaw().replaceFirst(
                 "(?i)" + Pattern.quote(App.getPREFIX()), "").split("\\s+");
         final String invoke = split[0].toLowerCase();
+        System.out.println("b");
 
         if(commands.containsKey(invoke)) {
             final List<String> args = Arrays.asList(split).subList(1, split.length);
-
             channel.sendTyping().queue();
             commands.get(invoke).handle(args, event);
         }

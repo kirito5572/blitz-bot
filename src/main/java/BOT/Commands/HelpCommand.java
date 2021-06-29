@@ -43,10 +43,11 @@ public class HelpCommand implements ICommand {
             return;
         }
 
+
         if(command.isAdminOnly()) {
             if(event.getGuild().getId().equals("826704284003205160")) {
-                if (!Objects.requireNonNull(event.getMember()).getRoles().contains(event.getGuild().getRoleById("827011445187280906"))) {
-                    if (!event.getMember().getRoles().contains(event.getGuild().getRoleById("827011445187280906"))) {
+                if (!Objects.requireNonNull(event.getMember()).getRoles().contains(event.getGuild().getRoleById("827009999145926657"))) {
+                    if (!event.getMember().getRoles().contains(event.getGuild().getRoleById("82701084844254825"))) {
                         event.getChannel().sendMessage( " `"+joined + "`는 존재하지 않는 명령어 입니다.\n" +
                                 "`" + App.getPREFIX() + getInvoke() + "` 를 사용해 명령어 리스트를 확인하세요.").queue();
                         return;
@@ -77,12 +78,14 @@ public class HelpCommand implements ICommand {
         });
         Member member = event.getMember();
         assert member != null;
-        if ((!member.getRoles().contains(event.getGuild().getRoleById("827011445187280906"))) |
-                (!member.getRoles().contains(event.getGuild().getRoleById("827011445187280906")))) {
-            event.getChannel().sendMessage(builder.build()).queue();
-            return;
+        if (!member.getRoles().contains(event.getGuild().getRoleById("827009999145926657"))) {
+            if (!member.getRoles().contains(event.getGuild().getRoleById("827010848442548254"))) {
+                event.getChannel().sendMessage(builder.build()).queue();
+                return;
+            }
         }
-        event.getChannel().sendMessage(builder1.build()).complete().delete().queueAfter(10, TimeUnit.SECONDS);
+        event.getChannel().sendMessage(builder.build()).queue();
+        event.getChannel().sendMessage(builder1.build()).queue();
     }
 
     @NotNull

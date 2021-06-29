@@ -32,12 +32,13 @@ public class MuteCommand implements ICommand {
     public void handle(List<String> args, @NotNull GuildMessageReceivedEvent event) {
         Member member = event.getMember();
         assert member != null;
-        if ((!member.getRoles().contains(event.getGuild().getRoleById("827011445187280906"))) |
-                (!member.getRoles().contains(event.getGuild().getRoleById("827011445187280906")))) {
-            return;
+        if (!member.getRoles().contains(event.getGuild().getRoleById("827009999145926657"))) {
+            if (!member.getRoles().contains(event.getGuild().getRoleById("827010848442548254"))) {
+                return;
+            }
         }
         Role role = event.getGuild().getRoleById("827098219061444618");
-        if(!event.getGuild().getId().equals("")) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
             return;
         }
         if(args.isEmpty()) {

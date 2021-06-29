@@ -32,32 +32,43 @@ public class MuteListener extends ListenerAdapter {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE isEnd = 0", new int[]{}, new String[]{})) {
-                    if(resultSet.next()) {
-                        Guild guild = event.getJDA().getGuildById("826704284003205160");
-                        assert guild != null;
-                        Role role = guild.getRoleById("827098219061444618");
-                        TextChannel textChannel = guild.getTextChannelById("827097881239355392");
-                        Member member = guild.getMemberById(resultSet.getString("userId"));
-                        sqlConnector.Insert_Query("UPDATE blitz_bot.MuteTable SET isEnd = 1 WHERE userId = ?",
-                                new int[]{sqlConnector.STRING}, new String[]{resultSet.getString("userId")});
-                        if(member != null) {
-                            assert role != null;
-                            assert textChannel != null;
-                            guild.removeRoleFromMember(member, role).queue();
-                            EmbedBuilder builder = EmbedUtils.getDefaultEmbed()
-                                    .setTitle("사용자 제재 해제")
-                                    .setColor(Color.GREEN)
-                                    .addField("제재 대상", member.getAsMention(), false);
-                            textChannel.sendMessage(builder.build()).queue();
+                try {
+                    try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE isEnd = 0", new int[]{}, new String[]{})) {
+                        while (resultSet.next()) {
+                            long endTime = resultSet.getLong("endTime");
+                            long time = System.currentTimeMillis() / 1000;
+                            if (time < endTime) {
+                                continue;
+                            }
+                            Guild guild = event.getJDA().getGuildById("826704284003205160");
+                            assert guild != null;
+                            Role role = guild.getRoleById("827098219061444618");
+                            TextChannel textChannel = guild.getTextChannelById("827097881239355392");
+                            Member member = guild.getMemberById(resultSet.getString("userId"));
+                            sqlConnector.Insert_Query("UPDATE blitz_bot.MuteTable SET isEnd = 1 WHERE userId = ?",
+                                    new int[]{sqlConnector.STRING}, new String[]{resultSet.getString("userId")});
+                            if (member != null) {
+                                assert role != null;
+                                assert textChannel != null;
+                                guild.removeRoleFromMember(member, role).queue();
+                                EmbedBuilder builder = EmbedUtils.getDefaultEmbed()
+                                        .setTitle("사용자 제재 해제")
+                                        .setColor(Color.GREEN)
+                                        .addField("제재 대상", member.getAsMention(), false);
+                                textChannel.sendMessage(builder.build()).queue();
+                            }
                         }
+                    } catch (SQLException e) {
+                        sqlConnector.reConnection();
+                        e.printStackTrace();
                     }
-                } catch (SQLException e) {
+                } catch (Exception e) {
+                    sqlConnector.reConnection();
                     e.printStackTrace();
                 }
             }
         };
-        timer.scheduleAtFixedRate(task, 0, 1000);
+        timer.scheduleAtFixedRate(task, 1000, 1000);
     }
 
     @Override

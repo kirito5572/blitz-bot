@@ -6,11 +6,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.hyperic.sigar.Mem;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -53,13 +53,16 @@ public class LogListener extends ListenerAdapter {
         EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
         Date time = new Date();
         try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.ChattingUpdateDataTable WHERE messageId=?;", new int[]{sqlConnector.STRING}, new String[]{event.getMessageId()})) {
+            Member member = event.getMember();
+            assert member != null;
             if (resultSet.next()) {
                 embedBuilder.setTitle("수정된 메세지")
                         .setColor(Color.ORANGE)
                         .setDescription("이 메세지는 1회 이상 수정된 메세지입니다. [메세지 이동](" + event.getMessage().getJumpUrl() + ")")
-                        .addField("메세지 작성자", event.getChannel().getAsMention(), false)
+                        .addField("작성 채널", event.getChannel().getAsMention(), false)
                         .addField("수정전 내용", resultSet.getString("messageRaw"), false)
-                        .addField("수정 시간", timeFormat.format(time), false);
+                        .addField("수정 시간", timeFormat.format(time), false)
+                        .setFooter(member.getNickname(), member.getUser().getAvatarUrl());
 
                 sqlConnector.Insert_Query("UPDATE blitz_bot.ChattingUpdateDataTable SET messageRaw= ? WHERE messageId= ?;",
                         new int[] {sqlConnector.STRING, sqlConnector.STRING},
@@ -68,10 +71,11 @@ public class LogListener extends ListenerAdapter {
                 embedBuilder.setTitle("수정된 메세지")
                         .setColor(Color.ORANGE)
                         .setDescription("[메세지 이동](" + event.getMessage().getJumpUrl() + ")")
-                        .addField("메세지 작성자", event.getChannel().getAsMention(), false)
+                        .addField("작성 채널", event.getChannel().getAsMention(), false)
                         .addField("수정전 내용", "메세지 내용을 알 수 없습니다.", false)
-                        .addField("수정 시간", timeFormat.format(time), false);
-                sqlConnector.Insert_Query("INSERT INTO blitz_bot.ChattingDataTable (messageId, userId, messageRaw) VALUES (?, ?, ?);",
+                        .addField("수정 시간", timeFormat.format(time), false)
+                        .setFooter(member.getNickname(), member.getUser().getAvatarUrl());
+                sqlConnector.Insert_Query("INSERT INTO blitz_bot.ChattingUpdateDataTable (messageId, userId, messageRaw) VALUES (?, ?, ?);",
                         new int[]{sqlConnector.STRING,sqlConnector.STRING, sqlConnector.STRING},
                         new String[] {event.getMessageId(), event.getAuthor().getId(), event.getMessage().getContentRaw()});
             }
@@ -96,22 +100,24 @@ public class LogListener extends ListenerAdapter {
                                 .setColor(Color.RED)
                                 .setDescription("이 삭제된 메세지는 수정된 적있는 메세지입니다.");
                         if (member == null) {
-                            embedBuilder.addField("메세지 작성자", "서버에 없는 유저", false);
+                            embedBuilder.setFooter("<@" + resultSet.getString("userId") + ">");
                         } else {
-                            embedBuilder.addField("메세지 작성자", member.getAsMention(), false);
+                            embedBuilder.setFooter(member.getNickname(), member.getUser().getAvatarUrl());
                         }
-                        embedBuilder.addField("삭제된 내용", resultSet1.getString("messageRaw"), false)
+                        embedBuilder.addField("작성 채널", event.getChannel().getAsMention(), false)
+                                .addField("삭제된 내용", resultSet1.getString("messageRaw"), false)
                                 .addField("메세지 ID", event.getMessageId(), false)
                                 .addField("삭제 시간", timeFormat.format(time), false);
                     } else {
                         embedBuilder.setTitle("삭제된 메세지")
                                 .setColor(Color.RED);
                         if (member == null) {
-                            embedBuilder.addField("메세지 작성자", "서버에 없는 유저", false);
+                            embedBuilder.setFooter("<@" + resultSet.getString("userId") + ">");
                         } else {
-                            embedBuilder.addField("메세지 작성자", member.getAsMention(), false);
+                            embedBuilder.setFooter(member.getNickname(), member.getUser().getAvatarUrl());
                         }
-                        embedBuilder.addField("삭제된 내용", resultSet.getString("messageRaw"), false)
+                        embedBuilder.addField("작성 채널", event.getChannel().getAsMention(), false)
+                                .addField("삭제된 내용", resultSet.getString("messageRaw"), false)
                                 .addField("메세지 ID", event.getMessageId(), false)
                                 .addField("삭제 시간", timeFormat.format(time), false);
                     }
@@ -121,10 +127,11 @@ public class LogListener extends ListenerAdapter {
             } else {
                 embedBuilder.setTitle("삭제된 메세지")
                         .setColor(Color.RED)
-                        .addField("메세지 작성자", "작성자를 알수 없습니다.", false)
+                        .addField("작성 채널", event.getChannel().getAsMention(), false)
                         .addField("삭제된 내용", "내용을 알수 없습니다.", false)
                         .addField("메세지 ID", event.getMessageId(), false)
-                        .addField("삭제 시간", timeFormat.format(time), false);
+                        .addField("삭제 시간", timeFormat.format(time), false)
+                        .setFooter("작성자를 알수 없습니다.");
             }
         } catch (SQLException e) {
             e.printStackTrace();

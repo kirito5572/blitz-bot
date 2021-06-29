@@ -1,9 +1,11 @@
 package BOT.Listener;
 
+import BOT.App;
 import BOT.Objects.CommandManager;
 import BOT.Objects.SQLConnector;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.ResumedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +39,13 @@ public class Listener extends ListenerAdapter {
         if(message.isWebhookMessage()) {
             return;
         }
-        manager.handleCommand(event);
+        if(event.getMessage().getContentRaw().startsWith(App.getPREFIX())) {
+            manager.handleCommand(event);
+        }
     }
 
+    @Override
+    public void onResume(@NotNull ResumedEvent event) {
+        sqlConnector.reConnection();
+    }
 }

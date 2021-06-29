@@ -64,12 +64,10 @@ public class SQLConnector {
 
     public void reConnection() {
         try {
-            if(connection.isClosed()) {
-                connection = DriverManager.getConnection(url, user, password);
-            } else {
+            if (!connection.isClosed()) {
                 connection.close();
-                connection = DriverManager.getConnection(url, user, password);
             }
+            connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -124,7 +122,6 @@ public class SQLConnector {
             statement.execute();
             return 0;
         } catch (SQLException e) {
-            e.printStackTrace();
             reConnection();
             try {
                 PreparedStatement statement = connection.prepareStatement(Query);

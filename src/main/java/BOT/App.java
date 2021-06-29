@@ -1,9 +1,6 @@
 package BOT;
 
-import BOT.Listener.Listener;
-import BOT.Listener.LogListener;
-import BOT.Listener.filterListener;
-import BOT.Listener.giveRoleListener;
+import BOT.Listener.*;
 import BOT.Objects.CommandManager;
 import BOT.Objects.SQLConnector;
 import me.duncte123.botcommons.web.WebUtils;
@@ -46,12 +43,14 @@ public class App {
         giveRoleListener giveRoleListener = new giveRoleListener(sqlConnector);
         filterListener noticeAutoTransListener = new filterListener(sqlConnector);
         LogListener logListener = new LogListener(sqlConnector);
+        MuteListener muteListener = new MuteListener(sqlConnector);
+        MessagePinListener messagePinListener = new MessagePinListener(sqlConnector);
 
         try {
             logger.info("부팅");
             JDABuilder.createDefault(TOKENreader.toString())
                     .setAutoReconnect(true)
-                    .addEventListeners(listener, giveRoleListener, noticeAutoTransListener, logListener)
+                    .addEventListeners(listener, giveRoleListener, noticeAutoTransListener, logListener, muteListener, messagePinListener)
                     .setEnabledIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                     .setChunkingFilter(ChunkingFilter.ALL)
                     .build().awaitReady();

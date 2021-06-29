@@ -22,9 +22,10 @@ public class FilterWordRemoveCommand implements ICommand {
         if(event.getGuild().getId().equals("826704284003205160")) {
             Member member = event.getMember();
             assert member != null;
-            if ((!member.getRoles().contains(event.getGuild().getRoleById("827011445187280906"))) |
-                    (!member.getRoles().contains(event.getGuild().getRoleById("827011445187280906")))) {
-                return;
+            if (!member.getRoles().contains(event.getGuild().getRoleById("827009999145926657"))) {
+                if (!member.getRoles().contains(event.getGuild().getRoleById("827010848442548254"))) {
+                    return;
+                }
             }
             if(args.isEmpty()) {
                 event.getChannel().sendMessage("필터링 단어를 입력하여주십시오").queue();
