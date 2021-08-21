@@ -44,8 +44,9 @@ public class Listener extends ListenerAdapter {
         }
     }
 
+
     @Override
-    public void onResume(@NotNull ResumedEvent event) {
+    public void onResumed(@NotNull ResumedEvent event) {
         sqlConnector.reConnection();
     }
 }
