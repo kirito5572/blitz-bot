@@ -89,7 +89,7 @@ public class QueueCommand implements ICommand {
             builder.appendDescription("다음 재생목록 확인: `"+ App.getPREFIX() + getInvoke() + " " + (Integer.parseInt(joined) + 1) + "`");
         }
 
-        channel.sendMessage(builder.build()).queue();
+        channel.sendMessageEmbeds(builder.build()).queue();
     }
 
     @NotNull

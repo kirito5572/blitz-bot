@@ -80,12 +80,12 @@ public class HelpCommand implements ICommand {
         assert member != null;
         if (!member.getRoles().contains(event.getGuild().getRoleById("827009999145926657"))) {
             if (!member.getRoles().contains(event.getGuild().getRoleById("827010848442548254"))) {
-                event.getChannel().sendMessage(builder.build()).queue();
+                event.getChannel().sendMessageEmbeds(builder.build()).queue();
                 return;
             }
         }
-        event.getChannel().sendMessage(builder.build()).queue();
-        event.getChannel().sendMessage(builder1.build()).queue();
+        event.getChannel().sendMessageEmbeds(builder.build()).queue();
+        event.getChannel().sendMessageEmbeds(builder1.build()).queue();
     }
 
     @NotNull

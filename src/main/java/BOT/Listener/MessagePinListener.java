@@ -33,7 +33,7 @@ public class MessagePinListener extends ListenerAdapter {
                 }
                 MessageEmbed embed = message.getEmbeds().get(0);
                 message.delete().queue();
-                String messageId = event.getChannel().sendMessage(embed).complete().getId();
+                String messageId = event.getChannel().sendMessageEmbeds(embed).complete().getId();
                 sqlConnector.Insert_Query("UPDATE blitz_bot.Pin SET messageId =? WHERE channelId = ?;", new int[]{sqlConnector.STRING, sqlConnector.STRING}, new String[]{messageId, event.getChannel().getId()});
             }
         } catch (Exception e) {

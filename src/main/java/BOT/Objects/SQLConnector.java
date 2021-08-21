@@ -15,6 +15,7 @@ public class SQLConnector {
 
     public final int STRING = 0;
     public final int INT = 1;
+    public final int BOOLEAN = 2;
 
     public SQLConnector() {
         StringBuilder SQLPassword = new StringBuilder();
@@ -84,6 +85,8 @@ public class SQLConnector {
                     statement.setString(i + 1, data[i]);
                 } else if(dataType[i] == INT) {
                     statement.setInt(i + 1, Integer.parseInt(data[i]));
+                } else if(dataType[i] == BOOLEAN) {
+                    statement.setBoolean(i + 1, Boolean.parseBoolean(data[i]));
                 }
             }
             return statement.executeQuery();
@@ -100,6 +103,8 @@ public class SQLConnector {
                         statement.setString(i + 1, data[i]);
                     } else if (dataType[i] == INT) {
                         statement.setInt(i + 1, Integer.parseInt(data[i]));
+                    } else if(dataType[i] == BOOLEAN) {
+                        statement.setBoolean(i + 1, Boolean.parseBoolean(data[i]));
                     }
                 }
             } catch (SQLException e1) {
@@ -117,6 +122,8 @@ public class SQLConnector {
                     statement.setString(i + 1, data[i]);
                 } else if(dataType[i] == INT) {
                     statement.setInt(i + 1, Integer.parseInt(data[i]));
+                } else if(dataType[i] == BOOLEAN) {
+                    statement.setBoolean(i + 1, Boolean.parseBoolean(data[i]));
                 }
             }
             statement.execute();
@@ -130,6 +137,8 @@ public class SQLConnector {
                         statement.setString(i + 1, data[i]);
                     } else if(dataType[i] == INT) {
                         statement.setInt(i + 1, Integer.parseInt(data[i]));
+                    } else if(dataType[i] == BOOLEAN) {
+                        statement.setBoolean(i + 1, Boolean.parseBoolean(data[i]));
                     }
                 }
                 statement.execute();

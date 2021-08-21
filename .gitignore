@@ -1,5 +1,7 @@
 .gradle
-/build/
+build/classes/*
+build/generated/*
+build/tmp/*
 .idea/*
 
 # Ignore Gradle GUI config
@@ -17,3 +19,4 @@ gradle-app.setting
 *.xml
 *.xml
 .idea/compiler.xml
+*.class

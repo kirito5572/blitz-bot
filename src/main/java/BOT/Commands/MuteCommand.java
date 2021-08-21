@@ -90,7 +90,7 @@ public class MuteCommand implements ICommand {
                 .addField("제재 종료시간", format.format(return_time.getTime()), false)
                 .addField("제재 사유", stringBuilder.toString(), false)
                 .addField("담당자", member.getAsMention(), false);
-        Objects.requireNonNull(event.getGuild().getTextChannelById("827097881239355392")).sendMessage(builder.build()).queue();
+        Objects.requireNonNull(event.getGuild().getTextChannelById("827097881239355392")).sendMessageEmbeds(builder.build()).queue();
     }
 
     @Override

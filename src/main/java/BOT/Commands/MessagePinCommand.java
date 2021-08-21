@@ -41,7 +41,7 @@ public class MessagePinCommand implements ICommand {
                         .setTitle("고정된 메세지")
                         .setColor(Color.GREEN)
                         .setDescription(event.getMessage().getContentRaw().substring(2));
-                messageId = event.getChannel().sendMessage(builder.build()).complete().getId();
+                messageId = event.getChannel().sendMessageEmbeds(builder.build()).complete().getId();
                 sqlConnector.Insert_Query("INSERT INTO blitz_bot.Pin (channelId, messageId) VALUES (?, ?)", new int[]{sqlConnector.STRING, sqlConnector.STRING}, new String[]{channelId, messageId});
             }
         } catch (Exception e) {

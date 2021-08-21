@@ -38,7 +38,7 @@ public class NowPlayingCommand implements ICommand {
 
         AudioTrackInfo info = player.getPlayingTrack().getInfo();
 
-        channel.sendMessage(EmbedUtils.embedMessage(String.format(
+        channel.sendMessageEmbeds(EmbedUtils.embedMessage(String.format(
                 "**" + (player.isPaused() ? "일시정지중" : "재생중") + ": ** [%s](%s)\n%s %s/%s",
                 info.title,
                 info.uri,

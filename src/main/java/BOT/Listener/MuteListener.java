@@ -55,7 +55,7 @@ public class MuteListener extends ListenerAdapter {
                                         .setTitle("사용자 제재 해제")
                                         .setColor(Color.GREEN)
                                         .addField("제재 대상", member.getAsMention(), false);
-                                textChannel.sendMessage(builder.build()).queue();
+                                textChannel.sendMessageEmbeds(builder.build()).queue();
                             }
                         }
                     } catch (SQLException e) {

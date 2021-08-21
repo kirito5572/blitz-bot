@@ -60,6 +60,7 @@ public class App {
         }
     }
 
+    @SuppressWarnings("InstantiationOfUtilityClass")
     public static void main(String[] args) {
         new App();
     }

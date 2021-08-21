@@ -60,7 +60,7 @@ public class SearchCommand implements ICommand {
                         .setTitle("검색 결과")
                         .setDescription(builder.toString());
 
-                Message message = channel.sendMessage(builder1.build()).complete();
+                Message message = channel.sendMessageEmbeds(builder1.build()).complete();
 
                 for(int i = 0; i < 11; i++) {
                     Thread.sleep(1000);
