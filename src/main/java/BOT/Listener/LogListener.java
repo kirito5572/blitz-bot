@@ -11,7 +11,12 @@ import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
@@ -166,8 +171,80 @@ public class LogListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildBan(@NotNull GuildBanEvent event) {
+    public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
+        EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy/MM/dd a hh:mm:ss");
+        embedBuilder.setTitle("신규 유저 접속")
+                .setColor(new Color(50, 200, 50))
+                .setDescription(simpleDateFormat.format(date))
+                .addField("유저명", event.getMember().getEffectiveName(), false)
+                .setFooter(event.getMember().getId(), event.getMember().getAvatarUrl());
+        Objects.requireNonNull(event.getGuild().getTextChannelById("946362857795248188")).sendMessageEmbeds(embedBuilder.build()).queue();
+    }
 
+    @Override
+    public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
+        EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
+        Date date = new Date();
+        Member member = event.getMember();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy/MM/dd a hh:mm:ss");
+        embedBuilder.setTitle("유저 서버 나감")
+                .setColor(new Color(200, 50, 50))
+                .setDescription(simpleDateFormat.format(date));
+        if(member != null) {
+            embedBuilder.addField("유저명", member.getEffectiveName(), false)
+                    .setFooter(member.getId(), member.getAvatarUrl());
+        } else {
+            embedBuilder.addField("유저명", "데이터 알 수 없음", false)
+                    .setFooter(event.getUser().getId());
+        }
+        Objects.requireNonNull(event.getGuild().getTextChannelById("946362857795248188")).sendMessageEmbeds(embedBuilder.build()).queue();
+    }
+
+    @Override
+    public void onGuildMemberRoleAdd(@NotNull GuildMemberRoleAddEvent event) {
+        EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
+        Date date = new Date();
+        Member member = event.getMember();
+        List<Role> roleList = event.getRoles();
+        StringBuilder roleData = new StringBuilder();
+        for (Role role : roleList) {
+            roleData.append(role.getAsMention());
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy/MM/dd a hh:mm:ss");
+        embedBuilder.setTitle("유저 역할 부여")
+                .setColor(new Color(255, 200, 0))
+                .setDescription(simpleDateFormat.format(date))
+                .addField("유저명", member.getAsMention(), false)
+                .addField("부여된 역할", roleData.toString(), false)
+                .setFooter(member.getId(), member.getAvatarUrl());
+        Objects.requireNonNull(event.getGuild().getTextChannelById("946362857795248188")).sendMessageEmbeds(embedBuilder.build()).queue();
+    }
+
+    @Override
+    public void onGuildMemberRoleRemove(@NotNull GuildMemberRoleRemoveEvent event) {
+        EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
+        Date date = new Date();
+        Member member = event.getMember();
+        List<Role> roleList = event.getRoles();
+        StringBuilder roleData = new StringBuilder();
+        for (Role role : roleList) {
+            roleData.append(role.getAsMention());
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy/MM/dd a hh:mm:ss");
+        embedBuilder.setTitle("유저 역할 삭제")
+                .setColor(new Color(102,20,153))
+                .setDescription(simpleDateFormat.format(date))
+                .addField("유저명", member.getAsMention(), false)
+                .addField("삭제된 역할", roleData.toString(), false)
+                .setFooter(member.getId(), member.getAvatarUrl());
+        Objects.requireNonNull(event.getGuild().getTextChannelById("946362857795248188")).sendMessageEmbeds(embedBuilder.build()).queue();
+    }
+
+    @Override
+    public void onGuildBan(@NotNull GuildBanEvent event) {
+        super.onGuildBan(event);
     }
 
     private void S3UploadObject(File file, String messageId) {

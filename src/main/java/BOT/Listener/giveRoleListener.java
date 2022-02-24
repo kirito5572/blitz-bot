@@ -12,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.ResultSet;
+
 public class giveRoleListener extends ListenerAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(giveRoleListener.class);
@@ -35,7 +37,7 @@ public class giveRoleListener extends ListenerAdapter {
                         new int[] {sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
                         new String[] {member.getId(), String.valueOf(System.currentTimeMillis() / 1000), "0"});
                 if (result != 0) {
-                    logger.warn("sql insert error");
+                    logger.warn("sql insert error #1");
                 }
             }
         }
@@ -55,7 +57,7 @@ public class giveRoleListener extends ListenerAdapter {
                         new int[] {sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
                         new String[] {String.valueOf(System.currentTimeMillis() / 1000), member.getId(), "0"});
                 if (result != 0) {
-                    logger.warn("sql insert error");
+                    logger.warn("sql update error #1");
                 }
             }
         }
@@ -69,9 +71,9 @@ public class giveRoleListener extends ListenerAdapter {
             assert member != null;
             int result = sqlConnector.Insert_Query("UPDATE blitz_bot.JoinData_Table SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
                     new int[]{sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
-                    new String[] {String.valueOf(System.currentTimeMillis() / 1000),  member.getId(), "0"});
+                    new String[] {String.valueOf(System.currentTimeMillis() / 1000),  member.getId(), "1"});
             if (result != 0) {
-                logger.warn("sql insert error");
+                logger.warn("sql update error #2");
             }
 
         }

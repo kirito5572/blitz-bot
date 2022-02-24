@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -76,9 +77,14 @@ public class MuteListener extends ListenerAdapter {
         try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE userId = ?",
         new int[]{sqlConnector.STRING}, new String[]{event.getMember().getId()})) {
             if(resultSet.next()) {
-                Role role = event.getGuild().getRoleById("827098219061444618");
-                assert role != null;
-                event.getGuild().addRoleToMember(event.getMember(), role).queue();
+                long endTimeData;
+                Date date = new Date();
+                endTimeData = resultSet.getLong("endTime");
+                if(date.getTime() < endTimeData) {
+                    Role role = event.getGuild().getRoleById("827098219061444618");
+                    assert role != null;
+                    event.getGuild().addRoleToMember(event.getMember(), role).queue();
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
