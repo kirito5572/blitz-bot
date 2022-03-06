@@ -2,8 +2,8 @@ package BOT.Objects;
 
 import BOT.App;
 import BOT.Commands.*;
-import BOT.Commands.Music.*;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -110,13 +110,11 @@ public class CommandManager {
         return commands.get(name);
     }
 
-    public void handleCommand(@NotNull GuildMessageReceivedEvent event) {
-        System.out.println("a");
-        final TextChannel channel = event.getChannel();
-        final String[] split = event.getMessage().getContentRaw().replaceFirst(
-                "(?i)" + Pattern.quote(App.getPREFIX()), "").split("\\s+");
+    public void handleCommand(@NotNull SlashCommandEvent event) {
+        final TextChannel channel = event.getTextChannel();
+        final String[] split = event.getCommandString().replaceFirst(
+                "(?i)" + Pattern.quote("/"), "").split("\\s+");
         final String invoke = split[0].toLowerCase();
-        System.out.println("b");
 
         if(commands.containsKey(invoke)) {
             final List<String> args = Arrays.asList(split).subList(1, split.length);

@@ -3,6 +3,7 @@ package BOT.Commands;
 import BOT.App;
 import BOT.Objects.ICommand;
 import BOT.Objects.SQLConnector;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +19,7 @@ public class PingCommand implements ICommand {
     }
 
     @Override
-    public void handle(List<String> args, @NotNull GuildMessageReceivedEvent event) {
+    public void handle(List<String> args, @NotNull SlashCommandEvent event) {
         long a = event.getJDA().getRestPing().complete();
         long b = event.getJDA().getGatewayPing();
         long start=System.currentTimeMillis();
@@ -35,13 +36,9 @@ public class PingCommand implements ICommand {
         } else {
             sqlTimeString = String.valueOf(sqlTime);
         }
-        event.getChannel().sendMessage("퐁!").queue((message) ->
-                message.editMessageFormat("blitz_bot\n" +
-                        "rest 요청(udp) ping: %sms\n" +
-                        "rest 요청(tcp) ping: %sms\n" +
-                        "sqlServer ping: " + sqlTimeString + "ms", b, a).queue()
+        event.reply("blitz_bot\n" + "rest 요청(udp) ping: " + b + "ms\n"
+                +  "rest 요청(tcp) ping: " + a+ "ms\n" + "sqlServer ping: " + sqlTimeString + "ms").queue();
 
-        );
     }
 
     @NotNull

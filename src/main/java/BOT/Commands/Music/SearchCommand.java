@@ -9,6 +9,7 @@ import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
@@ -22,10 +23,10 @@ import java.util.concurrent.TimeUnit;
 public class SearchCommand implements ICommand {
     private final Logger logger = LoggerFactory.getLogger(SearchCommand.class);
     @Override
-    public void handle(@NotNull List<String> args, @NotNull GuildMessageReceivedEvent event) {
+    public void handle(@NotNull List<String> args, @NotNull SlashCommandEvent event) {
         new Thread(() -> {
             AudioManager audioManager = event.getGuild().getAudioManager();
-            TextChannel channel = event.getChannel();
+            TextChannel channel = event.getTextChannel();
             GuildVoiceState memberVoiceState = Objects.requireNonNull(event.getMember()).getVoiceState();
             assert memberVoiceState != null;
             VoiceChannel voiceChannel = memberVoiceState.getChannel();

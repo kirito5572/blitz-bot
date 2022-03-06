@@ -6,7 +6,7 @@ import BOT.Objects.ICommand;
 import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -27,7 +27,7 @@ public class HelpCommand implements ICommand {
     }
 
     @Override
-    public void handle(@NotNull List<String> args, @NotNull GuildMessageReceivedEvent event) {
+    public void handle(@NotNull List<String> args, @NotNull SlashCommandEvent event) {
         String joined = String.join(" ", args);
 
         if(joined.equals("")) {
@@ -64,7 +64,7 @@ public class HelpCommand implements ICommand {
         event.getChannel().sendMessage(message).queue();
     }
 
-    private void generateAndSendEmbed(@NotNull GuildMessageReceivedEvent event) {
+    private void generateAndSendEmbed(@NotNull SlashCommandEvent event) {
         EmbedBuilder builder = EmbedUtils.getDefaultEmbed().setTitle("명령어 리스트:");
         EmbedBuilder builder1 = EmbedUtils.getDefaultEmbed().setTitle("관리 명령어 리스트:");
 

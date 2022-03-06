@@ -4,6 +4,7 @@ import BOT.Listener.filterListener;
 import BOT.Objects.ICommand;
 import BOT.Objects.SQLConnector;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +19,7 @@ public class FilterWordRemoveCommand implements ICommand {
         this.sqlConnector = sqlConnector;
     }
     @Override
-    public void handle(List<String> args, @NotNull GuildMessageReceivedEvent event) {
+    public void handle(List<String> args, @NotNull SlashCommandEvent event) {
         if(event.getGuild().getId().equals("826704284003205160")) {
             Member member = event.getMember();
             assert member != null;

@@ -7,6 +7,7 @@ import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +30,7 @@ public class MuteCommand implements ICommand {
     }
 
     @Override
-    public void handle(List<String> args, @NotNull GuildMessageReceivedEvent event) {
+    public void handle(List<String> args, @NotNull SlashCommandEvent event) {
         Member member = event.getMember();
         assert member != null;
         if (!member.getRoles().contains(event.getGuild().getRoleById("827009999145926657"))) {

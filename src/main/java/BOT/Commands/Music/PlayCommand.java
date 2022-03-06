@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
@@ -23,9 +24,9 @@ import java.util.concurrent.BlockingQueue;
 
 public class PlayCommand implements ICommand {
     @Override
-    public void handle(@NotNull List<String> args, @NotNull GuildMessageReceivedEvent event) {
+    public void handle(@NotNull List<String> args, @NotNull SlashCommandEvent event) {
 
-        TextChannel channel = event.getChannel();
+        TextChannel channel = event.getTextChannel();
         AudioManager audioManager = event.getGuild().getAudioManager();
         GuildVoiceState memberVoiceState = Objects.requireNonNull(event.getMember()).getVoiceState();
         assert memberVoiceState != null;
@@ -122,7 +123,7 @@ public class PlayCommand implements ICommand {
             });
             thread.start();
         }
-        manager.loadAndPlay(event.getChannel(), input);
+        manager.loadAndPlay(event.getTextChannel(), input);
 
         musicManager = manager.getGuildMusicManager(event.getGuild());
         BlockingQueue<AudioTrack> queue = musicManager.scheduler.getQueue();

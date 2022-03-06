@@ -10,6 +10,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,8 +21,8 @@ import java.util.concurrent.BlockingQueue;
 public class QueueCommand implements ICommand {
 
     @Override
-    public void handle(@NotNull List<String> args, @NotNull GuildMessageReceivedEvent event) {
-        TextChannel channel = event.getChannel();
+    public void handle(@NotNull List<String> args, @NotNull SlashCommandEvent event) {
+        TextChannel channel = event.getTextChannel();
         PlayerManager playerManager = PlayerManager.getInstance();
         GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
         BlockingQueue<AudioTrack> queue = musicManager.scheduler.getQueue();
@@ -64,11 +65,7 @@ public class QueueCommand implements ICommand {
                 .setTitle("현재 재생목록 (총합: " + (queue.size() - 1) + ") 페이지: " + joined);
         if(!queue.isEmpty()) {
             AudioTrackInfo info = player.getPlayingTrack().getInfo();
-            builder.appendDescription(String.format(
-                    "현재 재생중: %s - %s\n",
-                    info.title,
-                    info.author
-            ));
+            builder.appendDescription("현재 재생중: " + info.title + " - " + info.author + "\n");
             for (int i = minTrackCount; i < maxTrackCount; i++) {
                 try {
                     AudioTrack track = tracks.get(i);
