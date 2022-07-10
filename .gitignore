@@ -17,6 +17,5 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 .idea/.name
 *.xml
-*.xml
 .idea/compiler.xml
 *.class
