@@ -50,14 +50,14 @@ public class SQLConnector {
     public ResultSet Select_Query(@Language("SQL") String Query, int[] dataType,  String[] data) {
         try {
             PreparedStatement statement = connection.prepareStatement(Query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            Query(statement, Query, dataType, data);
+            Query(statement, dataType, data);
             return statement.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
             reConnection();
             try {
                 PreparedStatement statement = connection.prepareStatement(Query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                Query(statement, Query, dataType, data);
+                Query(statement, dataType, data);
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
@@ -65,7 +65,7 @@ public class SQLConnector {
         }
     }
 
-    private void Query(PreparedStatement statement, @Language("SQL") String Query, int[] dataType, String[] data) throws SQLException {
+    private void Query(PreparedStatement statement, int[] dataType, String[] data) throws SQLException {
         if(connection.isClosed()) {
             reConnection();
         }
@@ -83,14 +83,14 @@ public class SQLConnector {
     public int Insert_Query(@Language("SQL") String Query, int[] dataType,  String[] data) {
         try {
             PreparedStatement statement = connection.prepareStatement(Query);
-            Query(statement, Query, dataType, data);
+            Query(statement, dataType, data);
             statement.execute();
             return 0;
         } catch (SQLException e) {
             reConnection();
             try {
                 PreparedStatement statement = connection.prepareStatement(Query);
-                Query(statement, Query, dataType, data);
+                Query(statement, dataType, data);
                 statement.execute();
                 return 0;
             } catch (SQLException e1) {

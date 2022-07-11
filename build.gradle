@@ -6,7 +6,7 @@ plugins {
 group 'me.kirito5572'
 version '0.0.2_alpha_2'
 
-mainClassName = 'BOT.App'
+mainClassName = 'bot.App'
 
 repositories {
     jcenter()
