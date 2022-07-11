@@ -20,7 +20,6 @@ public class SQLConnector {
     public final int BOOLEAN = 2;
     private final String driverName = "com.mysql.cj.jdbc.Driver";
 
-    //TODO SQL쿼리 Stack식으로 변경하기
 
     public SQLConnector() {
         url = "jdbc:mysql://" + openFileData("endPoint") + "/blitz_bot?serverTimezone=UTC";
@@ -80,19 +79,18 @@ public class SQLConnector {
         }
     }
 
+
     public int Insert_Query(@Language("SQL") String Query, int[] dataType,  String[] data) {
         try {
             PreparedStatement statement = connection.prepareStatement(Query);
             Query(statement, dataType, data);
-            statement.execute();
-            return 0;
+            return statement.execute() ? 1 : 0;
         } catch (SQLException e) {
             reConnection();
             try {
                 PreparedStatement statement = connection.prepareStatement(Query);
                 Query(statement, dataType, data);
-                statement.execute();
-                return 0;
+                return statement.execute() ? 1 : 0;
             } catch (SQLException e1) {
                 e1.printStackTrace();
                 reConnection();
