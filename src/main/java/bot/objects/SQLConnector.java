@@ -49,14 +49,14 @@ public class SQLConnector {
 
     public ResultSet Select_Query(@Language("SQL") String Query, int[] dataType,  String[] data) {
         try {
-            PreparedStatement statement = connection.prepareStatement(Query);
+            PreparedStatement statement = connection.prepareStatement(Query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             Query(statement, Query, dataType, data);
             return statement.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
             reConnection();
             try {
-                PreparedStatement statement = connection.prepareStatement(Query);
+                PreparedStatement statement = connection.prepareStatement(Query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 Query(statement, Query, dataType, data);
             } catch (SQLException e1) {
                 e1.printStackTrace();
