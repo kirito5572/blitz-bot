@@ -43,6 +43,7 @@ public class Listener extends ListenerAdapter {
                 event.getGuild().upsertCommand("핀", "(관리자 전용)메세지를 고정합니다.").queue();
                 event.getGuild().upsertCommand("제재", "(관리자 전용) 서버에서 사용자를 제재합니다.").queue();
                 event.getGuild().upsertCommand("제재해제", "(관리자 전용) 서버에서 제재한 사용자에 대한 제재를 해제합니다.").queue();
+                event.getGuild().upsertCommand("eval","(개발자 전용) 살충제! 살충제!").queue();
             } catch (ErrorResponseException e) {
                 event.getChannel().sendMessage(e.getMessage()).queue();
             } catch (Exception e) {
