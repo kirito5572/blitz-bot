@@ -133,7 +133,10 @@ public class giveRoleListener extends ListenerAdapter {
         int min = 60, hour = 3600, day = 86400;
         try {
             //[0] = 확인할 시간, [1] = 이모지 반복 횟수 [2] = 처벌시간  3*day = 3일 6*hour = 6시간
-            int[][] check_time = {{10, 3, 5*min}, {hour, 10, 6*hour}, {day, 20, 7*day}, {30*day, 40, 0}};
+            int[][] check_time = {{10, 3, 0}, {hour, 10, 0}, {day, 20, 0}, {30*day, 40, 0}};
+            check_time[0][2] = 5*min;
+            check_time[1][2] = 6*hour;
+            check_time[2][2] = 7*day;
             for(int i = 0; i < 4; i++) {
                 ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.JoinData_Table where approveTime > ? AND approveTime < ?;",
                         new int[]{sqlConnector.STRING, sqlConnector.STRING},
@@ -143,6 +146,7 @@ public class giveRoleListener extends ListenerAdapter {
                     if(i == 3) {
                         return "ban";
                     }
+                    logger.warn(String.valueOf(check_time[i][2]));
                     logger.warn("sql insert: INSERT INTO blitz_bot.GiveRoleBanTable (userId, endTime) VALUES("+ member.getId() + ","+ ((System.currentTimeMillis() / 1000) + check_time[i][2]) + ")");
                     sqlConnector.Insert_Query("INSERT INTO blitz_bot.GiveRoleBanTable (userId, endTime) VALUES(?,?);",
                             new int[]{sqlConnector.STRING, sqlConnector.STRING},
