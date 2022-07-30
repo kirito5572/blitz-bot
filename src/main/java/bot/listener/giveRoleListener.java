@@ -132,8 +132,9 @@ public class giveRoleListener extends ListenerAdapter {
                 ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.JoinData_Table where approveTime > ? AND approveTime < ?;",
                         new int[]{sqlConnector.STRING, sqlConnector.STRING},
                         new String[]{String.valueOf(time - check_time[i][0]), String.valueOf(time)});
-                logger.warn("SELECT * FROM blitz_bot.JoinData_Table where approveTime > " + (time - check_time[i][0]) + " AND approveTime < " + time);
-                if (resultSet.getRow() > check_time[i][1]) {
+                logger.warn("\nSELECT * FROM blitz_bot.JoinData_Table where approveTime > " + (time - check_time[i][0]) + " AND approveTime < " + time);
+                logger.warn(String.valueOf(resultSet.getRow()));
+                if (resultSet.getRow() >= check_time[i][1]) {
                     logger.warn("sql insert!");
                     if(i == 3) {
                         return "ban";
