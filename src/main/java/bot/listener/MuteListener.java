@@ -34,6 +34,9 @@ public class MuteListener extends ListenerAdapter {
             public void run() {
                 try {
                     try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE isEnd = 0", new int[]{}, new String[]{})) {
+                        if(resultSet == null) {
+                            return;
+                        }
                         while (resultSet.next()) {
                             long endTime = resultSet.getLong("endTime");
                             long time = System.currentTimeMillis() / 1000;
@@ -60,7 +63,6 @@ public class MuteListener extends ListenerAdapter {
                         }
                     } catch (SQLException e) {
                         sqlConnector.reConnection();
-                        e.printStackTrace();
                     }
                 } catch (Exception e) {
                     sqlConnector.reConnection();
@@ -68,7 +70,7 @@ public class MuteListener extends ListenerAdapter {
                 }
             }
         };
-        timer.scheduleAtFixedRate(task, 1000, 1000);
+        timer.scheduleAtFixedRate(task, 0, 1000);
     }
 
     @Override

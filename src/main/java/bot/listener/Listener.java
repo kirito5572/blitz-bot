@@ -2,6 +2,12 @@ package bot.listener;
 
 import bot.objects.CommandManager;
 import bot.objects.SQLConnector;
+import me.duncte123.botcommons.messaging.EmbedUtils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ResumedEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -12,7 +18,13 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 
 public class Listener extends ListenerAdapter {
@@ -30,6 +42,15 @@ public class Listener extends ListenerAdapter {
     public void onReady(@NotNull ReadyEvent event) {
         logger.info("로그인 성공:" + event.getJDA().getSelfUser());
         System.out.printf("로그인 성공: %#s%n", event.getJDA().getSelfUser());
+
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                sqlConnector.reConnection();
+            }
+        };
+        timer.scheduleAtFixedRate(task, 10, 86400000);
     }
 
     @Override

@@ -121,7 +121,7 @@ public class LogListener extends ListenerAdapter {
                     new int[] {sqlConnector.STRING, sqlConnector.STRING},
                     new String[] {event.getMessage().getContentRaw(), event.getMessageId()});
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -166,7 +166,7 @@ public class LogListener extends ListenerAdapter {
             sqlConnector.Insert_Query("DELETE FROM blitz_bot.ChattingDataTable WHERE messageId=?", new int[] {sqlConnector.STRING}, new String[] {event.getMessageId()});
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -261,7 +261,7 @@ public class LogListener extends ListenerAdapter {
             request.setStorageClass(StorageClass.StandardInfrequentAccess);
             s3Client.putObject(request);
         } catch (SdkClientException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
