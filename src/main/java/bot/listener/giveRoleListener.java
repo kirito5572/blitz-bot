@@ -38,7 +38,7 @@ public class giveRoleListener extends ListenerAdapter {
             if (event.getMessageId().equals(Chatting)) {
                 long banTime = isBan(member);
                 if(banTime != 0) {
-                    long time = System.currentTimeMillis() + banTime * 1000;
+                    long time = banTime * 1000;
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(time);
 
