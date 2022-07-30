@@ -50,7 +50,7 @@ public class Listener extends ListenerAdapter {
                 sqlConnector.reConnection();
             }
         };
-        timer.scheduleAtFixedRate(task, 10, 86400000);
+        timer.scheduleAtFixedRate(task, 86400000, 86400000);
     }
 
     @Override
