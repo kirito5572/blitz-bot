@@ -41,12 +41,17 @@ public class giveRoleListener extends ListenerAdapter {
                     return;
                 }
                 String confirmBan = confirmBan(member);
-                switch (confirmBan) {
-                    case "ban" -> {event.getGuild().ban(member, 0, "역할 스팸으로 밴").queue();
-                        member.getUser().openPrivateChannel().complete().sendMessage("30일 동안 40회 이상 역할 부여를 시도하여 서버에서 밴되었습니다. 관련 문의는 <@284508374924787713> 에게 부탁드립니다.").queue();}
-                    case "true/10" -> member.getUser().openPrivateChannel().complete().sendMessage("10초 동안 3회 이상 역할 부여를 시도하여 5분간 쿨타임에 걸렸습니다.").queue();
-                    case "true/3600" -> member.getUser().openPrivateChannel().complete().sendMessage("1시간 동안 10회 이상 역할 부여를 시도하여 6시간동안 쿨타임에 걸렸습니다.").queue();
-                    case "true/86400" -> member.getUser().openPrivateChannel().complete().sendMessage("하루 동안 20회 이상 역할 부여를 시도하여 7일동안 쿨타임에 걸렸습니다.").queue();
+                if(confirmBan.contains("#")) {
+                    switch (confirmBan.split("#")[0]) {
+                        case "true/10" -> member.getUser().openPrivateChannel().complete().sendMessage("10초 동안 " + confirmBan.split("#")[1] + "회 이상 역할 부여를 시도하여 5분간 쿨타임에 걸렸습니다.").queue();
+                        case "true/3600" -> member.getUser().openPrivateChannel().complete().sendMessage("1시간 동안 " + confirmBan.split("#")[1] + "회 이상 역할 부여를 시도하여 6시간동안 쿨타임에 걸렸습니다.").queue();
+                        case "true/86400" -> member.getUser().openPrivateChannel().complete().sendMessage("하루 동안 " + confirmBan.split("#")[1] + "회 이상 역할 부여를 시도하여 7일동안 쿨타임에 걸렸습니다.").queue();
+                    }
+                } else {
+                    if(confirmBan.contains("ban")) {
+                        event.getGuild().ban(member, 0, "역할 스팸으로 밴").queue();
+                        member.getUser().openPrivateChannel().complete().sendMessage("30일 동안 40회 이상 역할 부여를 시도하여 서버에서 밴되었습니다. 관련 문의는 <@284508374924787713> 에게 부탁드립니다.").queue();
+                    }
                 }
                 assert role != null;
                 guild.addRoleToMember(member, role).complete();
@@ -106,8 +111,9 @@ public class giveRoleListener extends ListenerAdapter {
                 try (ResultSet resultSet = sqlConnector.Select_Query(
                         "SELECT * FROM blitz_bot.GiveRoleBanTable WHERE endTime > ?;",
                         new int[]{sqlConnector.STRING}, new String[]{String.valueOf(time)})) {
-
+                        logger.info("SELECT * FROM blitz_bot.GiveRoleBanTable WHERE endTime > " + time);
                     while (resultSet.next()) {
+                        logger.info("GiveRoleBanTable delete :" + resultSet.getString("userId"));
                         sqlConnector.Insert_Query(
                                 "DELETE FROM blitz_bot.GiveRoleBanTable WHERE userId = ?;",
                                 new int[] {sqlConnector.STRING}, new String[]{resultSet.getString("userId")});
@@ -119,7 +125,7 @@ public class giveRoleListener extends ListenerAdapter {
                 }
             }
         };
-        timer.scheduleAtFixedRate(task, 1000, 1000);
+        timer.scheduleAtFixedRate(task, 0, 1000);
     }
 
     private String confirmBan(Member member) {
@@ -132,18 +138,16 @@ public class giveRoleListener extends ListenerAdapter {
                 ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.JoinData_Table where approveTime > ? AND approveTime < ?;",
                         new int[]{sqlConnector.STRING, sqlConnector.STRING},
                         new String[]{String.valueOf(time - check_time[i][0]), String.valueOf(time)});
-                logger.warn("\nSELECT * FROM blitz_bot.JoinData_Table where approveTime > " + (time - check_time[i][0]) + " AND approveTime < " + time);
                 resultSet.last();
-                logger.warn(String.valueOf(resultSet.getRow()));
                 if (resultSet.getRow() >= check_time[i][1]) {
-                    logger.warn("sql insert!");
                     if(i == 3) {
                         return "ban";
                     }
+                    logger.warn("sql insert");
                     sqlConnector.Insert_Query("INSERT INTO blitz_bot.GiveRoleBanTable (userId, endTime) VALUES(?,?);",
                             new int[]{sqlConnector.STRING, sqlConnector.STRING},
                             new String[]{member.getId(), String.valueOf((System.currentTimeMillis() / 1000) + check_time[i][2])});
-                    return "true/" + check_time[i][0];
+                    return "true/" + check_time[i][0] + "#" + resultSet.getRow();
                 }
             }
         } catch (SQLException sqlException) {
