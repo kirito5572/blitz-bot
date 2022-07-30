@@ -146,11 +146,11 @@ public class giveRoleListener extends ListenerAdapter {
                     if(i == 3) {
                         return "ban";
                     }
-                    logger.warn(String.valueOf(check_time[i][2]));
-                    logger.warn("sql insert: INSERT INTO blitz_bot.GiveRoleBanTable (userId, endTime) VALUES("+ member.getId() + ","+ ((System.currentTimeMillis() / 1000) + check_time[i][2]) + ")");
+                    long end_time = (System.currentTimeMillis() / 1000) + check_time[i][2];
+                    logger.warn("sql insert: INSERT INTO blitz_bot.GiveRoleBanTable (userId, endTime) VALUES("+ member.getId() + ","+ end_time + ")");
                     sqlConnector.Insert_Query("INSERT INTO blitz_bot.GiveRoleBanTable (userId, endTime) VALUES(?,?);",
                             new int[]{sqlConnector.STRING, sqlConnector.STRING},
-                            new String[]{member.getId(), String.valueOf((System.currentTimeMillis() / 1000) + check_time[i][2])});
+                            new String[]{member.getId(), String.valueOf(end_time)});
                     return "true/" + check_time[i][0] + "#" + resultSet.getRow();
                 }
             }
