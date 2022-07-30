@@ -109,11 +109,9 @@ public class giveRoleListener extends ListenerAdapter {
             public void run() {
                 long time = System.currentTimeMillis() / 1000;
                 try (ResultSet resultSet = sqlConnector.Select_Query(
-                        "SELECT * FROM blitz_bot.GiveRoleBanTable WHERE endTime > ?;",
+                        "SELECT * FROM blitz_bot.GiveRoleBanTable WHERE endTime < ?;",
                         new int[]{sqlConnector.STRING}, new String[]{String.valueOf(time)})) {
-                        logger.info("SELECT * FROM blitz_bot.GiveRoleBanTable WHERE endTime > " + time);
                     while (resultSet.next()) {
-                        logger.info("GiveRoleBanTable delete :" + resultSet.getString("userId"));
                         sqlConnector.Insert_Query(
                                 "DELETE FROM blitz_bot.GiveRoleBanTable WHERE userId = ?;",
                                 new int[] {sqlConnector.STRING}, new String[]{resultSet.getString("userId")});
@@ -147,7 +145,6 @@ public class giveRoleListener extends ListenerAdapter {
                         return "ban";
                     }
                     long end_time = (System.currentTimeMillis() / 1000) + check_time[i][2];
-                    logger.warn("sql insert: INSERT INTO blitz_bot.GiveRoleBanTable (userId, endTime) VALUES("+ member.getId() + ","+ end_time + ")");
                     sqlConnector.Insert_Query("INSERT INTO blitz_bot.GiveRoleBanTable (userId, endTime) VALUES(?,?);",
                             new int[]{sqlConnector.STRING, sqlConnector.STRING},
                             new String[]{member.getId(), String.valueOf(end_time)});
