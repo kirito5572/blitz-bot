@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,9 +36,16 @@ public class giveRoleListener extends ListenerAdapter {
             Role role = guild.getRoleById("827207197183180821");
             Member member = event.getMember();
             if (event.getMessageId().equals(Chatting)) {
-                boolean isBan = isBan(member);
-                if(isBan) {
-                    member.getUser().openPrivateChannel().complete().sendMessage("현재 쿨타임 중입니다.").queue();
+                long banTime = isBan(member);
+                if(banTime != 0) {
+                    long time = System.currentTimeMillis() + banTime * 1000;
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(time);
+
+                    int mYear = calendar.get(Calendar.YEAR), mMonth = calendar.get(Calendar.MONTH) + 1, mDay = calendar.get(Calendar.DAY_OF_MONTH),
+                            mHour = calendar.get(Calendar.HOUR_OF_DAY), mMin = calendar.get(Calendar.MINUTE), mSec = calendar.get(Calendar.SECOND);
+                    String Date = mYear + "년 " + mMonth + "월 " + mDay + "일 " + mHour + "시 " + mMin + "분 " + mSec + "초";
+                    member.getUser().openPrivateChannel().complete().sendMessage("현재 쿨타임 중입니다.\n 쿨타임 해제 시간: " + Date).queue();
                     return;
                 }
                 String confirmBan = confirmBan(member);
@@ -159,20 +167,20 @@ public class giveRoleListener extends ListenerAdapter {
         return "false";
     }
 
-    private boolean isBan(Member member) {
+    private long isBan(Member member) {
         try {
             ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.GiveRoleBanTable where userId = ?;",
                     new int[]{sqlConnector.STRING},
                     new String[]{member.getId()});
 
             if (resultSet.next()) {
-                return true;
+                return Long.parseLong(resultSet.getString("endTime"));
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             logger.error("에러발생!! giveRoleListener#onGuildMessageReactionAdd#cool-time");
         }
-        return false;
+        return 0;
     }
 }
 
