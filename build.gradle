@@ -4,7 +4,7 @@ plugins {
     id'com.github.johnrengelman.shadow' version '7.1.2'
 }
 group 'me.kirito5572'
-version '0.0.2_alpha_7'
+version '0.0.2_beta_1'
 
 mainClassName = 'bot.App'
 

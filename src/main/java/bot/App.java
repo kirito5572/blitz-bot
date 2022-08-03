@@ -73,12 +73,13 @@ public class App {
         LogListener logListener = new LogListener(sqlConnector);
         MuteListener muteListener = new MuteListener(sqlConnector);
         MessagePinListener messagePinListener = new MessagePinListener(sqlConnector);
+        onReadyListener onReadyListener = new onReadyListener(sqlConnector);
 
         try {
             logger.info("부팅");
             JDABuilder.createDefault(openFileData("TOKEN"))
                     .setAutoReconnect(true)
-                    .addEventListeners(listener, giveRoleListener, noticeAutoTransListener, logListener, muteListener, messagePinListener)
+                    .addEventListeners(listener, giveRoleListener, noticeAutoTransListener, logListener, muteListener, messagePinListener, onReadyListener)
                     .setEnabledIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                     .setChunkingFilter(ChunkingFilter.ALL)
                     .build().awaitReady();

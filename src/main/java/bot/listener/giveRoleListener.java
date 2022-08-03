@@ -109,31 +109,6 @@ public class giveRoleListener extends ListenerAdapter {
         }
     }
 
-    @Override
-    public void onReady(@NotNull ReadyEvent event) {
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                long time = System.currentTimeMillis() / 1000;
-                try (ResultSet resultSet = sqlConnector.Select_Query(
-                        "SELECT * FROM blitz_bot.GiveRoleBanTable WHERE endTime < ?;",
-                        new int[]{sqlConnector.STRING}, new String[]{String.valueOf(time)})) {
-                    while (resultSet.next()) {
-                        sqlConnector.Insert_Query(
-                                "DELETE FROM blitz_bot.GiveRoleBanTable WHERE userId = ?;",
-                                new int[] {sqlConnector.STRING}, new String[]{resultSet.getString("userId")});
-                    }
-
-                } catch (SQLException sqlException) {
-                    sqlException.printStackTrace();
-                    sqlConnector.reConnection();
-                }
-            }
-        };
-        timer.scheduleAtFixedRate(task, 0, 1000);
-    }
-
     private String confirmBan(Member member) {
         long time = System.currentTimeMillis() / 1000;
         int min = 60, hour = 3600, day = 86400;

@@ -76,7 +76,13 @@ public class LogListener extends ListenerAdapter {
                     S3UploadObject(file, message.getId() + "_" + i);
                     boolean isFileDeleted = file.delete();
                     if(!isFileDeleted) {
-                        logger.error("파일 삭제에 실패하였습니다.");
+                        logger.warn("파일 삭제에 실패하였습니다. 재시도 중입니다.");
+                        isFileDeleted = file.delete();
+                        if(!isFileDeleted) {
+                            logger.error("파일 삭제에 실패하였습니다.");
+                        } else {
+                            logger.info("파일 삭제에 성공했습니다.");
+                        }
                     }
                 }
             }
