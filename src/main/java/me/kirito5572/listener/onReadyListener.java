@@ -109,10 +109,10 @@ public class onReadyListener extends ListenerAdapter {
             @Override
             public void run() {
                 switch (i) {
-                    case 0,2,4 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.playing("월드오브탱크블리츠 공식 한국어 디스코드"));
-                    case 1 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.playing("0.0.2_beta_2 실행중"));
+                    case 0,2,4 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.watching("월드오브탱크블리츠 공식 한국어 디스코드"));
+                    case 1 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.listening("0.0.2_beta_2 실행중"));
                     case 3 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.playing("버그/개선 사항은 DM 부탁드립니다."));
-                    case 5 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.playing("kirito5572#5572 제작"));
+                    case 5 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.streaming("kirito5572#5572 제작","https://github.com/kirito5572"));
                 }
                 i++;
                 if (i > 5) {
