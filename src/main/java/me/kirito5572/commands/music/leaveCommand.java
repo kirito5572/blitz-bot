@@ -7,7 +7,7 @@ import me.kirito5572.objects.ICommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public class leaveCommand implements ICommand {
     @Override
-    public void handle(List<String> args, @NotNull SlashCommandEvent event) {
+    public void handle(List<String> args, @NotNull EventPackage event) {
         TextChannel channel = event.getTextChannel();
         AudioManager audioManager = Objects.requireNonNull(event.getGuild()).getAudioManager();
         PlayerManager playerManager = PlayerManager.getInstance();

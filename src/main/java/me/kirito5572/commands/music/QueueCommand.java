@@ -10,7 +10,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.concurrent.BlockingQueue;
 public class QueueCommand implements ICommand {
 
     @Override
-    public void handle(@NotNull List<String> args, @NotNull SlashCommandEvent event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         TextChannel channel = event.getTextChannel();
         PlayerManager playerManager = PlayerManager.getInstance();
         GuildMusicManager musicManager = playerManager.getGuildMusicManager(Objects.requireNonNull(event.getGuild()));

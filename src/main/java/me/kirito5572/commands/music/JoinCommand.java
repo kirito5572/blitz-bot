@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class JoinCommand implements ICommand {
     @Override
-    public void handle(List<String> args, @NotNull SlashCommandEvent event) {
+    public void handle(List<String> args, @NotNull EventPackage event) {
         TextChannel channel = event.getTextChannel();
         AudioManager audioManager = Objects.requireNonNull(event.getGuild()).getAudioManager();
 
@@ -70,7 +70,7 @@ public class JoinCommand implements ICommand {
         thread.start();
     }
 
-    static void autoPaused(@NotNull SlashCommandEvent event, AudioManager audioManager, VoiceChannel voiceChannel, GuildMusicManager musicManager) {
+    static void autoPaused(@NotNull EventPackage event, AudioManager audioManager, VoiceChannel voiceChannel, GuildMusicManager musicManager) {
         if (voiceChannel.getMembers().size() < 2) {
             musicManager.player.isPaused();
             event.getChannel().sendMessage("사람이 아무도 없어, 노래가 일시 정지 되었습니다.\n" +

@@ -2,9 +2,10 @@ package me.kirito5572.commands.music;
 
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
+import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -12,7 +13,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class QueueMixCommand implements ICommand {
     @Override
-    public void handle(List<String> args, @NotNull SlashCommandEvent event) {
+    public void handle(List<String> args, @NotNull EventPackage event) {
         Random random = new Random();
         PlayerManager playerManager = PlayerManager.getInstance();
         GuildMusicManager musicManager = playerManager.getGuildMusicManager(Objects.requireNonNull(event.getGuild()));

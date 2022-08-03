@@ -6,7 +6,7 @@ import me.kirito5572.objects.SQLConnector;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
@@ -21,7 +21,7 @@ public class FilterWordRemoveCommand implements ICommand {
         this.sqlConnector = sqlConnector;
     }
     @Override
-    public void handle(List<String> args, @NotNull SlashCommandEvent event) {
+    public void handle(List<String> args, @NotNull EventPackage event) {
         if(Objects.requireNonNull(event.getGuild()).getId().equals("826704284003205160")) {
             if (FilterCommandAuthorityCheck(args, event)) return;
             try ( ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.FilterWord WHERE Word=?;", new int[]{sqlConnector.STRING}, new String[] {args.get(0)})) {
@@ -36,7 +36,7 @@ public class FilterWordRemoveCommand implements ICommand {
         }
     }
 
-    static boolean FilterCommandAuthorityCheck(List<String> args, @NotNull SlashCommandEvent event) {
+    static boolean FilterCommandAuthorityCheck(List<String> args, @NotNull EventPackage event) {
         Member member = event.getMember();
         assert member != null;
         Guild guild = event.getGuild();

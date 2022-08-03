@@ -2,8 +2,12 @@ package me.kirito5572.listener;
 
 import me.kirito5572.objects.CommandManager;
 import me.kirito5572.objects.SQLConnector;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ResumedEvent;
+import me.kirito5572.objects.EventPackage;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
@@ -15,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 
 public class Listener extends ListenerAdapter {
@@ -71,6 +76,14 @@ public class Listener extends ListenerAdapter {
             } catch (Exception e) {
                 e.printStackTrace();
                 event.getChannel().sendMessage("에러 발생! 명령어 등록 또는 갱신 실패").queue();
+            }
+        }
+
+
+        if (!event.getAuthor().isBot()) {
+            if (!event.getMessage().isWebhookMessage()) {
+                if(event.getMessage().getContentRaw().startsWith("!"))
+                this.manager.handleCommand(event);
             }
         }
     }

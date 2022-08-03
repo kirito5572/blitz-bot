@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public class VolumeCommand implements ICommand {
     @Override
-    public void handle(@NotNull List<String> args, @NotNull SlashCommandEvent event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         MessageChannel channel = event.getMessageChannel();
         PlayerManager manager = PlayerManager.getInstance();
         AudioManager audioManager = Objects.requireNonNull(event.getGuild()).getAudioManager();

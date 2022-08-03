@@ -4,7 +4,7 @@ import me.kirito5572.objects.ICommand;
 import me.kirito5572.objects.SQLConnector;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
@@ -21,7 +21,7 @@ public class UnMuteCommand implements ICommand {
     }
 
     @Override
-    public void handle(List<String> args, @NotNull SlashCommandEvent event) {
+    public void handle(List<String> args, @NotNull EventPackage event) {
         Member member = event.getMember();
         assert member != null;
         if (!member.getRoles().contains(Objects.requireNonNull(event.getGuild()).getRoleById("827009999145926657"))) {

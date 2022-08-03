@@ -5,7 +5,7 @@ import me.kirito5572.objects.SQLConnector;
 import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -22,7 +22,7 @@ public class MessagePinCommand implements ICommand {
     }
 
     @Override
-    public void handle(List<String> args, @NotNull SlashCommandEvent event) {
+    public void handle(List<String> args, @NotNull EventPackage event) {
         Member member = event.getMember();
         assert member != null;
         if (!member.getRoles().contains(Objects.requireNonNull(event.getGuild()).getRoleById("827009999145926657"))) {
@@ -41,14 +41,14 @@ public class MessagePinCommand implements ICommand {
                 EmbedBuilder builder = EmbedUtils.getDefaultEmbed()
                         .setTitle("고정된 메세지")
                         .setColor(Color.GREEN)
-                        .setDescription(event.getCommandString());
+                        .setDescription(event.getMessage().getContentRaw());
                 messageId = event.getChannel().sendMessageEmbeds(builder.build()).complete().getId();
                 sqlConnector.Insert_Query("INSERT INTO blitz_bot.Pin (channelId, messageId) VALUES (?, ?)", new int[]{sqlConnector.STRING, sqlConnector.STRING}, new String[]{channelId, messageId});
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        event.getTextChannel().deleteMessageById(event.getCommandIdLong()).queue();
+        event.getTextChannel().deleteMessageById(event.getMessage().getId()).queue();
     }
 
     @Override

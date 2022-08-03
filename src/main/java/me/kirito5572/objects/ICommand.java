@@ -1,13 +1,13 @@
 package me.kirito5572.objects;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface ICommand {
 
-    void handle(List<String> args, @Nonnull SlashCommandEvent event);
+    void handle(List<String> args, @Nonnull EventPackage event);
 
     String getHelp();
 

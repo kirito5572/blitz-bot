@@ -9,7 +9,7 @@ import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class SearchCommand implements ICommand {
     private final Logger logger = LoggerFactory.getLogger(SearchCommand.class);
     @Override
-    public void handle(@NotNull List<String> args, @NotNull SlashCommandEvent event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         new Thread(() -> {
             AudioManager audioManager = Objects.requireNonNull(event.getGuild()).getAudioManager();
             TextChannel channel = event.getTextChannel();

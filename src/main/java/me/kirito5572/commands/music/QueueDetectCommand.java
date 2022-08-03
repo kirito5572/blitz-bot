@@ -8,7 +8,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class QueueDetectCommand implements ICommand {
     @Override
-    public void handle(@NotNull List<String> args, @NotNull SlashCommandEvent event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         new Thread(() -> {
             TextChannel channel = event.getTextChannel();
             PlayerManager playerManager = PlayerManager.getInstance();

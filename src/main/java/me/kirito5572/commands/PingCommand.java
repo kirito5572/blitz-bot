@@ -3,7 +3,7 @@ package me.kirito5572.commands;
 import me.kirito5572.App;
 import me.kirito5572.objects.ICommand;
 import me.kirito5572.objects.SQLConnector;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
@@ -18,7 +18,7 @@ public class PingCommand implements ICommand {
     }
 
     @Override
-    public void handle(List<String> args, @NotNull SlashCommandEvent event) {
+    public void handle(List<String> args, @NotNull EventPackage event) {
         long a = event.getJDA().getRestPing().complete();
         long b = event.getJDA().getGatewayPing();
         long start=System.currentTimeMillis();
@@ -35,7 +35,7 @@ public class PingCommand implements ICommand {
         } else {
             sqlTimeString = String.valueOf(sqlTime);
         }
-        event.reply("blitz_bot\n" + "rest 요청(udp) ping: " + b + "ms\n"
+        event.getTextChannel().sendMessage("blitz_bot\n" + "rest 요청(udp) ping: " + b + "ms\n"
                 +  "rest 요청(tcp) ping: " + a+ "ms\n" + "sqlServer ping: " + sqlTimeString + "ms").queue();
 
     }
