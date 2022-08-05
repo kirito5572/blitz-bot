@@ -30,8 +30,10 @@ public class PingCommand implements ICommand {
         }
         String sqlTimeString;
         long sqlTime = (end - start);
-        if(sqlTime < 4) {
+        if(sqlTime < 0) {
             sqlTimeString = "접속 에러";
+        } else if(sqlTime == 1 || sqlTime == 0) {
+            sqlTimeString = "<1";
         } else {
             sqlTimeString = String.valueOf(sqlTime);
         }
