@@ -80,7 +80,7 @@ public class ClearCommand implements ICommand {
 
     @Override
     public String getInvoke() {
-        return "clear";
+        return "청소";
     }
 
     @Override

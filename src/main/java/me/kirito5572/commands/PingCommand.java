@@ -37,8 +37,8 @@ public class PingCommand implements ICommand {
         } else {
             sqlTimeString = String.valueOf(sqlTime);
         }
-        event.getTextChannel().sendMessage("blitz_bot\n" + "rest 요청(udp) ping: " + b + "ms\n"
-                +  "rest 요청(tcp) ping: " + a+ "ms\n" + "sqlServer ping: " + sqlTimeString + "ms").queue();
+        event.getTextChannel().sendMessage("blitz_bot\n" + "API 응답요청 소요시간(udp 연결): " + b + "ms\n"
+                +  "API 응답요청후 반환소요 시간(tcp 연결): " + a+ "ms\n" + "SQL 서버 명령어 처리시간(tcp 연결): " + sqlTimeString + "ms").queue();
 
     }
 
