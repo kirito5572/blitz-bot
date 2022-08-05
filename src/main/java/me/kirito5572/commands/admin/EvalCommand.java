@@ -88,6 +88,7 @@ public class EvalCommand implements ICommand {
         }
         if(args.get(0).contains("jda.shutdown()")) {
             event.getChannel().sendMessage("봇이 종료됩니다.").queue();
+            System.exit(0);
         }
         try {
             engine.setProperty("args", args);
