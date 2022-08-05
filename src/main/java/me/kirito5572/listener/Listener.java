@@ -38,14 +38,6 @@ public class Listener extends ListenerAdapter {
         logger.info("로그인 성공:" + event.getJDA().getSelfUser());
         System.out.printf("로그인 성공: %#s%n", event.getJDA().getSelfUser());
 
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                sqlConnector.reConnection();
-            }
-        };
-        timer.scheduleAtFixedRate(task, 86400000, 86400000);
     }
 
     @Override

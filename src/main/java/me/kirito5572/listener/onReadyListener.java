@@ -31,7 +31,7 @@ public class onReadyListener extends ListenerAdapter {
     public void onReady(@NotNull ReadyEvent event) {
         autoActivityChangeModule(event);
 
-
+        final int[] i = {0};
         try {
             Timer timer = new Timer();
             TimerTask task = new TimerTask() {
@@ -39,6 +39,11 @@ public class onReadyListener extends ListenerAdapter {
                 public void run() {
                     muteListenerModule(event);
                     giveRoleListenerModule();
+                    i[0]++;
+                    if(i[0] > 43200) {
+                        i[0] = 0;
+                        sqlConnector.reConnection();
+                    }
                 }
             };
             timer.scheduleAtFixedRate(task, 0, 1000);
@@ -49,7 +54,9 @@ public class onReadyListener extends ListenerAdapter {
 
     public void muteListenerModule(ReadyEvent event) {
         try {
-            try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE isEnd = 0", new int[]{}, new String[]{})) {
+            ResultSet resultSet = null;
+            try {
+                resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE isEnd = 0", new int[]{}, new String[]{});
                 if (resultSet == null) {
                     return;
                 }
@@ -79,6 +86,12 @@ public class onReadyListener extends ListenerAdapter {
                 }
             } catch (SQLException e) {
                 sqlConnector.reConnection();
+            } finally {
+                if(resultSet != null) {
+                    if (!resultSet.isClosed()) {
+                        resultSet.close();
+                    }
+                }
             }
         } catch (Exception e) {
             sqlConnector.reConnection();
