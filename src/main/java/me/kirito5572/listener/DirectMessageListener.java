@@ -98,7 +98,7 @@ public class DirectMessageListener extends ListenerAdapter {
                         "(userId, createtime, endtime) VALUES (?, ?, ?);",
                 new int[]{sqlConnector.STRING, sqlConnector.LONG, sqlConnector.LONG},
                 new String[]{event.getUserId(), String.valueOf(System.currentTimeMillis() / 1000), "0"});
-        if(i == 0) {
+        if(i == 1) {
             event.getChannel().sendMessage("""
                     처리 과정에서 에러가 발생하였습니다. 
                     <@284508374924787713>에게 문의부탁드립니다.""").queue();
