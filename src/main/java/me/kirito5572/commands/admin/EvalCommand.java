@@ -1,5 +1,6 @@
 package me.kirito5572.commands.admin;
 
+import groovy.lang.MissingPropertyException;
 import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
 import groovy.lang.GroovyShell;

@@ -1,5 +1,6 @@
 package me.kirito5572.listener;
 
+import me.kirito5572.App;
 import me.kirito5572.objects.SQLConnector;
 import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -40,7 +41,7 @@ public class onReadyListener extends ListenerAdapter {
                     muteListenerModule(event);
                     giveRoleListenerModule();
                     i[0]++;
-                    if(i[0] > 43200) {
+                    if(i[0] > 21600) {
                         i[0] = 0;
                         sqlConnector.reConnection();
                     }
@@ -56,6 +57,9 @@ public class onReadyListener extends ListenerAdapter {
         try {
             ResultSet resultSet = null;
             try {
+                if(sqlConnector.isConnectionClosed()){
+                    sqlConnector.reConnection();
+                }
                 resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE isEnd = 0", new int[]{}, new String[]{});
                 if (resultSet == null) {
                     return;
@@ -123,7 +127,7 @@ public class onReadyListener extends ListenerAdapter {
             public void run() {
                 switch (i) {
                     case 0,2,4 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.watching("월드오브탱크블리츠 공식 한국어 디스코드"));
-                    case 1 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.listening("0.0.2_STABLE"));
+                    case 1 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.listening(App.getVersion()));
                     case 3 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.playing("버그/개선 사항은 DM 부탁드립니다."));
                     case 5 -> Objects.requireNonNull(jda.getPresence()).setActivity(Activity.streaming("kirito5572#5572 제작","https://github.com/kirito5572"));
                 }
@@ -133,6 +137,7 @@ public class onReadyListener extends ListenerAdapter {
                 }
             }
         };
+
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(timerTask, 0, 5000);
     }

@@ -1,10 +1,13 @@
+import java.text.SimpleDateFormat
+
 plugins ({
     id'java'
     id'application'
     id'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'net.nemerosa.versioning' version '2.6.1'
 })
 group 'me.kirito5572'
-version '0.0.2'
+version '0.0.3_alpha_1'
 
 mainClassName = 'me.kirito5572.App'
 
@@ -50,7 +53,18 @@ dependencies {
 shadowJar {
     zip64 true
     manifest {
-        attributes 'Title': 'blitz_bot', 'Main-Class': mainClassName, 'Group': group, 'Version': archiveVersion
+        attributes(
+                'Title': 'blitz_bot',
+                'Main-Class': mainClassName,
+                'Group': group,
+                'Version': archiveVersion,
+                'BuiltBy'       : "kirito5572",
+                'BuildDate': new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+                'CreatedBy'     : "Gradle ${gradle.gradleVersion}",
+                'BuildJDK'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+                'BuildOS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+        )
+
     }
 }
 

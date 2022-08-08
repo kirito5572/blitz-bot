@@ -14,6 +14,10 @@ import org.slf4j.LoggerFactory;
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 
 public class App {
     private final static Logger logger = LoggerFactory.getLogger(App.class);
@@ -28,6 +32,11 @@ public class App {
     private final static int MAC = 1;
     private final static int UNIX = 2;
     private final static int UNSUPPORTED = 3;
+
+    private static String version = null;
+    private static String build_time = null;
+    private static String build_os = null;
+    private static String build_jdk = null;
 
     public static String openFileData(String Data) {
         StringBuilder reader = new StringBuilder();
@@ -64,6 +73,22 @@ public class App {
             OS = UNSUPPORTED;
         }
 
+        try {
+            String location = new File(getClass().getProtectionDomain().getCodeSource().getLocation()
+                    .toURI()).getAbsolutePath();
+
+            Attributes attribute = new JarFile(location).getManifest().getMainAttributes();
+            version = attribute.getValue("Version");
+            build_time = attribute.getValue("BuildDate");
+            build_os = attribute.getValue("BuildOS");
+            build_jdk = attribute.getValue("BuildJDK");
+
+        } catch (URISyntaxException | IOException e){
+            logger.error(e.getMessage());
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
         WebUtils.setUserAgent("Chrome 89.0.4389.114 discord bot");
 
         SQLConnector sqlConnector = new SQLConnector();
@@ -76,12 +101,14 @@ public class App {
         MuteListener muteListener = new MuteListener(sqlConnector);
         MessagePinListener messagePinListener = new MessagePinListener(sqlConnector);
         onReadyListener onReadyListener = new onReadyListener(sqlConnector);
+        DirectMessageListener directMessageListener = new DirectMessageListener(sqlConnector);
 
         try {
             logger.info("부팅");
             JDABuilder.createDefault(openFileData("TOKEN"))
                     .setAutoReconnect(true)
-                    .addEventListeners(listener, giveRoleListener, noticeAutoTransListener, logListener, muteListener, messagePinListener, onReadyListener)
+                    .addEventListeners(listener, giveRoleListener, noticeAutoTransListener, logListener,
+                            muteListener, messagePinListener, onReadyListener, directMessageListener)
                     .setEnabledIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                     .setChunkingFilter(ChunkingFilter.ALL)
                     .build().awaitReady();
@@ -106,5 +133,21 @@ public class App {
 
     public static void setFilterList(String[] filterList) {
         FilterList = filterList;
+    }
+
+    public static String getVersion() {
+        return version;
+    }
+
+    public static String getBuild_time() {
+        return build_time;
+    }
+
+    public static String getBuild_os() {
+        return build_os;
+    }
+
+    public static String getBuild_jdk() {
+        return build_jdk;
     }
 }

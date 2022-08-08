@@ -51,7 +51,10 @@ public class Listener extends ListenerAdapter {
                 event.getGuild().upsertCommand("핀", "(관리자 전용)메세지를 고정합니다.").queue();
                 event.getGuild().upsertCommand("제재", "(관리자 전용) 서버에서 사용자를 제재합니다.").queue();
                 event.getGuild().upsertCommand("제재해제", "(관리자 전용) 서버에서 제재한 사용자에 대한 제재를 해제합니다.").queue();
+                event.getGuild().upsertCommand("종료","(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅을 종료하는 명령어입니다.").queue();
+                event.getGuild().upsertCommand("청소", "(관리자 전용) 메세지를 입력한 숫자만큼 대량 삭제 합니다.").queue();
                 event.getGuild().upsertCommand("eval","(개발자 전용) 살충제! 살충제!").queue();
+                event.getGuild().upsertCommand("봇정보", "봇에 대한 정보를 표시합니다.").queue();
             } catch (ErrorResponseException e) {
                 event.getChannel().sendMessage(e.getMessage()).queue();
             } catch (Exception e) {
@@ -61,8 +64,10 @@ public class Listener extends ListenerAdapter {
             event.getChannel().sendMessage("명령어 등록 또는 갱신 완료").queue();
         } else if (event.getMessage().getContentRaw().startsWith("!update") && Objects.requireNonNull(event.getMember()).getId().equals("284508374924787713")){
             try {
+                event.getGuild().upsertCommand("종료","(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅을 종료하는 명령어입니다.").queue();
+                event.getGuild().upsertCommand("청소", "(관리자 전용) 메세지를 입력한 숫자만큼 대량 삭제 합니다.").queue();
                 event.getGuild().upsertCommand("eval","(개발자 전용) 살충제! 살충제!").queue();
-                event.getGuild().upsertCommand("clear", "(관리자 전용) 메세지를 입력한 숫자만큼 대량 삭제 합니다.").queue();
+                event.getGuild().upsertCommand("봇정보", "봇에 대한 정보를 표시합니다.").queue();
             } catch (ErrorResponseException e) {
                 event.getChannel().sendMessage(e.getMessage()).queue();
             } catch (Exception e) {

@@ -18,6 +18,7 @@ public class SQLConnector {
     public final int STRING = 0;
     public final int INT = 1;
     public final int BOOLEAN = 2;
+    public final int LONG = 3;
     private final String driverName = "com.mysql.cj.jdbc.Driver";
 
 
@@ -32,6 +33,15 @@ public class SQLConnector {
             e.printStackTrace();
             System.exit(-1);
         }
+    }
+
+    public boolean isConnectionClosed() {
+        try {
+            return connection.isClosed();
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+        return false;
     }
 
     public void reConnection() {
@@ -75,12 +85,14 @@ public class SQLConnector {
                 statement.setInt(i + 1, Integer.parseInt(data[i]));
             } else if(dataType[i] == BOOLEAN) {
                 statement.setBoolean(i + 1, Boolean.parseBoolean(data[i]));
+            } else if(dataType[i] == LONG) {
+                statement.setLong(i + 1, Long.parseLong(data[i]));
             }
         }
     }
 
 
-    public int Insert_Query(@Language("SQL") String Query, int[] dataType,  String[] data) {
+    public int Insert_Query(String Query, int[] dataType, String[] data) {
         try {
             PreparedStatement statement = connection.prepareStatement(Query);
             Query(statement, dataType, data);
