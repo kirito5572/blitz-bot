@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
@@ -37,6 +38,7 @@ public class App {
     private static String build_time = null;
     private static String build_os = null;
     private static String build_jdk = null;
+    private static Date date;
 
     public static String openFileData(String Data) {
         StringBuilder reader = new StringBuilder();
@@ -73,6 +75,7 @@ public class App {
             OS = UNSUPPORTED;
         }
 
+        date = new Date();
         try {
             String location = new File(getClass().getProtectionDomain().getCodeSource().getLocation()
                     .toURI()).getAbsolutePath();
@@ -149,5 +152,9 @@ public class App {
 
     public static String getBuild_jdk() {
         return build_jdk;
+    }
+
+    public static Date getDate() {
+        return date;
     }
 }
