@@ -28,6 +28,9 @@ public class DirectMessageListener extends ListenerAdapter {
 
     @Override
     public void onPrivateMessageReceived(@NotNull PrivateMessageReceivedEvent event) {
+        if(event.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
+            return;
+        }
         boolean isChannelOpened = false;
         TextChannel textChannel = null;
 
@@ -133,6 +136,9 @@ public class DirectMessageListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
+        if(event.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
+            return;
+        }
         List<TextChannel> textChannels = Objects.requireNonNull(event.getGuild().getCategoryById("1005116641509650482")).getTextChannels();
         for(TextChannel textChannel : textChannels) {
             if(textChannel.getId().equals(event.getChannel().getId())) {
