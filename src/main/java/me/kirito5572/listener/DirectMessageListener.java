@@ -47,7 +47,7 @@ public class DirectMessageListener extends ListenerAdapter {
             int complainInt = 0;
             try (ResultSet resultSet =
                          sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
-                                         " WHERE userId = ? ORDER BY ROWID DESC LIMIT 1;",
+                                         " WHERE userId = ? ORDER BY Complain_int DESC LIMIT 1;",
                                  new int[]{sqlConnector.STRING},
                                  new String[]{event.getAuthor().getId()})) {
                 if(resultSet.next()) {
@@ -106,7 +106,7 @@ public class DirectMessageListener extends ListenerAdapter {
         }
 
         try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
-                        " WHERE userId = ? ORDER BY ROWID DESC LIMIT 1",
+                        " WHERE userId = ? ORDER BY Complain_int DESC LIMIT 1",
                 new int[]{sqlConnector.STRING},
                 new String[]{event.getUserId()})) {
             if(resultSet.next()) {

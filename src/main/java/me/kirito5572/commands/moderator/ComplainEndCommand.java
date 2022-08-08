@@ -42,7 +42,7 @@ public class ComplainEndCommand implements ICommand {
                 long endTime = System.currentTimeMillis();
                 EmbedBuilder builder = EmbedUtils.getDefaultEmbed();
                 try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
-                                " WHERE userId = ? ORDER BY ROWID DESC LIMIT 1",
+                                " WHERE userId = ? ORDER BY Complain_int DESC LIMIT 1",
                         new int[]{sqlConnector.STRING},
                         new String[]{event.getTextChannel().getName()})) {
                     sqlConnector.Insert_Query("UPDATE blitz_bot.ComplainLog SET endtime = ? WHERE Complain_int = ?",
