@@ -84,23 +84,23 @@ public class ComplainMessageLogCommand implements ICommand {
                 }
                 messageBuilder.append(resultSet.getString("messageRaw")).append("\n");
 
-                String sendData = messageBuilder.toString();
-                if(sendData.length() < (dataPage * 2000)) {
-                    event.getTextChannel().sendMessage("""
+            }
+            String sendData = messageBuilder.toString();
+            if(sendData.length() < (dataPage * 2000)) {
+                event.getTextChannel().sendMessage("""
                             해당 페이지만큼 글자수가 많지 않습니다.
                             예시: !로그 1 """).queue();
-                    return;
-                }
-                int endLength = (((dataPage + 1) * 2000) -1);
-                if(endLength > sendData.length()) {
-                    endLength = sendData.length();
-                }
-                event.getChannel().sendMessage(
-                        messageBuilder.substring(dataPage * 2000, endLength)).queue();
-                if(endLength < sendData.length()) {
-                    event.getChannel().sendMessage(" 로그 데이터 량이 2000자를 초과하여 다음페이지가 존재합니다.\n" +
-                            "현재 페이지: " + (dataPage + 1) + " / 마지막 페이지: " + (int) Math.ceil(sendData.length() / 2000.0)).queue();
-                }
+                return;
+            }
+            int endLength = (((dataPage + 1) * 2000) -1);
+            if(endLength > sendData.length()) {
+                endLength = sendData.length();
+            }
+            event.getChannel().sendMessage(
+                    sendData.substring(dataPage * 2000, endLength)).queue();
+            if(endLength < sendData.length()) {
+                event.getChannel().sendMessage(" 로그 데이터 량이 2000자를 초과하여 다음페이지가 존재합니다.\n" +
+                        "현재 페이지: " + (dataPage + 1) + " / 마지막 페이지: " + (int) Math.ceil(sendData.length() / 2000.0)).queue();
             }
         } catch (SQLException e) {
             logger.error(e.getMessage());
