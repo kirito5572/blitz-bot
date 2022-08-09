@@ -45,6 +45,9 @@ public class ComplainEndCommand implements ICommand {
                                 " WHERE userId = ? ORDER BY Complain_int DESC LIMIT 1",
                         new int[]{sqlConnector.STRING},
                         new String[]{event.getTextChannel().getName()})) {
+                    if(!resultSet.next()) {
+                        return;
+                    }
                     sqlConnector.Insert_Query("UPDATE blitz_bot.ComplainLog SET endtime = ? WHERE Complain_int = ?",
                             new int[]{sqlConnector.LONG, sqlConnector.STRING},
                             new String[]{String.valueOf(endTime / 1000), resultSet.getString("Complain_int")});
