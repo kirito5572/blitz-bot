@@ -66,7 +66,7 @@ public class DirectMessageListener extends ListenerAdapter {
                     new String[]{event.getAuthor().getId(),
                             String.valueOf(complainInt),
                             event.getMessage().getContentRaw()});
-            if(i == 0) {
+            if(i == 1) {
                 event.getChannel().sendMessage("""
                         처리 과정에서 에러가 발생하였습니다.
                         메세지가 정상적으로 전송되지 않았습니다.
