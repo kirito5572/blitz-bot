@@ -40,6 +40,24 @@ public class App {
     private static String build_jdk = null;
     private static Date date;
 
+
+    private static final String[] moderator = new String[]{
+            //administrator
+            "241540160389382145",   //김증권#2950
+            "454484285035118607",   //Nya-gaming#0099
+            //moderator
+            "284508374924787713",   //kirito5572#5572
+            "321535660576210954",   //CHERRY_PICKER#9999
+            //contributor
+            "265095112789327872",   //nakdo#7495
+            "234326875982397452",   //OlosTan#1439(KamP0n)
+            //Wargaming(Game STAFF)
+            "268251437224427521",   //Cincin#2050(Duan)
+            "742717525363523655",   //Jobasim#0302
+            "651303118239432704"    //[WG]Summer#6183
+
+    };
+
     public static String openFileData(String Data) {
         StringBuilder reader = new StringBuilder();
         try {
@@ -157,4 +175,9 @@ public class App {
     public static Date getDate() {
         return date;
     }
+
+    public static String[] getModerator() {
+        return moderator;
+    }
+
 }
