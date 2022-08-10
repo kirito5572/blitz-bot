@@ -92,7 +92,7 @@ public class ComplainMessageLogCommand implements ICommand {
                             예시: !로그 1 """).queue();
                 return;
             }
-            int endLength = (((dataPage + 1) * 2000) -1);
+            int endLength = (((dataPage + 1) * 2000));
             if(endLength > sendData.length()) {
                 endLength = sendData.length();
             }
