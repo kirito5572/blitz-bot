@@ -86,7 +86,6 @@ public class ComplainMessageLogCommand implements ICommand {
 
             }
             String sendData = messageBuilder.toString();
-            System.out.println(sendData);
             if(sendData.length() < (dataPage * 2000)) {
                 event.getTextChannel().sendMessage("""
                             해당 페이지만큼 글자수가 많지 않습니다.

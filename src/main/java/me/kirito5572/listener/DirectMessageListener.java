@@ -3,6 +3,7 @@ package me.kirito5572.listener;
 import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.objects.SQLConnector;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -44,29 +45,8 @@ public class DirectMessageListener extends ListenerAdapter {
             }
         }
         if(isChannelOpened) {
-            int complainInt = 0;
-            try (ResultSet resultSet =
-                         sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
-                                         " WHERE userId = ? ORDER BY Complain_int DESC LIMIT 1;",
-                                 new int[]{sqlConnector.STRING},
-                                 new String[]{event.getAuthor().getId()})) {
-                if(resultSet.next()) {
-                    complainInt = resultSet.getInt("Complain_int");
-                }
-            } catch (SQLException sqlException) {
-                sqlException.printStackTrace();
-            }
-
-            if(complainInt == 0) {
-                textChannel.delete().queue();
-            }
-            int i = sqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainMessageLog " +
-                            "(userId, ComplainInt, messageRaw) VALUES (?, ?, ?);",
-                    new int[]{sqlConnector.STRING, sqlConnector.LONG, sqlConnector.STRING},
-                    new String[]{event.getAuthor().getId(),
-                            String.valueOf(complainInt),
-                            event.getMessage().getContentRaw()});
-            if(i == 1) {
+            boolean i = insertMessageData(event.getAuthor(), textChannel, event.getMessage());
+            if(!i) {
                 event.getChannel().sendMessage("""
                         처리 과정에서 에러가 발생하였습니다.
                         메세지가 정상적으로 전송되지 않았습니다.
@@ -152,9 +132,37 @@ public class DirectMessageListener extends ListenerAdapter {
                                     \\종료 또는 !종료를 사용하여 채팅을 종료하여 주세요.""").queue();
                     break;
                 }
+                insertMessageData(event.getAuthor(), textChannel, event.getMessage());
                 user.openPrivateChannel().complete().sendMessage(event.getMessage()).queue();
+
                 break;
             }
         }
+    }
+
+    private boolean insertMessageData(User user, TextChannel textChannel, Message message) {
+        int complainInt = 0;
+        try (ResultSet resultSet =
+                     sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
+                                     " WHERE userId = ? ORDER BY Complain_int DESC LIMIT 1;",
+                             new int[]{sqlConnector.STRING},
+                             new String[]{user.getId()})) {
+            if(resultSet.next()) {
+                complainInt = resultSet.getInt("Complain_int");
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+
+        if(complainInt == 0) {
+            textChannel.delete().queue();
+        }
+        int i = sqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainMessageLog " +
+                        "(userId, ComplainInt, messageRaw) VALUES (?, ?, ?);",
+                new int[]{sqlConnector.STRING, sqlConnector.LONG, sqlConnector.STRING},
+                new String[]{user.getId(),
+                        String.valueOf(complainInt),
+                        message.getContentRaw()});
+        return i == 1;
     }
 }
