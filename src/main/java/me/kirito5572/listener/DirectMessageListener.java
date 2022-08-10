@@ -46,7 +46,7 @@ public class DirectMessageListener extends ListenerAdapter {
         }
         if(isChannelOpened) {
             boolean i = insertMessageData(event.getAuthor(), textChannel, event.getMessage());
-            if(!i) {
+            if(i) {
                 event.getChannel().sendMessage("""
                         처리 과정에서 에러가 발생하였습니다.
                         메세지가 정상적으로 전송되지 않았습니다.
