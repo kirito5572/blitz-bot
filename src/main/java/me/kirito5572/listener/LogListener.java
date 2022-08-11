@@ -1,6 +1,5 @@
 package me.kirito5572.listener;
 
-import me.kirito5572.objects.SQLConnector;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.regions.Regions;
@@ -8,6 +7,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
 import me.duncte123.botcommons.messaging.EmbedUtils;
+import me.kirito5572.objects.SQLConnector;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +45,8 @@ public class LogListener extends ListenerAdapter {
     private final static Logger logger = LoggerFactory.getLogger(LogListener.class);
     private final SQLConnector sqlConnector;
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy년 MM월dd일 HH시mm분ss초");
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy/MM/dd a hh:mm:ss");
+
     public LogListener(SQLConnector sqlConnector) {
         this.sqlConnector = sqlConnector;
     }
@@ -73,7 +76,12 @@ public class LogListener extends ListenerAdapter {
                 if (attachment.isImage()) {
                     i++;
                     File file = attachment.downloadToFile().join();
-                    S3UploadObject(file, message.getId() + "_" + i);
+                    try {
+                        S3UploadObject(file, message.getId() + "_" + i);
+                    } catch (SdkClientException e) {
+                        logger.error(e.getMessage());
+                        e.printStackTrace();
+                    }
                     boolean isFileDeleted = file.delete();
                     if(!isFileDeleted) {
                         logger.warn("파일 삭제에 실패하였습니다. 재시도 중입니다.");
@@ -109,15 +117,15 @@ public class LogListener extends ListenerAdapter {
                     .setDescription("[메세지 이동](" + event.getMessage().getJumpUrl() + ")")
                     .addField("작성 채널", event.getChannel().getAsMention(), false);
             if(resultSet.next()) {
-                String data = resultSet.getString("messageRaw");
-                if(data != null) {
-                    embedBuilder.addField("수정전 내용", data, false)
-                            .addField("수정후 내용",event.getMessage().getContentRaw(), false)
-                            .addField("메세지 ID", event.getMessageId(), false);
+                String pastData = resultSet.getString("messageRaw");
+                String nowData = event.getMessage().getContentRaw();
+                if(pastData != null) {
+                    MessageBuilder(embedBuilder, pastData,"수정전 내용", null);
+                    MessageBuilder(embedBuilder, nowData,"수정후 내용", event.getMessageId());
                 }
             } else {
-                embedBuilder.addField("수정전 내용", "정보 없음", false)
-                        .addField("수정후 내용",event.getMessage().getContentRaw(), false);
+                embedBuilder.addField("수정전 내용", "정보 없음", false);
+                MessageBuilder(embedBuilder, event.getMessage().getContentRaw(),"수정후 내용", null);
             }
             embedBuilder.addField("수정 시간", timeFormat.format(time), false)
                     .setFooter(member.getNickname(), member.getUser().getAvatarUrl());
@@ -152,27 +160,32 @@ public class LogListener extends ListenerAdapter {
                     embedBuilder.appendDescription("이미지가 포함된 게시글");
                 }
                 embedBuilder.addField("작성 채널", event.getChannel().getAsMention(), false);
+                String messageRaw = resultSet.getString("messageRaw");
                 if(resultSet.getString("messageRaw").length() < 1) {
                     embedBuilder.addField("삭제된 내용", "내용이 없이 사진만 있는 메세지", false);
                 } else {
-                    embedBuilder.addField("삭제된 내용", resultSet.getString("messageRaw"), false);
+                    MessageBuilder(embedBuilder, messageRaw,"삭제된 내용", event.getMessageId());
+                    embedBuilder.addField("삭제된 내용", messageRaw, false);
                 }
-                embedBuilder.addField("메세지 ID", event.getMessageId(), false).addField("삭제 시간", timeFormat.format(time), false);
             } else {
-                embedBuilder.addField("데이터 없음", "데이터 없음", false)
-                        .addField("삭제 시간", timeFormat.format(time), false);
+                embedBuilder.addField("데이터 없음", "데이터 없음", false);
             }
+            embedBuilder.addField("삭제 시간", timeFormat.format(time), false);
             Objects.requireNonNull(event.getGuild().getTextChannelById("829023428019355688")).sendMessageEmbeds(embedBuilder.build()).queue();
             if(isFile) {
-                File file = S3DownloadObject(event.getMessageId() + "_" + 1);
-                if (file != null) {
+                try {
+                    File file = S3DownloadObject(event.getMessageId() + "_" + 1);
                     Objects.requireNonNull(event.getGuild().getTextChannelById("829023428019355688")).sendFile(file).queue();
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                    e.printStackTrace();
                 }
             }
             sqlConnector.Insert_Query("DELETE FROM blitz_bot.ChattingDataTable WHERE messageId=?", new int[] {sqlConnector.STRING}, new String[] {event.getMessageId()});
 
         } catch (SQLException e) {
             logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -208,7 +221,6 @@ public class LogListener extends ListenerAdapter {
         Objects.requireNonNull(event.getGuild().getTextChannelById("946362857795248188")).sendMessageEmbeds(embedBuilder.build()).queue();
     }
 
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy/MM/dd a hh:mm:ss");
     @Override
     public void onGuildMemberRoleAdd(@NotNull GuildMemberRoleAddEvent event) {
         Date date = new Date();
@@ -252,55 +264,94 @@ public class LogListener extends ListenerAdapter {
         super.onGuildBan(event);
     }
 
-    private void S3UploadObject(File file, String messageId) {
+    /**
+     * upload file to bot s3 cloud
+     *
+     * @param file the {@link java.io.File} to upload
+     * @param messageId message id of the file to be uploaded
+     */
+
+    private void S3UploadObject(@NotNull File file,@NotNull String messageId) throws SdkClientException{
         Regions clientRegion = Regions.AP_NORTHEAST_2;
         String bucketName = "blitzbot-logger";
-        try {
-            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                    .withRegion(clientRegion)
-                    .withCredentials(new EnvironmentVariableCredentialsProvider())
-                    .build();
 
-            PutObjectRequest request = new PutObjectRequest(bucketName, messageId, file);
-            ObjectMetadata metadata = new ObjectMetadata();
-            request.setMetadata(metadata);
-            request.setStorageClass(StorageClass.StandardInfrequentAccess);
-            s3Client.putObject(request);
-        } catch (SdkClientException e) {
-            logger.error(e.getMessage());
-        }
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+                .withRegion(clientRegion)
+                .withCredentials(new EnvironmentVariableCredentialsProvider())
+                .build();
+
+        PutObjectRequest request = new PutObjectRequest(bucketName, messageId, file);
+        ObjectMetadata metadata = new ObjectMetadata();
+        request.setMetadata(metadata);
+        request.setStorageClass(StorageClass.StandardInfrequentAccess);
+        s3Client.putObject(request);
     }
 
+    /**
+     * download {@link java.io.File} to bot s3 cloud
+     *
+     * @param messageId Message id of the file to be downloaded
+     *
+     * @return download {@link java.io.File} or null(If the file does not exist)
+     */
 
-    private File S3DownloadObject(String messageId) {
+    private File S3DownloadObject(@NotNull String messageId) throws SdkClientException, IOException{
         Regions clientRegion = Regions.AP_NORTHEAST_2;
         String bucketName = "blitzbot-logger";
 
-        try {
-            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                    .withRegion(clientRegion)
-                    .withCredentials(new EnvironmentVariableCredentialsProvider())
-                    .build();
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+                .withRegion(clientRegion)
+                .withCredentials(new EnvironmentVariableCredentialsProvider())
+                .build();
 
-            GetObjectRequest request = new GetObjectRequest(bucketName, messageId);
-            S3Object object = s3Client.getObject(request);
-            ObjectMetadata metadata = object.getObjectMetadata();
-            InputStream inputStream = object.getObjectContent();
-            Path path = Files.createTempFile(messageId, "." + metadata.getContentType().split("/")[1]);
-            try (FileOutputStream out = new FileOutputStream(path.toFile())) {
-                byte[] buffer = new byte[1024];
-                int len;
-                while ((len = inputStream.read(buffer)) != -1) {
-                    out.write(buffer, 0, len);
-                }
-            } catch (Exception e) {
-                // TODO: handle exception
-                return null;
-            }
-            return path.toFile();
-
-        } catch (SdkClientException | IOException e) {
-            return null;
+        GetObjectRequest request = new GetObjectRequest(bucketName, messageId);
+        S3Object object = s3Client.getObject(request);
+        ObjectMetadata metadata = object.getObjectMetadata();
+        InputStream inputStream = object.getObjectContent();
+        Path path = Files.createTempFile(messageId, "." + metadata.getContentType().split("/")[1]);
+        FileOutputStream out = new FileOutputStream(path.toFile());
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = inputStream.read(buffer)) != -1) {
+            out.write(buffer, 0, len);
         }
+        out.close();
+        return path.toFile();
+    }
+
+    /**
+     * Message data splitter(if Message data's length > 1000, split it)
+     *
+     * @param embedBuilder the EmbedBuilder which is use addField with split data
+     * @param data the message string to be split
+     * @param messageId the messageId which is modify message's id
+     *                  input null if the message which is before modification is null
+     * @param name the name
+     */
+
+    private void MessageBuilder(@NotNull EmbedBuilder embedBuilder, @NotNull String data, @NotNull String name, @Nullable String messageId) {
+        if(1000 < data.length() && data.length() <= 2000) {
+            embedBuilder.addField("정보", "1000글자를 넘어가는 메세지로 확인되어 여러단락으로 분리했습니다.", false)
+                    .addField(name + "-1", data.substring(0, 1000), false)
+                    .addField(name + "-2", data.substring(1000), false);
+        } else if(2000 < data.length() && data.length() <= 3000) {
+            embedBuilder.addField("정보", "1000글자를 넘어가는 메세지로 확인되어 여러단락으로 분리했습니다.", false)
+                    .addField(name + "-1", data.substring(0, 1000), false)
+                    .addField(name + "-2", data.substring(1000, 2000), false)
+                    .addField(name + "-3", data.substring(2000), false);
+        } else if(3000 < data.length() && data.length() <= 4000) {
+            embedBuilder.addField("정보", "1000글자를 넘어가는 메세지로 확인되어 여러단락으로 분리했습니다.", false)
+                    .addField(name + "-1", data.substring(0, 1000), false)
+                    .addField(name + "-2", data.substring(1000, 2000), false)
+                    .addField(name + "-3", data.substring(2000, 3000), false)
+                    .addField(name + "-4", data.substring(3000), false);
+        } else {
+            embedBuilder.addField(name, data, false);
+        }
+
+        if(messageId != null) {
+            embedBuilder.addField("메세지 ID", messageId, false);
+        }
+
     }
 }
