@@ -67,9 +67,13 @@ public class LogListener extends ListenerAdapter {
             isFile = true;
         }
 
-        sqlConnector.Insert_Query("INSERT INTO blitz_bot.ChattingDataTable (messageId, userId, messageRaw, isFile) VALUES (?, ?, ?, ?)",
-                new int[]{sqlConnector.STRING,sqlConnector.STRING, sqlConnector.STRING, sqlConnector.BOOLEAN},
-                new String[] {message.getId(), message.getAuthor().getId(), message.getContentRaw(), String.valueOf(isFile)});
+        try {
+            sqlConnector.Insert_Query("INSERT INTO blitz_bot.ChattingDataTable (messageId, userId, messageRaw, isFile) VALUES (?, ?, ?, ?)",
+                    new int[]{sqlConnector.STRING,sqlConnector.STRING, sqlConnector.STRING, sqlConnector.BOOLEAN},
+                    new String[] {message.getId(), message.getAuthor().getId(), message.getContentRaw(), String.valueOf(isFile)});
+        } catch (SQLException sqlException) {
+            logger.error(sqlException.getMessage());
+        }
         if(isFile) {
             int i = 0;
             for (Message.Attachment attachment : files) {
@@ -165,7 +169,6 @@ public class LogListener extends ListenerAdapter {
                     embedBuilder.addField("삭제된 내용", "내용이 없이 사진만 있는 메세지", false);
                 } else {
                     MessageBuilder(embedBuilder, messageRaw,"삭제된 내용", event.getMessageId());
-                    embedBuilder.addField("삭제된 내용", messageRaw, false);
                 }
             } else {
                 embedBuilder.addField("데이터 없음", "데이터 없음", false);

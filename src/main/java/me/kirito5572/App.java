@@ -1,10 +1,10 @@
 package me.kirito5572;
 
+import me.duncte123.botcommons.web.WebUtils;
 import me.kirito5572.listener.*;
 import me.kirito5572.objects.CommandManager;
 import me.kirito5572.objects.SQLConnector;
 import me.kirito5572.objects.UnsupportedOSException;
-import me.duncte123.botcommons.web.WebUtils;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -82,7 +83,7 @@ public class App {
         return reader.toString();
     }
 
-    public App() {
+    public App() throws SQLException, ClassNotFoundException {
         if(OSStringData.contains("win")) {
             OS = WINDOWS;
         } else if(OSStringData.contains("mac")) {
@@ -140,7 +141,7 @@ public class App {
     }
 
     @SuppressWarnings("InstantiationOfUtilityClass")
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
         new App();
     }
 

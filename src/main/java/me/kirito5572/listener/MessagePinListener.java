@@ -6,12 +6,16 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class MessagePinListener extends ListenerAdapter {
     private final SQLConnector sqlConnector;
+    private final Logger logger = LoggerFactory.getLogger(MessagePinListener.class);
 
     public MessagePinListener(SQLConnector sqlConnector) {
         this.sqlConnector = sqlConnector;
@@ -38,7 +42,11 @@ public class MessagePinListener extends ListenerAdapter {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            sqlConnector.reConnection();
+            try {
+                sqlConnector.reConnection();
+            } catch (SQLException sqlException) {
+                logger.error(sqlException.getMessage());
+            }
         }
     }
 }

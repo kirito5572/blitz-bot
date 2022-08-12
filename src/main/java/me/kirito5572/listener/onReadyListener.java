@@ -1,8 +1,8 @@
 package me.kirito5572.listener;
 
+import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.App;
 import me.kirito5572.objects.SQLConnector;
-import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -43,7 +43,11 @@ public class onReadyListener extends ListenerAdapter {
                     i[0]++;
                     if(i[0] > 21600) {
                         i[0] = 0;
-                        sqlConnector.reConnection();
+                        try {
+                            sqlConnector.reConnection();
+                        } catch (SQLException sqlException) {
+                            logger.error(sqlException.getMessage());
+                        }
                     }
                 }
             };
@@ -53,7 +57,12 @@ public class onReadyListener extends ListenerAdapter {
         }
     }
 
-    public void muteListenerModule(ReadyEvent event) {
+
+    /**
+     * {@link net.dv8tion.jda.api.events.ReadyEvent} for {@link me.kirito5572.listener.MuteListener}
+     */
+
+    public void muteListenerModule(@NotNull ReadyEvent event) {
         try {
             ResultSet resultSet = null;
             try {
@@ -90,18 +99,20 @@ public class onReadyListener extends ListenerAdapter {
                 }
             } catch (SQLException e) {
                 sqlConnector.reConnection();
-            } finally {
-                if(resultSet != null) {
-                    if (!resultSet.isClosed()) {
-                        resultSet.close();
-                    }
-                }
             }
         } catch (Exception e) {
-            sqlConnector.reConnection();
+            try {
+                sqlConnector.reConnection();
+            } catch (SQLException sqlException) {
+                logger.error(sqlException.getMessage());
+            }
             logger.error(e.getMessage());
         }
     }
+
+    /**
+     * {@link net.dv8tion.jda.api.events.ReadyEvent} for {@link me.kirito5572.listener.giveRoleListener}
+     */
 
     public void giveRoleListenerModule() {
         long time = System.currentTimeMillis() / 1000;
@@ -115,12 +126,21 @@ public class onReadyListener extends ListenerAdapter {
             }
 
         } catch (SQLException sqlException) {
-            sqlConnector.reConnection();
+            try {
+                sqlConnector.reConnection();
+            } catch (SQLException throwables) {
+                logger.error(sqlException.getMessage());
+            }
             logger.error(sqlException.getMessage());
         }
     }
 
-    public void autoActivityChangeModule(ReadyEvent event) {
+    /**
+     * Automatically change activity of bot
+     * @param event {@link net.dv8tion.jda.api.events.ReadyEvent}
+     */
+
+    public void autoActivityChangeModule(@NotNull ReadyEvent event) {
         JDA jda = event.getJDA();
         TimerTask timerTask = new TimerTask() {
             @Override

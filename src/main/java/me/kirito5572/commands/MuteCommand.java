@@ -1,15 +1,16 @@
 package me.kirito5572.commands;
 
+import com.jagrosh.jdautilities.commons.utils.FinderUtil;
+import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
 import me.kirito5572.objects.SQLConnector;
-import com.jagrosh.jdautilities.commons.utils.FinderUtil;
-import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.sql.ResultSet;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class MuteCommand implements ICommand {
     private final SQLConnector sqlConnector;
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd aa hh:mm:ss z");
+    private final Logger logger = LoggerFactory.getLogger(MuteCommand.class);
 
     public MuteCommand(SQLConnector sqlConnector) {
         this.sqlConnector = sqlConnector;
@@ -80,9 +82,13 @@ public class MuteCommand implements ICommand {
         }
         assert role != null;
         event.getGuild().addRoleToMember(foundMember.get(0), role).queue();
-        sqlConnector.Insert_Query("INSERT INTO blitz_bot.MuteTable (userId, DBWriteTime, endTime, reason, isEnd) VALUES (?, ?, ?, ?, ?)",
-                new int[]{sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING, sqlConnector.INT},
-                new String[]{foundMember.get(0).getId(), String.valueOf(System.currentTimeMillis() / 1000), String.valueOf(return_time.getTimeInMillis() / 1000), stringBuilder.toString(), "0"});
+        try {
+            sqlConnector.Insert_Query("INSERT INTO blitz_bot.MuteTable (userId, DBWriteTime, endTime, reason, isEnd) VALUES (?, ?, ?, ?, ?)",
+                    new int[]{sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING, sqlConnector.INT},
+                    new String[]{foundMember.get(0).getId(), String.valueOf(System.currentTimeMillis() / 1000), String.valueOf(return_time.getTimeInMillis() / 1000), stringBuilder.toString(), "0"});
+        } catch (SQLException sqlException) {
+            logger.error(sqlException.getMessage());
+        }
 
         EmbedBuilder builder = EmbedUtils.getDefaultEmbed()
                 .setTitle("사용자 제재")

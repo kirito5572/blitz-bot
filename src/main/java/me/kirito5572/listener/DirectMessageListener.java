@@ -32,6 +32,16 @@ public class DirectMessageListener extends ListenerAdapter {
         if(event.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
             return;
         }
+        try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainBan WHERE userId = ?",
+                    new int[]{sqlConnector.STRING},
+                    new String[]{event.getAuthor().getId()})) {
+            if(resultSet.next()) {
+                event.getChannel().sendMessage("당신은 해당 기능이 차단되어 사용할수 없습니다.").queue();
+                return;
+            }
+        } catch (SQLException sqlException) {
+            logger.error(sqlException.getMessage());
+        }
         boolean isChannelOpened = false;
         TextChannel textChannel = null;
 
@@ -74,10 +84,15 @@ public class DirectMessageListener extends ListenerAdapter {
 
         EmbedBuilder builder1 = EmbedUtils.getDefaultEmbed();
 
-        int i = sqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainLog " +
-                        "(userId, createtime, endtime) VALUES (?, ?, ?);",
-                new int[]{sqlConnector.STRING, sqlConnector.LONG, sqlConnector.LONG},
-                new String[]{event.getUserId(), String.valueOf(System.currentTimeMillis() / 1000), "0"});
+        int i = 0;
+        try {
+            i = sqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainLog " +
+                            "(userId, createtime, endtime) VALUES (?, ?, ?);",
+                    new int[]{sqlConnector.STRING, sqlConnector.LONG, sqlConnector.LONG},
+                    new String[]{event.getUserId(), String.valueOf(System.currentTimeMillis() / 1000), "0"});
+        } catch (SQLException sqlException) {
+            logger.error(sqlException.getMessage());
+        }
         if(i == 1) {
             event.getChannel().sendMessage("""
                     처리 과정에서 에러가 발생하였습니다. 
@@ -140,7 +155,15 @@ public class DirectMessageListener extends ListenerAdapter {
         }
     }
 
-    private boolean insertMessageData(User user, TextChannel textChannel, Message message) {
+    /**
+     * Upload MessageData to DataBase
+     * @param user the user who chatting message
+     * @param textChannel the textChannel which is chatting channel
+     * @param message the message which is chatting message
+     * @return if false, upload success/ if true, upload fail
+     */
+
+    private boolean insertMessageData(@NotNull User user,@NotNull TextChannel textChannel,@NotNull Message message) {
         int complainInt = 0;
         try (ResultSet resultSet =
                      sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
@@ -157,12 +180,17 @@ public class DirectMessageListener extends ListenerAdapter {
         if(complainInt == 0) {
             textChannel.delete().queue();
         }
-        int i = sqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainMessageLog " +
-                        "(userId, ComplainInt, messageRaw) VALUES (?, ?, ?);",
-                new int[]{sqlConnector.STRING, sqlConnector.LONG, sqlConnector.STRING},
-                new String[]{user.getId(),
-                        String.valueOf(complainInt),
-                        message.getContentRaw()});
+        int i = 0;
+        try {
+            i = sqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainMessageLog " +
+                            "(userId, ComplainInt, messageRaw) VALUES (?, ?, ?);",
+                    new int[]{sqlConnector.STRING, sqlConnector.LONG, sqlConnector.STRING},
+                    new String[]{user.getId(),
+                            String.valueOf(complainInt),
+                            message.getContentRaw()});
+        } catch (SQLException sqlException) {
+            logger.error(sqlException.getMessage());
+        }
         return i == 1;
     }
 }

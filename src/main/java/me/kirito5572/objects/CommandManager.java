@@ -1,13 +1,12 @@
 package me.kirito5572.objects;
 
-import me.kirito5572.commands.admin.EvalCommand;
 import me.kirito5572.commands.*;
+import me.kirito5572.commands.admin.EvalCommand;
 import me.kirito5572.commands.moderator.ClearCommand;
 import me.kirito5572.commands.moderator.ComplainEndCommand;
 import me.kirito5572.commands.moderator.ComplainMessageLogCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import me.kirito5572.objects.EventPackage;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -100,6 +99,11 @@ public class CommandManager {
 
     }
 
+    /**
+     * addCommand for prefix command system(prefix = !)
+     * @param command command data, more: {@link me.kirito5572.objects.ICommand}
+     */
+
     private void addCommand(@NotNull ICommand command) {
         if(!commands.containsKey(command.getInvoke())) {
             commands.put(command.getInvoke(), command);
@@ -107,6 +111,9 @@ public class CommandManager {
         sleep();
     }
 
+    /**
+     * delay 10 mill
+     */
     private void sleep() {
         try {
             Thread.sleep(10);
@@ -121,15 +128,29 @@ public class CommandManager {
         }
     }
 
+    /**
+     * get all Commands {@link me.kirito5572.objects.ICommand}
+     * @return Commands Collection return
+     */
     @NotNull
     public Collection<ICommand> getCommands() {
         return commands.values();
     }
 
-    public ICommand getCommand(String name) {
+    /**
+     * get single Command's {@link me.kirito5572.objects.ICommand}
+     * @param name command invoke
+     * @return If the command exists, return it's {@link me.kirito5572.objects.ICommand}
+     */
+    public ICommand getCommand(@NotNull String name) {
         return commands.get(name);
     }
 
+    /**
+     * When input a command, the part to be linked to the command
+     * use with prefix command system({@link net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent})
+     * @param event {@link net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent}
+     */
     public void handleCommand(@NotNull GuildMessageReceivedEvent event) {
         TextChannel channel = event.getChannel();
         String[] split = event.getMessage().getContentRaw().replaceFirst("(?i)" + Pattern.quote("!"), "").split("\\s+");
@@ -143,6 +164,11 @@ public class CommandManager {
 
     }
 
+    /**
+     * When input a command, the part to be linked to the command
+     * use with slash command system({@link net.dv8tion.jda.api.events.interaction.SlashCommandEvent})
+     * @param event {@link net.dv8tion.jda.api.events.interaction.SlashCommandEvent}
+     */
     public void handleCommand(@NotNull final SlashCommandEvent event) {
         final TextChannel channel = event.getTextChannel();
         final String[] split = event.getCommandString().replaceFirst(

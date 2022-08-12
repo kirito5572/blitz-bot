@@ -22,58 +22,56 @@ public class SQLConnector {
     private final String driverName = "com.mysql.cj.jdbc.Driver";
 
 
-    public SQLConnector() {
+    public SQLConnector() throws ClassNotFoundException, SQLException {
         url = "jdbc:mysql://" + openFileData("endPoint") + "/blitz_bot?serverTimezone=UTC";
         user = "blitzbot";
         password = openFileData("SQLPassword");
-        try {
-            Class.forName(driverName);
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
+        Class.forName(driverName);
+        connection = DriverManager.getConnection(url, user, password);
     }
 
-    public boolean isConnectionClosed() {
-        try {
-            return connection.isClosed();
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-        }
-        return false;
+    /**
+     * check SQL Connection is closed
+     * @return {@code true} if this {@code Connection} object
+     *      is closed; {@code false} if it is still open
+     * @throws SQLException if a database access error occurs
+     */
+    public boolean isConnectionClosed() throws SQLException {
+        return connection.isClosed();
     }
 
-    public void reConnection() {
-        try {
-            Class.forName(driverName);
-            if (!connection.isClosed()) {
-                connection.close();
-            }
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+    /**
+     * reconnecting with sql server
+     * @throws SQLException - if a database access error occurs
+     */
+    public void reConnection() throws SQLException {
+        if (!connection.isClosed()) {
+            connection.close();
         }
+        connection = DriverManager.getConnection(url, user, password);
     }
 
-    public ResultSet Select_Query(@Language("SQL") String Query, int[] dataType,  String[] data) {
-        try {
-            PreparedStatement statement = connection.prepareStatement(Query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            Query(statement, dataType, data);
-            return statement.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            reConnection();
-            try {
-                PreparedStatement statement = connection.prepareStatement(Query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                Query(statement, dataType, data);
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
-            return null;
-        }
+    /**
+     * select query to sql server
+     * @param Query sql query
+     * @param dataType the data types that input
+     * @param data the data that input
+     * @throws SQLException if query execution fail or database access error occurs
+     * @return {@link java.sql.ResultSet}
+     */
+    public ResultSet Select_Query(@Language("SQL") String Query, int[] dataType,  String[] data) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(Query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        Query(statement, dataType, data);
+        return statement.executeQuery();
     }
 
+    /**
+     * input data to query
+     * @param statement sql statement({@link java.sql.PreparedStatement})
+     * @param dataType the data types that input
+     * @param data the data that input
+     * @throws SQLException - if query execution fail or database access error occurs
+     */
     private void Query(PreparedStatement statement, int[] dataType, String[] data) throws SQLException {
         if(connection.isClosed()) {
             reConnection();
@@ -91,24 +89,18 @@ public class SQLConnector {
         }
     }
 
-
-    public int Insert_Query(String Query, int[] dataType, String[] data) {
-        try {
-            PreparedStatement statement = connection.prepareStatement(Query);
-            Query(statement, dataType, data);
-            return statement.execute() ? 1 : 0;
-        } catch (SQLException e) {
-            reConnection();
-            try {
-                PreparedStatement statement = connection.prepareStatement(Query);
-                Query(statement, dataType, data);
-                return statement.execute() ? 1 : 0;
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-                reConnection();
-            }
-            return 1;
-        }
+    /**
+     * insert query to sql server
+     * @param Query sql query
+     * @param dataType the data types that input
+     * @param data the data that input
+     * @return 1 = success, 0 = failed
+     * @throws SQLException if query execution fail or database access error occurs
+     */
+    public int Insert_Query(String Query, int[] dataType, String[] data) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(Query);
+        Query(statement, dataType, data);
+        return statement.execute() ? 1 : 0;
     }
 
     public void filterRefresh() {

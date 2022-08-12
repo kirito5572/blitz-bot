@@ -45,7 +45,7 @@ public class giveRoleListener extends ListenerAdapter {
                     member.getUser().openPrivateChannel().complete().sendMessage("현재 쿨타임 중입니다.\n 쿨타임 해제 시간: " + Date).queue();
                     return;
                 }
-                String confirmBan = confirmBan(member);
+                String confirmBan = confirmCoolDown(member);
                 if(confirmBan.contains("#")) {
                     switch (confirmBan.split("#")[0]) {
                         case "true/10" -> member.getUser().openPrivateChannel().complete().sendMessage("10초 동안 " + confirmBan.split("#")[1] + "회 이상 역할 부여를 시도하여 5분간 쿨타임에 걸렸습니다.").queue();
@@ -60,9 +60,14 @@ public class giveRoleListener extends ListenerAdapter {
                 }
                 assert role != null;
                 guild.addRoleToMember(member, role).complete();
-                int result = sqlConnector.Insert_Query("INSERT INTO blitz_bot.JoinData_Table (userId, approveTime, rejectTime) VALUES(?, ? ,?);",
-                        new int[] {sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
-                        new String[] {member.getId(), String.valueOf(System.currentTimeMillis() / 1000), "0"});
+                int result = 0;
+                try {
+                    result = sqlConnector.Insert_Query("INSERT INTO blitz_bot.JoinData_Table (userId, approveTime, rejectTime) VALUES(?, ? ,?);",
+                            new int[] {sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
+                            new String[] {member.getId(), String.valueOf(System.currentTimeMillis() / 1000), "0"});
+                } catch (SQLException sqlException) {
+                    logger.error(sqlException.getMessage());
+                }
                 if (result != 0) {
                     logger.warn("sql insert error #1");
                 }
@@ -80,9 +85,14 @@ public class giveRoleListener extends ListenerAdapter {
                 assert role != null;
                 assert member != null;
                 guild.removeRoleFromMember(member, role).complete();
-                int result = sqlConnector.Insert_Query("UPDATE blitz_bot.JoinData_Table SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
-                        new int[] {sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
-                        new String[] {String.valueOf(System.currentTimeMillis() / 1000), member.getId(), "0"});
+                int result = 0;
+                try {
+                    result = sqlConnector.Insert_Query("UPDATE blitz_bot.JoinData_Table SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
+                            new int[] {sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
+                            new String[] {String.valueOf(System.currentTimeMillis() / 1000), member.getId(), "0"});
+                } catch (SQLException sqlException) {
+                    logger.error(sqlException.getMessage());
+                }
                 if (result != 0) {
                     logger.warn("sql update error #1");
                 }
@@ -96,9 +106,14 @@ public class giveRoleListener extends ListenerAdapter {
         if (guild.getId().equals("826704284003205160")) {
             Member member = event.getMember();
             assert member != null;
-            int result = sqlConnector.Insert_Query("UPDATE blitz_bot.JoinData_Table SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
-                    new int[]{sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
-                    new String[] {String.valueOf(System.currentTimeMillis() / 1000),  member.getId(), "1"});
+            int result = 0;
+            try {
+                result = sqlConnector.Insert_Query("UPDATE blitz_bot.JoinData_Table SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
+                        new int[]{sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
+                        new String[] {String.valueOf(System.currentTimeMillis() / 1000),  member.getId(), "1"});
+            } catch (SQLException sqlException) {
+                logger.error(sqlException.getMessage());
+            }
             if (result != 0) {
                 logger.warn("sql update error #2");
             }
@@ -106,7 +121,18 @@ public class giveRoleListener extends ListenerAdapter {
         }
     }
 
-    private String confirmBan(Member member) {
+    /**
+     * Check if the member is on cooldown(쿨타임)
+     * @param member the member who check
+     *
+     * @return ban/error/true/false
+     *     if ban, need ban
+     *     if error, Unknown Member
+     *     if true, Member is cooldown now, and return with time data
+     *     if false, Member is clear
+     */
+    @NotNull
+    private String confirmCoolDown(@NotNull Member member) {
         long time = System.currentTimeMillis() / 1000;
         int min = 60, hour = 3600, day = 86400;
         try {
@@ -139,14 +165,23 @@ public class giveRoleListener extends ListenerAdapter {
         return "false";
     }
 
-    private long isBan(Member member) {
+    /**
+     * Check if the member is on cooldown(쿨타임)
+     * @param member the member who need check
+     *
+     * @return 0 or timeData(unix time)
+     * if 0, no cooldown
+     * if timeData, the time the cooldown is end
+     */
+
+    private long isBan(@NotNull Member member) {
         try {
             ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.GiveRoleBanTable where userId = ?;",
                     new int[]{sqlConnector.STRING},
                     new String[]{member.getId()});
 
             if (resultSet.next()) {
-                return Long.parseLong(resultSet.getString("endTime"));
+                return resultSet.getLong("endTime");
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
