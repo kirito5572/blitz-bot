@@ -89,7 +89,7 @@ public class App {
     }
 
     public App() throws SQLException, ClassNotFoundException {
-        logger.info("Start up");
+        logger.info("Start up, Version: " + getVersion());
         if(OSStringData.contains("win")) {
             OS = WINDOWS;
         } else if(OSStringData.contains("mac")) {
