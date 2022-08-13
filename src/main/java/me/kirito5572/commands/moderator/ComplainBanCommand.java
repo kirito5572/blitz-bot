@@ -52,7 +52,6 @@ public class ComplainBanCommand implements ICommand {
             return;
         }
         try {
-            //TODO SQL TABLE 만들기
             sqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainBan (userId, adminId, banTime, reason) VALUES (?, ?, ?, ?)",
                     new int[]{sqlConnector.STRING, sqlConnector.STRING, sqlConnector.LONG, sqlConnector.STRING},
                     new String[]{foundMembers.get(0).getId(), event.getAuthor().getId(),

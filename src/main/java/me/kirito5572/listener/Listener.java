@@ -50,6 +50,8 @@ public class Listener extends ListenerAdapter {
                 event.getGuild().upsertCommand("eval","(개발자 전용) 살충제! 살충제!").queue();
                 event.getGuild().upsertCommand("봇정보", "봇에 대한 정보를 표시합니다.").queue();
                 event.getGuild().upsertCommand("로그","(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅 로그를 조회하는 명령어입니다.").queue();
+                event.getGuild().upsertCommand("신고차단","(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅을 못하게 유저 차단하는 명령어입니다.").queue();
+                event.getGuild().upsertCommand("신고해제","(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅을 다시 할수 있도록 차단을 해제하는 명령어입니다.").queue();
             } catch (ErrorResponseException e) {
                 event.getChannel().sendMessage(e.getMessage()).queue();
             } catch (Exception e) {
@@ -64,6 +66,8 @@ public class Listener extends ListenerAdapter {
                 event.getGuild().upsertCommand("eval","(개발자 전용) 살충제! 살충제!").queue();
                 event.getGuild().upsertCommand("봇정보", "봇에 대한 정보를 표시합니다.").queue();
                 event.getGuild().upsertCommand("로그","(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅 로그를 조회하는 명령어입니다.").queue();
+                event.getGuild().upsertCommand("신고차단","(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅을 못하게 유저 차단하는 명령어입니다.").queue();
+                event.getGuild().upsertCommand("신고해제","(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅을 다시 할수 있도록 차단을 해제하는 명령어입니다.").queue();
             } catch (ErrorResponseException e) {
                 event.getChannel().sendMessage(e.getMessage()).queue();
             } catch (Exception e) {

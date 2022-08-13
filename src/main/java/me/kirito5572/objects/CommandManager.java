@@ -2,9 +2,7 @@ package me.kirito5572.objects;
 
 import me.kirito5572.commands.*;
 import me.kirito5572.commands.admin.EvalCommand;
-import me.kirito5572.commands.moderator.ClearCommand;
-import me.kirito5572.commands.moderator.ComplainEndCommand;
-import me.kirito5572.commands.moderator.ComplainMessageLogCommand;
+import me.kirito5572.commands.moderator.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -44,6 +42,8 @@ public class CommandManager {
         addCommand(new ComplainEndCommand(sqlConnector));
         addCommand(new BotInfoCommand());
         addCommand(new ComplainMessageLogCommand(sqlConnector));
+        addCommand(new ComplainBanCommand(sqlConnector));
+        addCommand(new ComplainUnBanCommand(sqlConnector));
 
         /*
         addCommand(new JoinCommand());

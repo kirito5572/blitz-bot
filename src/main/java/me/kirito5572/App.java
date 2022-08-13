@@ -59,6 +59,11 @@ public class App {
 
     };
 
+    /**
+     * open file.txt and get inside data
+     * @param Data the name of open .txt file name
+     * @return the string data that inside it
+     */
     public static String openFileData(String Data) {
         StringBuilder reader = new StringBuilder();
         try {
@@ -84,6 +89,7 @@ public class App {
     }
 
     public App() throws SQLException, ClassNotFoundException {
+        logger.info("Start up");
         if(OSStringData.contains("win")) {
             OS = WINDOWS;
         } else if(OSStringData.contains("mac")) {
@@ -93,8 +99,8 @@ public class App {
         } else {
             OS = UNSUPPORTED;
         }
+        logger.info("OS: " + OSStringData);
 
-        date = new Date();
         try {
             String location = new File(getClass().getProtectionDomain().getCodeSource().getLocation()
                     .toURI()).getAbsolutePath();
@@ -110,11 +116,12 @@ public class App {
             e.printStackTrace();
             System.exit(-1);
         }
-
-        WebUtils.setUserAgent("Chrome 89.0.4389.114 discord bot");
-
+        WebUtils.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) JDA/4.4.0_352");
+        logger.info("Connecting to SQL Server");
         SQLConnector sqlConnector = new SQLConnector();
+        logger.info("Connect Success with SQL Server");
 
+        logger.info("Loading Listeners");
         CommandManager commandManager = new CommandManager(sqlConnector);
         Listener listener = new Listener(commandManager, sqlConnector);
         giveRoleListener giveRoleListener = new giveRoleListener(sqlConnector);
@@ -124,9 +131,8 @@ public class App {
         MessagePinListener messagePinListener = new MessagePinListener(sqlConnector);
         onReadyListener onReadyListener = new onReadyListener(sqlConnector);
         DirectMessageListener directMessageListener = new DirectMessageListener(sqlConnector);
-
+        logger.info("JDA start up, Connecting to discord.com");
         try {
-            logger.info("부팅");
             JDABuilder.createDefault(openFileData("TOKEN"))
                     .setAutoReconnect(true)
                     .addEventListeners(listener, giveRoleListener, noticeAutoTransListener, logListener,
@@ -134,7 +140,9 @@ public class App {
                     .setEnabledIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                     .setChunkingFilter(ChunkingFilter.ALL)
                     .build().awaitReady();
-            logger.info("부팅 완료");
+            logger.info("Connect success with discord.com");
+
+            logger.info("Boot Complete");
         } catch (LoginException | InterruptedException e) {
             logger.error("의도치 않은 예외 발생" + e);
         }
@@ -142,40 +150,85 @@ public class App {
 
     @SuppressWarnings("InstantiationOfUtilityClass")
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        date = new Date();
         new App();
     }
 
+    /**
+     * return prefix
+     * @return the prefix of this discord bot
+     */
     public static String getPREFIX() {
         return PREFIX;
     }
+
+    /**
+     * return FilterList
+     * @return the String array that filter word
+     */
 
     public static String[] getFilterList() {
         return FilterList;
     }
 
+    /**
+     * setup FilterList
+     * @param filterList the String array that filter word
+     */
+
     public static void setFilterList(String[] filterList) {
         FilterList = filterList;
     }
+
+    /**
+     * return discord bot version
+     * @return the version of discord bot
+     */
 
     public static String getVersion() {
         return version;
     }
 
+    /**
+     * return discord bot build time
+     * @return the build time of discord bot
+     */
+
     public static String getBuild_time() {
         return build_time;
     }
+
+    /**
+     * return discord bot build os
+     * @return the build os of discord bot
+     */
 
     public static String getBuild_os() {
         return build_os;
     }
 
+    /**
+     * return discord bot build jdk
+     * @return the build jdk of discord bot
+     */
+
     public static String getBuild_jdk() {
         return build_jdk;
     }
 
+    /**
+     * return discord bot start-up time
+     * @return the start-up time of discord bot
+     */
+
     public static Date getDate() {
         return date;
     }
+
+    /**
+     * return moderator discor id list
+     * @return the string array that moderator discord id
+     */
 
     public static String[] getModerator() {
         return moderator;
