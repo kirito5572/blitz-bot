@@ -142,11 +142,10 @@ public class giveRoleListener extends ListenerAdapter {
             check_time[1][2] = 6*hour;
             check_time[2][2] = 7*day;
             for(int i = 0; i < 4; i++) {
-                ResultSet resultSet = sqliteConnector.Select_Query("SELECT * FROM JoinDataTable where approveTime > ? AND approveTime < ?;",
+                ResultSet resultSet = sqliteConnector.Select_Query("SELECT COUNT(*) FROM JoinDataTable where approveTime > ? AND approveTime < ?;",
                         new int[]{sqliteConnector.STRING, sqliteConnector.STRING},
                         new String[]{String.valueOf(time - check_time[i][0]), String.valueOf(time)});
-                resultSet.last();
-                if (resultSet.getRow() >= check_time[i][1]) {
+                if (resultSet.getInt(0) >= check_time[i][1]) {
                     if(i == 3) {
                         return "ban";
                     }
