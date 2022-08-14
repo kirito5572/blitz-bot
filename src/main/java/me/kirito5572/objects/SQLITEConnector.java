@@ -67,7 +67,7 @@ public class SQLITEConnector {
      * @return {@link java.sql.ResultSet}
      */
     public ResultSet Select_Query(@Language("SQLite") String Query, int[] dataType, String[] data) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement(Query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        PreparedStatement statement = connection.prepareStatement(Query);
         mySqlConnector.Query(statement, dataType, data);
         return statement.executeQuery();
     }
