@@ -146,7 +146,7 @@ public class giveRoleListener extends ListenerAdapter {
                         new int[]{sqliteConnector.STRING, sqliteConnector.STRING, sqliteConnector.STRING},
                         new String[]{String.valueOf(time - check_time[i][0]), String.valueOf(time), member.getId()});
                 resultSet.next();
-                if (resultSet.getInt(0) >= check_time[i][1]) {
+                if (resultSet.getInt(1) >= check_time[i][1]) {
                     if(i == 3) {
                         return "ban";
                     }
