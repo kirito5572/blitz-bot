@@ -7,7 +7,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
 import me.duncte123.botcommons.messaging.EmbedUtils;
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.MySQLConnector;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -43,12 +43,12 @@ import java.util.Objects;
 
 public class LogListener extends ListenerAdapter {
     private final static Logger logger = LoggerFactory.getLogger(LogListener.class);
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy년 MM월dd일 HH시mm분ss초");
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy/MM/dd a hh:mm:ss");
 
-    public LogListener(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public LogListener(MySQLConnector mySqlConnector) {
+        this.mySqlConnector = mySqlConnector;
     }
 
     @Override
@@ -68,8 +68,8 @@ public class LogListener extends ListenerAdapter {
         }
 
         try {
-            sqlConnector.Insert_Query("INSERT INTO blitz_bot.ChattingDataTable (messageId, userId, messageRaw, isFile) VALUES (?, ?, ?, ?)",
-                    new int[]{sqlConnector.STRING,sqlConnector.STRING, sqlConnector.STRING, sqlConnector.BOOLEAN},
+            mySqlConnector.Insert_Query("INSERT INTO blitz_bot.ChattingDataTable (messageId, userId, messageRaw, isFile) VALUES (?, ?, ?, ?)",
+                    new int[]{mySqlConnector.STRING, mySqlConnector.STRING, mySqlConnector.STRING, mySqlConnector.BOOLEAN},
                     new String[] {message.getId(), message.getAuthor().getId(), message.getContentRaw(), String.valueOf(isFile)});
         } catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());
@@ -111,8 +111,8 @@ public class LogListener extends ListenerAdapter {
         }
         EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
         Date time = new Date();
-        try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.ChattingDataTable WHERE messageId=?",
-                new int[] {sqlConnector.STRING},
+        try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ChattingDataTable WHERE messageId=?",
+                new int[] {mySqlConnector.STRING},
                 new String[] {event.getMessageId()})){
             Member member = event.getMember();
             assert member != null;
@@ -135,8 +135,8 @@ public class LogListener extends ListenerAdapter {
                     .setFooter(member.getNickname(), member.getUser().getAvatarUrl());
             Objects.requireNonNull(event.getGuild().getTextChannelById("829023428019355688")).sendMessageEmbeds(embedBuilder.build()).queue();
 
-            sqlConnector.Insert_Query("UPDATE blitz_bot.ChattingDataTable SET messageRaw=? WHERE messageId=?",
-                    new int[] {sqlConnector.STRING, sqlConnector.STRING},
+            mySqlConnector.Insert_Query("UPDATE blitz_bot.ChattingDataTable SET messageRaw=? WHERE messageId=?",
+                    new int[] {mySqlConnector.STRING, mySqlConnector.STRING},
                     new String[] {event.getMessage().getContentRaw(), event.getMessageId()});
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -147,8 +147,8 @@ public class LogListener extends ListenerAdapter {
     public void onGuildMessageDelete(@NotNull GuildMessageDeleteEvent event) {
         EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
         Date time = new Date();
-        try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.ChattingDataTable WHERE messageId=?;",
-                new int[] {sqlConnector.STRING}, new String[] {event.getMessageId()})) {
+        try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ChattingDataTable WHERE messageId=?;",
+                new int[] {mySqlConnector.STRING}, new String[] {event.getMessageId()})) {
             embedBuilder.setTitle("삭제된 메세지")
                     .setColor(Color.RED);
             boolean isFile = false;
@@ -184,7 +184,7 @@ public class LogListener extends ListenerAdapter {
                     e.printStackTrace();
                 }
             }
-            sqlConnector.Insert_Query("DELETE FROM blitz_bot.ChattingDataTable WHERE messageId=?", new int[] {sqlConnector.STRING}, new String[] {event.getMessageId()});
+            mySqlConnector.Insert_Query("DELETE FROM blitz_bot.ChattingDataTable WHERE messageId=?", new int[] {mySqlConnector.STRING}, new String[] {event.getMessageId()});
 
         } catch (SQLException e) {
             logger.error(e.getMessage());

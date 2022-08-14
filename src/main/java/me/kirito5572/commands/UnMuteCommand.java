@@ -1,10 +1,10 @@
 package me.kirito5572.commands;
 
-import me.kirito5572.objects.ICommand;
-import me.kirito5572.objects.SQLConnector;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
-import net.dv8tion.jda.api.entities.Member;
 import me.kirito5572.objects.EventPackage;
+import me.kirito5572.objects.ICommand;
+import me.kirito5572.objects.MySQLConnector;
+import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
@@ -14,10 +14,10 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class UnMuteCommand implements ICommand {
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
 
-    public UnMuteCommand(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public UnMuteCommand(MySQLConnector mySqlConnector) {
+        this.mySqlConnector = mySqlConnector;
     }
 
     @Override
@@ -42,11 +42,11 @@ public class UnMuteCommand implements ICommand {
             return;
         }
 
-        try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE userId = ? AND isEnd = 0",
-                new int[] {sqlConnector.STRING}, new String[] {foundMember.get(0).getId()})){
+        try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE userId = ? AND isEnd = 0",
+                new int[] {mySqlConnector.STRING}, new String[] {foundMember.get(0).getId()})){
             if(resultSet.next()) {
-                sqlConnector.Insert_Query("UPDATE blitz_bot.MuteTable SET isEnd = 1 WHERE userId = ?",
-                        new int[] {sqlConnector.STRING}, new String[] {resultSet.getString("userId")});
+                mySqlConnector.Insert_Query("UPDATE blitz_bot.MuteTable SET isEnd = 1 WHERE userId = ?",
+                        new int[] {mySqlConnector.STRING}, new String[] {resultSet.getString("userId")});
             } else {
                 event.getChannel().sendMessage("해당 유저는 현재 제재중이지 않습니다.").queue();
             }

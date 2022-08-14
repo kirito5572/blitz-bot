@@ -1,7 +1,7 @@
 package me.kirito5572.listener;
 
 import me.kirito5572.objects.CommandManager;
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.MySQLConnector;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ResumedEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -20,11 +20,11 @@ public class Listener extends ListenerAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(Listener.class);
     private final CommandManager manager;
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
 
-    public Listener(CommandManager manager, SQLConnector sqlConnector) {
+    public Listener(CommandManager manager, MySQLConnector mySqlConnector) {
         this.manager = manager;
-        this.sqlConnector = sqlConnector;
+        this.mySqlConnector = mySqlConnector;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class Listener extends ListenerAdapter {
     @Override
     public void onResumed(@NotNull ResumedEvent event) {
         try {
-            sqlConnector.reConnection();
+            MySQLConnector.reConnection();
         } catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());
         }

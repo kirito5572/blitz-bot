@@ -1,9 +1,10 @@
 package me.kirito5572.commands;
 
 import me.kirito5572.App;
-import me.kirito5572.objects.ICommand;
-import me.kirito5572.objects.SQLConnector;
 import me.kirito5572.objects.EventPackage;
+import me.kirito5572.objects.ICommand;
+import me.kirito5572.objects.MySQLConnector;
+import me.kirito5572.objects.SQLITEConnector;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
@@ -11,34 +12,55 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class PingCommand implements ICommand {
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
+    private final SQLITEConnector sqliteConnector;
 
-    public PingCommand(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public PingCommand(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector) {
+        this.mySqlConnector = mySqlConnector;
+        this.sqliteConnector = sqliteConnector;
     }
 
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
         long a = event.getJDA().getRestPing().complete();
         long b = event.getJDA().getGatewayPing();
-        long start=System.currentTimeMillis();
-        long end = System.currentTimeMillis();
-        try (ResultSet ignored = sqlConnector.Select_Query("SELECT * FROM blitz_bot.Pin", new int[]{}, new String[]{})) {
-            end = System.currentTimeMillis();
+        long mysqlStart = System.currentTimeMillis();
+        long mysqlEnd = System.currentTimeMillis();
+        long sqliteStart = System.currentTimeMillis();
+        long sqliteEnd = System.currentTimeMillis();
+        try (ResultSet ignored = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainBan", new int[]{}, new String[]{})) {
+            mysqlEnd = System.currentTimeMillis();
         } catch (SQLException e){
             e.printStackTrace();
         }
-        String sqlTimeString;
-        long sqlTime = (end - start);
-        if(sqlTime < 0) {
-            sqlTimeString = "접속 에러";
-        } else if(sqlTime == 1 || sqlTime == 0) {
-            sqlTimeString = "<1";
-        } else {
-            sqlTimeString = String.valueOf(sqlTime);
+        try (ResultSet ignored = sqliteConnector.Select_Query("SELECT * FROM Pin", new int[]{}, new String[]{})) {
+            sqliteEnd = System.currentTimeMillis();
+        } catch (SQLException e){
+            e.printStackTrace();
         }
-        event.getTextChannel().sendMessage("blitz_bot\n" + "API 응답요청 소요시간(udp 연결): " + b + "ms\n"
-                +  "API 응답요청후 반환소요 시간(tcp 연결): " + a+ "ms\n" + "SQL 서버 명령어 처리시간(tcp 연결): " + sqlTimeString + "ms").queue();
+        String mysqlTimeString;
+        String sqliteTimeString;
+        long mysqlTime = (mysqlEnd - mysqlStart);
+        long sqliteTime = (sqliteEnd - sqliteStart);
+        if(mysqlTime < 0) {
+            mysqlTimeString = "접속 에러";
+        } else if(mysqlTime == 1 || mysqlTime == 0) {
+            mysqlTimeString = "<1";
+        } else {
+            mysqlTimeString = String.valueOf(mysqlTime);
+        }
+        if(sqliteTime < 0) {
+            sqliteTimeString = "접속 에러";
+        } else if(sqliteTime == 1 || sqliteTime == 0) {
+            sqliteTimeString = "<1";
+        } else {
+            sqliteTimeString = String.valueOf(sqliteTime);
+        }
+        event.getTextChannel().sendMessage("blitz_bot\n"
+                + "API 응답요청 소요시간(udp 연결): " + b + "ms\n"
+                + "API 응답요청후 반환소요 시간(tcp 연결): " + a+ "ms\n"
+                + "MySQL 서버 명령어 처리시간(tcp 연결): " + mysqlTimeString + "ms\n"
+                + "SQLite 파일 명령어 처리시간: " + sqliteTimeString + "ms\n").queue();
 
     }
 

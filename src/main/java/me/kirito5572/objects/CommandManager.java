@@ -29,21 +29,21 @@ public class CommandManager {
 
     private final Map<String, ICommand> commands = new HashMap<>();
 
-    public CommandManager(SQLConnector sqlConnector) {
+    public CommandManager(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector) {
         addCommand(new HelpCommand(this));
-        addCommand(new PingCommand(sqlConnector));
-        addCommand(new FilterWordAddCommand(sqlConnector));
-        addCommand(new FilterWordRemoveCommand(sqlConnector));
-        addCommand(new MuteCommand(sqlConnector));
-        addCommand(new UnMuteCommand(sqlConnector));
-        addCommand(new MessagePinCommand(sqlConnector));
+        addCommand(new PingCommand(mySqlConnector, sqliteConnector));
+        addCommand(new FilterWordAddCommand(mySqlConnector));
+        addCommand(new FilterWordRemoveCommand(mySqlConnector));
+        addCommand(new MuteCommand(mySqlConnector));
+        addCommand(new UnMuteCommand(mySqlConnector));
+        addCommand(new MessagePinCommand(sqliteConnector));
         addCommand(new EvalCommand());
         addCommand(new ClearCommand());
-        addCommand(new ComplainEndCommand(sqlConnector));
+        addCommand(new ComplainEndCommand(mySqlConnector));
         addCommand(new BotInfoCommand());
-        addCommand(new ComplainMessageLogCommand(sqlConnector));
-        addCommand(new ComplainBanCommand(sqlConnector));
-        addCommand(new ComplainUnBanCommand(sqlConnector));
+        addCommand(new ComplainMessageLogCommand(mySqlConnector));
+        addCommand(new ComplainBanCommand(mySqlConnector));
+        addCommand(new ComplainUnBanCommand(mySqlConnector));
 
         /*
         addCommand(new JoinCommand());

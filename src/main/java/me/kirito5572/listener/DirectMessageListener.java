@@ -1,7 +1,8 @@
 package me.kirito5572.listener;
 
 import me.duncte123.botcommons.messaging.EmbedUtils;
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.MySQLConnector;
+import me.kirito5572.objects.OptionData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -21,10 +22,10 @@ import java.util.Objects;
 
 public class DirectMessageListener extends ListenerAdapter {
     private final Logger logger = LoggerFactory.getLogger(DirectMessageListener.class);
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
 
-    public DirectMessageListener(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public DirectMessageListener(MySQLConnector mySqlConnector) {
+        this.mySqlConnector = mySqlConnector;
     }
 
     @Override
@@ -32,15 +33,10 @@ public class DirectMessageListener extends ListenerAdapter {
         if(event.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
             return;
         }
-        try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainBan WHERE userId = ?",
-                    new int[]{sqlConnector.STRING},
-                    new String[]{event.getAuthor().getId()})) {
-            if(resultSet.next()) {
-                event.getChannel().sendMessage("당신은 해당 기능이 차단되어 사용할수 없습니다.").queue();
-                return;
-            }
-        } catch (SQLException sqlException) {
-            logger.error(sqlException.getMessage());
+        List<String> complainBanUserList = OptionData.getComplainBanUserList();
+        if(complainBanUserList.contains(event.getAuthor().getId())){
+            event.getChannel().sendMessage("당신은 해당 기능이 차단되어 사용할수 없습니다.").queue();
+            return;
         }
         boolean isChannelOpened = false;
         TextChannel textChannel = null;
@@ -86,9 +82,9 @@ public class DirectMessageListener extends ListenerAdapter {
 
         int i = 0;
         try {
-            i = sqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainLog " +
+            i = mySqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainLog " +
                             "(userId, createtime, endtime) VALUES (?, ?, ?);",
-                    new int[]{sqlConnector.STRING, sqlConnector.LONG, sqlConnector.LONG},
+                    new int[]{mySqlConnector.STRING, mySqlConnector.LONG, mySqlConnector.LONG},
                     new String[]{event.getUserId(), String.valueOf(System.currentTimeMillis() / 1000), "0"});
         } catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());
@@ -100,9 +96,9 @@ public class DirectMessageListener extends ListenerAdapter {
             return;
         }
 
-        try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
+        try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
                         " WHERE userId = ? ORDER BY Complain_int DESC LIMIT 1",
-                new int[]{sqlConnector.STRING},
+                new int[]{mySqlConnector.STRING},
                 new String[]{event.getUserId()})) {
             if(resultSet.next()) {
                 builder.addField("처리 번호",resultSet.getString("Complain_int"),false);
@@ -166,9 +162,9 @@ public class DirectMessageListener extends ListenerAdapter {
     private boolean insertMessageData(@NotNull User user,@NotNull TextChannel textChannel,@NotNull Message message) {
         int complainInt = 0;
         try (ResultSet resultSet =
-                     sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
+                     mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
                                      " WHERE userId = ? ORDER BY Complain_int DESC LIMIT 1;",
-                             new int[]{sqlConnector.STRING},
+                             new int[]{mySqlConnector.STRING},
                              new String[]{user.getId()})) {
             if(resultSet.next()) {
                 complainInt = resultSet.getInt("Complain_int");
@@ -182,9 +178,9 @@ public class DirectMessageListener extends ListenerAdapter {
         }
         int i = 0;
         try {
-            i = sqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainMessageLog " +
+            i = mySqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainMessageLog " +
                             "(userId, ComplainInt, messageRaw) VALUES (?, ?, ?);",
-                    new int[]{sqlConnector.STRING, sqlConnector.LONG, sqlConnector.STRING},
+                    new int[]{mySqlConnector.STRING, mySqlConnector.LONG, mySqlConnector.STRING},
                     new String[]{user.getId(),
                             String.valueOf(complainInt),
                             message.getContentRaw()});

@@ -16,7 +16,7 @@ import java.lang.management.ManagementFactory;
 import java.util.Date;
 import java.util.List;
 
-import static oshi.hardware.CentralProcessor.*;
+import static oshi.hardware.CentralProcessor.ProcessorIdentifier;
 
 public class BotInfoCommand implements ICommand {
     @Override
@@ -46,14 +46,16 @@ public class BotInfoCommand implements ICommand {
         EmbedBuilder builder = EmbedUtils.getDefaultEmbed()
                 .setTitle(event.getJDA().getSelfUser().getName() + "에 대한 정보")
                 .addField("봇 버젼", App.getVersion(), true)
-                .addField("빌드 시간", App.getBuild_time(), true)
-                .addField("빌드 JDK 버젼", App.getBuild_jdk(), true)
-                .addField("업타임", String.format("%s일 %s시간 %s분 %s초", upTime.getTime()/86400000%100, upTime.getTime()/3600000%24, upTime.getTime()/60000%60, upTime.getTime()/1000%60), true)
                 .addField("게이트웨이 핑", event.getJDA().getGatewayPing() + "ms", true)
                 .addField("램 사용량", ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024) + "MB", true)
+                .addField("빌드 시간", App.getBuild_time(), false)
+                .addField("빌드 JDK 버젼", App.getBuild_jdk(), false)
                 .addField("CPU 쓰레드", String.valueOf(Runtime.getRuntime().availableProcessors()), true)
-                .addField("CPU 사용량", "프로그램: " + String.format("%.2f", osBean.getProcessCpuLoad() * 100.0D) + "% / 전체: " + String.format("%.2f", osBean.getCpuLoad() * 100.0D) + "%", true)
-                .addField("CPU 정보 ", cpuInfo.getName() + "@" + cpuInfo.getVendorFreq() / 1000000L + "MHz", true)
+                .addField("CPU 사용량", "프로그램: " + String.format("%.2f", osBean.getProcessCpuLoad() * 100.0D) +
+                        "% / 전체: " + String.format("%.2f", osBean.getCpuLoad() * 100.0D) + "%", true)
+                .addField("업타임", String.format("%s일 %s시간 %s분 %s초",
+                        upTime.getTime()/86400000%100, upTime.getTime()/3600000%24, upTime.getTime()/60000%60, upTime.getTime()/1000%60), false)
+                .addField("CPU 정보 ", cpuInfo.getName() + "@" + cpuInfo.getVendorFreq() / 1000000L + "MHz", false)
                 .addField("OS 정보", operatingSystem.getManufacturer() + " " + operatingSystem.getVersionInfo().getVersion() + " Build" + operatingSystem.getVersionInfo().getBuildNumber(), true)
                 .addField("OS 업타임",day + "일 " + hour + "시간 " + min + "분 " + sec + "초", true);
 

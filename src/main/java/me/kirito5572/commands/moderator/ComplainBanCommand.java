@@ -3,7 +3,8 @@ package me.kirito5572.commands.moderator;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.MySQLConnector;
+import me.kirito5572.objects.OptionData;
 import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -13,11 +14,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class ComplainBanCommand implements ICommand {
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
     private final Logger logger = LoggerFactory.getLogger(ComplainBanCommand.class);
 
-    public ComplainBanCommand(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public ComplainBanCommand(MySQLConnector mySqlConnector) {
+        this.mySqlConnector = mySqlConnector;
     }
 
     @Override
@@ -51,9 +52,12 @@ public class ComplainBanCommand implements ICommand {
                     예시: `@kirito5572#5572`, kirito5572#5572, 284508374924787713 등""").queue();
             return;
         }
+        List<String> complainBanUserList = OptionData.getComplainBanUserList();
+        complainBanUserList.add(foundMembers.get(0).getId());
+        OptionData.setComplainBanUserList(complainBanUserList);
         try {
-            sqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainBan (userId, adminId, banTime, reason) VALUES (?, ?, ?, ?)",
-                    new int[]{sqlConnector.STRING, sqlConnector.STRING, sqlConnector.LONG, sqlConnector.STRING},
+            mySqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainBan (userId, adminId, banTime, reason) VALUES (?, ?, ?, ?)",
+                    new int[]{mySqlConnector.STRING, mySqlConnector.STRING, mySqlConnector.LONG, mySqlConnector.STRING},
                     new String[]{foundMembers.get(0).getId(), event.getAuthor().getId(),
                             String.valueOf((System.currentTimeMillis() / 1000)), banReason});
         } catch (SQLException sqlException) {

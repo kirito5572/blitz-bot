@@ -4,7 +4,7 @@ import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.MySQLConnector;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -23,12 +23,12 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class MuteCommand implements ICommand {
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd aa hh:mm:ss z");
     private final Logger logger = LoggerFactory.getLogger(MuteCommand.class);
 
-    public MuteCommand(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public MuteCommand(MySQLConnector mySqlConnector) {
+        this.mySqlConnector = mySqlConnector;
     }
 
     @Override
@@ -70,8 +70,8 @@ public class MuteCommand implements ICommand {
         for(int i = 2; i < args.size(); i++) {
             stringBuilder.append(args.get(i)).append(" ");
         }
-        try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE userId = ? AND isEnd = 0",
-        new int[] {sqlConnector.STRING}, new String[] {foundMember.get(0).getId()})){
+        try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE userId = ? AND isEnd = 0",
+        new int[] {mySqlConnector.STRING}, new String[] {foundMember.get(0).getId()})){
             if(resultSet.next()) {
                 event.getChannel().sendMessage("이미 해당 유저는 제재를 받고있습니다.").queue();
                 return;
@@ -83,8 +83,8 @@ public class MuteCommand implements ICommand {
         assert role != null;
         event.getGuild().addRoleToMember(foundMember.get(0), role).queue();
         try {
-            sqlConnector.Insert_Query("INSERT INTO blitz_bot.MuteTable (userId, DBWriteTime, endTime, reason, isEnd) VALUES (?, ?, ?, ?, ?)",
-                    new int[]{sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING, sqlConnector.INT},
+            mySqlConnector.Insert_Query("INSERT INTO blitz_bot.MuteTable (userId, DBWriteTime, endTime, reason, isEnd) VALUES (?, ?, ?, ?, ?)",
+                    new int[]{mySqlConnector.STRING, mySqlConnector.STRING, mySqlConnector.STRING, mySqlConnector.STRING, mySqlConnector.INT},
                     new String[]{foundMember.get(0).getId(), String.valueOf(System.currentTimeMillis() / 1000), String.valueOf(return_time.getTimeInMillis() / 1000), stringBuilder.toString(), "0"});
         } catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());

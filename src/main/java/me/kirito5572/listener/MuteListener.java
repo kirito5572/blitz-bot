@@ -1,6 +1,6 @@
 package me.kirito5572.listener;
 
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.MySQLConnector;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -13,18 +13,18 @@ import java.sql.SQLException;
 import java.util.Date;
 
 public class MuteListener extends ListenerAdapter {
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
 
     private final Logger logger = LoggerFactory.getLogger(MuteListener.class);
 
-    public MuteListener(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public MuteListener(MySQLConnector mySqlConnector) {
+        this.mySqlConnector = mySqlConnector;
     }
 
     @Override
     public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
-        try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE userId = ?",
-        new int[]{sqlConnector.STRING}, new String[]{event.getMember().getId()})) {
+        try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE userId = ?",
+        new int[]{mySqlConnector.STRING}, new String[]{event.getMember().getId()})) {
             if(resultSet.next()) {
                 long endTimeData;
                 Date date = new Date();

@@ -1,7 +1,7 @@
 package me.kirito5572.listener;
 
 import me.kirito5572.App;
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.MySQLConnector;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -19,16 +19,16 @@ import java.util.concurrent.TimeUnit;
 public class filterListener extends ListenerAdapter {
     private static String[] filter_data;
     private static String[][] white_list_data;
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
 
-    public filterListener(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public filterListener(MySQLConnector mySqlConnector) {
+        this.mySqlConnector = mySqlConnector;
     }
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        if (getFilterDataFromDB(sqlConnector)) return;
-        try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.WhiteListWord;", new int[0], new String[0])) {
+        if (getFilterDataFromDB(mySqlConnector)) return;
+        try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.WhiteListWord;", new int[0], new String[0])) {
             if (resultSet.last()) {
                 return;
             }
@@ -62,14 +62,14 @@ public class filterListener extends ListenerAdapter {
     /**
      * Get prohibited word from DataBase
      *
-     * @param sqlConnector {@link me.kirito5572.objects.SQLConnector}
+     * @param mySqlConnector {@link MySQLConnector}
      *
      * @return if true, get data success
      *         if false, get data fail
      */
 
-    public static boolean getFilterDataFromDB(@NotNull SQLConnector sqlConnector) {
-        try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.FilterWord;", new int[0], new String[0])) {
+    public static boolean getFilterDataFromDB(@NotNull MySQLConnector mySqlConnector) {
+        try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.FilterWord;", new int[0], new String[0])) {
             if (resultSet.last()) {
                 return true;
             }

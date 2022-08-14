@@ -3,7 +3,7 @@ package me.kirito5572.commands.moderator;
 import me.kirito5572.App;
 import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.MySQLConnector;
 import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -14,12 +14,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class ComplainMessageLogCommand implements ICommand {
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
     private final Logger logger = LoggerFactory.getLogger(ComplainMessageLogCommand.class);
 
 
-    public ComplainMessageLogCommand(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public ComplainMessageLogCommand(MySQLConnector mySqlConnector) {
+        this.mySqlConnector = mySqlConnector;
     }
 
     @Override
@@ -58,8 +58,8 @@ public class ComplainMessageLogCommand implements ICommand {
                 return;
             }
         }
-        try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainMessageLog WHERE ComplainInt = ?",
-                new int[]{sqlConnector.INT},
+        try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainMessageLog WHERE ComplainInt = ?",
+                new int[]{mySqlConnector.INT},
                 new String[]{String.valueOf(ComplainInt)})) {
             while(resultSet.next()) {
                 String userId = resultSet.getString("userId");

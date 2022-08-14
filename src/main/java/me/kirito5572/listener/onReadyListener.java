@@ -2,7 +2,8 @@ package me.kirito5572.listener;
 
 import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.App;
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.MySQLConnector;
+import me.kirito5572.objects.OptionData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -15,21 +16,21 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.List;
+import java.util.*;
 
 public class onReadyListener extends ListenerAdapter {
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
     private int i = 0;
     private final Logger logger = LoggerFactory.getLogger(MuteListener.class);
 
-    public onReadyListener(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public onReadyListener(MySQLConnector mySqlConnector) {
+        this.mySqlConnector = mySqlConnector;
     }
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
+        startUpGetData();
         autoActivityChangeModule(event);
 
         final int[] i = {0};
@@ -44,7 +45,7 @@ public class onReadyListener extends ListenerAdapter {
                     if(i[0] > 21600) {
                         i[0] = 0;
                         try {
-                            sqlConnector.reConnection();
+                            MySQLConnector.reConnection();
                         } catch (SQLException sqlException) {
                             logger.error(sqlException.getMessage());
                         }
@@ -66,10 +67,10 @@ public class onReadyListener extends ListenerAdapter {
         try {
             ResultSet resultSet = null;
             try {
-                if(sqlConnector.isConnectionClosed()){
-                    sqlConnector.reConnection();
+                if(mySqlConnector.isConnectionClosed()){
+                    MySQLConnector.reConnection();
                 }
-                resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE isEnd = 0", new int[]{}, new String[]{});
+                resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.MuteTable WHERE isEnd = 0", new int[]{}, new String[]{});
                 if (resultSet == null) {
                     return;
                 }
@@ -84,8 +85,8 @@ public class onReadyListener extends ListenerAdapter {
                     Role role = guild.getRoleById("827098219061444618");
                     TextChannel textChannel = guild.getTextChannelById("827097881239355392");
                     Member member = guild.getMemberById(resultSet.getString("userId"));
-                    sqlConnector.Insert_Query("UPDATE blitz_bot.MuteTable SET isEnd = 1 WHERE userId = ?",
-                            new int[]{sqlConnector.STRING}, new String[]{resultSet.getString("userId")});
+                    mySqlConnector.Insert_Query("UPDATE blitz_bot.MuteTable SET isEnd = 1 WHERE userId = ?",
+                            new int[]{mySqlConnector.STRING}, new String[]{resultSet.getString("userId")});
                     if (member != null) {
                         assert role != null;
                         assert textChannel != null;
@@ -98,11 +99,11 @@ public class onReadyListener extends ListenerAdapter {
                     }
                 }
             } catch (SQLException e) {
-                sqlConnector.reConnection();
+                MySQLConnector.reConnection();
             }
         } catch (Exception e) {
             try {
-                sqlConnector.reConnection();
+                MySQLConnector.reConnection();
             } catch (SQLException sqlException) {
                 logger.error(sqlException.getMessage());
             }
@@ -116,18 +117,18 @@ public class onReadyListener extends ListenerAdapter {
 
     public void giveRoleListenerModule() {
         long time = System.currentTimeMillis() / 1000;
-        try (ResultSet resultSet = sqlConnector.Select_Query(
+        try (ResultSet resultSet = mySqlConnector.Select_Query(
                 "SELECT * FROM blitz_bot.GiveRoleBanTable WHERE endTime < ?;",
-                new int[]{sqlConnector.STRING}, new String[]{String.valueOf(time)})) {
+                new int[]{mySqlConnector.STRING}, new String[]{String.valueOf(time)})) {
             while (resultSet.next()) {
-                sqlConnector.Insert_Query(
+                mySqlConnector.Insert_Query(
                         "DELETE FROM blitz_bot.GiveRoleBanTable WHERE userId = ?;",
-                        new int[] {sqlConnector.STRING}, new String[]{resultSet.getString("userId")});
+                        new int[] {mySqlConnector.STRING}, new String[]{resultSet.getString("userId")});
             }
 
         } catch (SQLException sqlException) {
             try {
-                sqlConnector.reConnection();
+                MySQLConnector.reConnection();
             } catch (SQLException throwables) {
                 logger.error(sqlException.getMessage());
             }
@@ -160,5 +161,17 @@ public class onReadyListener extends ListenerAdapter {
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(timerTask, 0, 5000);
+    }
+
+    public void startUpGetData() {
+        List<String> complainData = new ArrayList<>();
+        try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainBan;", new int[]{}, new String[]{})) {
+            while (resultSet.next()) {
+                complainData.add(resultSet.getString("userId"));
+            }
+        } catch (SQLException sqlException) {
+            logger.error(sqlException.getMessage());
+        }
+        OptionData.setComplainBanUserList(complainData);
     }
 }

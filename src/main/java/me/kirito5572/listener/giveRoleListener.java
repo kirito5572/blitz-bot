@@ -1,6 +1,6 @@
 package me.kirito5572.listener;
 
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.SQLITEConnector;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -19,11 +19,11 @@ import java.util.Calendar;
 public class giveRoleListener extends ListenerAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(giveRoleListener.class);
-    private final SQLConnector sqlConnector;
+    private final SQLITEConnector sqliteConnector;
     private static final String Chatting = "830514311939751967";
 
-    public giveRoleListener(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public giveRoleListener(SQLITEConnector sqliteConnector) {
+        this.sqliteConnector = sqliteConnector;
     }
 
     @Override
@@ -60,15 +60,15 @@ public class giveRoleListener extends ListenerAdapter {
                 }
                 assert role != null;
                 guild.addRoleToMember(member, role).complete();
-                int result = 0;
+                boolean result = true;
                 try {
-                    result = sqlConnector.Insert_Query("INSERT INTO blitz_bot.JoinData_Table (userId, approveTime, rejectTime) VALUES(?, ? ,?);",
-                            new int[] {sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
+                    result = sqliteConnector.Insert_Query("INSERT INTO JoinDataTable (userId, approveTime, rejectTime) VALUES(?, ? ,?);",
+                            new int[] {sqliteConnector.STRING, sqliteConnector.STRING, sqliteConnector.STRING},
                             new String[] {member.getId(), String.valueOf(System.currentTimeMillis() / 1000), "0"});
                 } catch (SQLException sqlException) {
                     logger.error(sqlException.getMessage());
                 }
-                if (result != 0) {
+                if (result) {
                     logger.warn("sql insert error #1");
                 }
             }
@@ -85,15 +85,15 @@ public class giveRoleListener extends ListenerAdapter {
                 assert role != null;
                 assert member != null;
                 guild.removeRoleFromMember(member, role).complete();
-                int result = 0;
+                boolean result = true;
                 try {
-                    result = sqlConnector.Insert_Query("UPDATE blitz_bot.JoinData_Table SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
-                            new int[] {sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
+                    result = sqliteConnector.Insert_Query("UPDATE JoinDataTable SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
+                            new int[] {sqliteConnector.STRING, sqliteConnector.STRING, sqliteConnector.STRING},
                             new String[] {String.valueOf(System.currentTimeMillis() / 1000), member.getId(), "0"});
                 } catch (SQLException sqlException) {
                     logger.error(sqlException.getMessage());
                 }
-                if (result != 0) {
+                if (result) {
                     logger.warn("sql update error #1");
                 }
             }
@@ -106,15 +106,15 @@ public class giveRoleListener extends ListenerAdapter {
         if (guild.getId().equals("826704284003205160")) {
             Member member = event.getMember();
             assert member != null;
-            int result = 0;
+            boolean result = true;
             try {
-                result = sqlConnector.Insert_Query("UPDATE blitz_bot.JoinData_Table SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
-                        new int[]{sqlConnector.STRING, sqlConnector.STRING, sqlConnector.STRING},
+                result = sqliteConnector.Insert_Query("UPDATE JoinDataTable SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
+                        new int[]{sqliteConnector.STRING, sqliteConnector.STRING, sqliteConnector.STRING},
                         new String[] {String.valueOf(System.currentTimeMillis() / 1000),  member.getId(), "1"});
             } catch (SQLException sqlException) {
                 logger.error(sqlException.getMessage());
             }
-            if (result != 0) {
+            if (result) {
                 logger.warn("sql update error #2");
             }
 
@@ -142,8 +142,8 @@ public class giveRoleListener extends ListenerAdapter {
             check_time[1][2] = 6*hour;
             check_time[2][2] = 7*day;
             for(int i = 0; i < 4; i++) {
-                ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.JoinData_Table where approveTime > ? AND approveTime < ?;",
-                        new int[]{sqlConnector.STRING, sqlConnector.STRING},
+                ResultSet resultSet = sqliteConnector.Select_Query("SELECT * FROM JoinDataTable where approveTime > ? AND approveTime < ?;",
+                        new int[]{sqliteConnector.STRING, sqliteConnector.STRING},
                         new String[]{String.valueOf(time - check_time[i][0]), String.valueOf(time)});
                 resultSet.last();
                 if (resultSet.getRow() >= check_time[i][1]) {
@@ -151,8 +151,8 @@ public class giveRoleListener extends ListenerAdapter {
                         return "ban";
                     }
                     long end_time = (System.currentTimeMillis() / 1000) + check_time[i][2];
-                    sqlConnector.Insert_Query("INSERT INTO blitz_bot.GiveRoleBanTable (userId, endTime) VALUES(?,?);",
-                            new int[]{sqlConnector.STRING, sqlConnector.STRING},
+                    sqliteConnector.Insert_Query("INSERT INTO GiveRoleBanTable (userId, endTime) VALUES(?,?);",
+                            new int[]{sqliteConnector.STRING, sqliteConnector.STRING},
                             new String[]{member.getId(), String.valueOf(end_time)});
                     return "true/" + check_time[i][0] + "#" + resultSet.getRow();
                 }
@@ -176,8 +176,8 @@ public class giveRoleListener extends ListenerAdapter {
 
     private long isBan(@NotNull Member member) {
         try {
-            ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.GiveRoleBanTable where userId = ?;",
-                    new int[]{sqlConnector.STRING},
+            ResultSet resultSet = sqliteConnector.Select_Query("SELECT * FROM GiveRoleBanTable where userId = ?;",
+                    new int[]{sqliteConnector.STRING},
                     new String[]{member.getId()});
 
             if (resultSet.next()) {

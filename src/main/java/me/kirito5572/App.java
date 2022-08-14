@@ -3,7 +3,8 @@ package me.kirito5572;
 import me.duncte123.botcommons.web.WebUtils;
 import me.kirito5572.listener.*;
 import me.kirito5572.objects.CommandManager;
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.MySQLConnector;
+import me.kirito5572.objects.SQLITEConnector;
 import me.kirito5572.objects.UnsupportedOSException;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -29,11 +30,11 @@ public class App {
     private static String[] FilterList = new String[0];
 
     private final static String OSStringData = System.getProperty("os.name").toLowerCase();
-    private static int OS = 3;
-    private final static int WINDOWS = 0;
-    private final static int MAC = 1;
-    private final static int UNIX = 2;
-    private final static int UNSUPPORTED = 3;
+    public static int OS = 3;
+    public final static int WINDOWS = 0;
+    public final static int MAC = 1;
+    public final static int UNIX = 2;
+    public final static int UNSUPPORTED = 3;
 
     private static String version = null;
     private static String build_time = null;
@@ -88,8 +89,8 @@ public class App {
         return reader.toString();
     }
 
-    public App() throws SQLException, ClassNotFoundException {
-        logger.info("Start up, Version: " + getVersion());
+    public App() throws SQLException, ClassNotFoundException, URISyntaxException {
+        logger.info("Start up");
         if(OSStringData.contains("win")) {
             OS = WINDOWS;
         } else if(OSStringData.contains("mac")) {
@@ -116,21 +117,28 @@ public class App {
             e.printStackTrace();
             System.exit(-1);
         }
+        if(getVersion().contains("STABLE")) {
+            logger.info("program version: " + getVersion());
+        } else {
+            logger.warn("debug program version: " + getVersion());
+        }
         WebUtils.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) JDA/4.4.0_352");
-        logger.info("Connecting to SQL Server");
-        SQLConnector sqlConnector = new SQLConnector();
-        logger.info("Connect Success with SQL Server");
+        logger.info("Connecting to SQL Server/File");
+        MySQLConnector mySqlConnector = new MySQLConnector();
+        SQLITEConnector sqliteConnector = new SQLITEConnector(mySqlConnector);
+        logger.info("Connect Success with SQL Server/File");
 
         logger.info("Loading Listeners");
-        CommandManager commandManager = new CommandManager(sqlConnector);
-        Listener listener = new Listener(commandManager, sqlConnector);
-        giveRoleListener giveRoleListener = new giveRoleListener(sqlConnector);
-        filterListener noticeAutoTransListener = new filterListener(sqlConnector);
-        LogListener logListener = new LogListener(sqlConnector);
-        MuteListener muteListener = new MuteListener(sqlConnector);
-        MessagePinListener messagePinListener = new MessagePinListener(sqlConnector);
-        onReadyListener onReadyListener = new onReadyListener(sqlConnector);
-        DirectMessageListener directMessageListener = new DirectMessageListener(sqlConnector);
+        CommandManager commandManager = new CommandManager(mySqlConnector, sqliteConnector);
+        Listener listener = new Listener(commandManager, mySqlConnector);
+        filterListener noticeAutoTransListener = new filterListener(mySqlConnector);
+        LogListener logListener = new LogListener(mySqlConnector);
+        MuteListener muteListener = new MuteListener(mySqlConnector);
+        onReadyListener onReadyListener = new onReadyListener(mySqlConnector);
+        DirectMessageListener directMessageListener = new DirectMessageListener(mySqlConnector);
+
+        MessagePinListener messagePinListener = new MessagePinListener(sqliteConnector);
+        giveRoleListener giveRoleListener = new giveRoleListener(sqliteConnector);
         logger.info("JDA start up, Connecting to discord.com");
         try {
             JDABuilder.createDefault(openFileData("TOKEN"))
@@ -149,7 +157,7 @@ public class App {
     }
 
     @SuppressWarnings("InstantiationOfUtilityClass")
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, URISyntaxException {
         date = new Date();
         new App();
     }

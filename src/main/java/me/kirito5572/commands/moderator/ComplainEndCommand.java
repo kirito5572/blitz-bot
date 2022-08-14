@@ -1,10 +1,9 @@
 package me.kirito5572.commands.moderator;
 
 import me.duncte123.botcommons.messaging.EmbedUtils;
-import me.kirito5572.listener.DirectMessageListener;
 import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
-import me.kirito5572.objects.SQLConnector;
+import me.kirito5572.objects.MySQLConnector;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -19,11 +18,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class ComplainEndCommand implements ICommand {
-    private final SQLConnector sqlConnector;
+    private final MySQLConnector mySqlConnector;
     private final Logger logger = LoggerFactory.getLogger(ComplainEndCommand.class);
 
-    public ComplainEndCommand(SQLConnector sqlConnector) {
-        this.sqlConnector = sqlConnector;
+    public ComplainEndCommand(MySQLConnector mySqlConnector) {
+        this.mySqlConnector = mySqlConnector;
     }
 
     @Override
@@ -41,15 +40,15 @@ public class ComplainEndCommand implements ICommand {
 
                 long endTime = System.currentTimeMillis();
                 EmbedBuilder builder = EmbedUtils.getDefaultEmbed();
-                try (ResultSet resultSet = sqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
+                try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
                                 " WHERE userId = ? ORDER BY Complain_int DESC LIMIT 1",
-                        new int[]{sqlConnector.STRING},
+                        new int[]{mySqlConnector.STRING},
                         new String[]{event.getTextChannel().getName()})) {
                     if(!resultSet.next()) {
                         return;
                     }
-                    sqlConnector.Insert_Query("UPDATE blitz_bot.ComplainLog SET endtime = ? WHERE Complain_int = ?",
-                            new int[]{sqlConnector.LONG, sqlConnector.STRING},
+                    mySqlConnector.Insert_Query("UPDATE blitz_bot.ComplainLog SET endtime = ? WHERE Complain_int = ?",
+                            new int[]{mySqlConnector.LONG, mySqlConnector.STRING},
                             new String[]{String.valueOf(endTime / 1000), resultSet.getString("Complain_int")});
 
                     Calendar calendar = Calendar.getInstance();
