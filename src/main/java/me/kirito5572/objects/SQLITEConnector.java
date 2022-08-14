@@ -24,15 +24,15 @@ public class SQLITEConnector {
     public SQLITEConnector(MySQLConnector mySQLConnector) throws ClassNotFoundException, SQLException, URISyntaxException {
         this.mySqlConnector = mySQLConnector;
         Class.forName("org.sqlite.JDBC");
+        String FilePath = new File(getClass().getProtectionDomain().getCodeSource().getLocation()
+                .toURI()).getAbsolutePath();
+        FilePath = FilePath.substring(0, FilePath.lastIndexOf("blitz_bot"));
         if(App.OS == App.WINDOWS) {
-            dbUrl = new File(getClass().getProtectionDomain().getCodeSource().getLocation()
-                    .toURI()).getAbsolutePath() + "\\sqlite.db";
+            dbUrl = FilePath + "sqlite.db";
         } else if(App.OS == App.UNIX) {
-            dbUrl = new File(getClass().getProtectionDomain().getCodeSource().getLocation()
-                    .toURI()).getAbsolutePath() + "/sqlite.db";
+            dbUrl = FilePath + "sqlite.db";
         } else if(App.OS == App.MAC) {
-            dbUrl = new File(getClass().getProtectionDomain().getCodeSource().getLocation()
-                    .toURI()).getAbsolutePath() + "/sqlite.db";
+            dbUrl = FilePath + "sqlite.db";
         }
         connection = DriverManager.getConnection("jdbc:sqlite:" + dbUrl);
     }
