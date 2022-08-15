@@ -82,7 +82,7 @@ public class ComplainBanCommand implements ICommand {
 
     @Override
     public String getSmallHelp() {
-        return "신고/건의사항/이의제기 못하게 유저 차단";
+        return "(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅을 못하게 유저 차단하는 명령어입니다.";
     }
 
     @Override

@@ -63,7 +63,7 @@ public class MessagePinCommand implements ICommand {
 
     @Override
     public String getSmallHelp() {
-        return "메세지 고정";
+        return "(관리자 전용)메세지를 고정합니다.";
     }
 
     @Override

@@ -72,7 +72,7 @@ public class ComplainUnBanCommand implements ICommand {
 
     @Override
     public String getSmallHelp() {
-        return "신고/건의사항/이의제기을 다시 할수 있도록 유저 차단 해제";
+        return "(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅을 다시 할수 있도록 차단을 해제하는 명령어입니다";
     }
 
     @Override

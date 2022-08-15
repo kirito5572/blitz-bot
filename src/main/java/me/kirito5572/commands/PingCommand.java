@@ -1,6 +1,5 @@
 package me.kirito5572.commands;
 
-import me.kirito5572.App;
 import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
 import me.kirito5572.objects.MySQLConnector;
@@ -67,8 +66,7 @@ public class PingCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "레이턴시 ㄴㅇㄱ!\n" +
-                "명령어: `" + App.getPREFIX() + getInvoke() + "`";
+        return "BlitzBot의 핑을 조회합니다. 봇에 연결된 SQL 서버 또한 함께 조회합니다.";
     }
 
     @NotNull

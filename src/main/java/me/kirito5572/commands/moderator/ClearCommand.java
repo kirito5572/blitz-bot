@@ -85,7 +85,7 @@ public class ClearCommand implements ICommand {
 
     @Override
     public String getSmallHelp() {
-        return "채팅 청소용";
+        return "(관리자 전용) 메세지를 입력한 숫자만큼 대량 삭제 합니다.";
     }
 
     @Override

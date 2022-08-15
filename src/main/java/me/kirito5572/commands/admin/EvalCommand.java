@@ -1,11 +1,10 @@
 package me.kirito5572.commands.admin;
 
-import groovy.lang.MissingPropertyException;
+import groovy.lang.GroovyShell;
 import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
-import groovy.lang.GroovyShell;
-
 import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -122,7 +121,7 @@ public class EvalCommand implements ICommand {
 
     @Override
     public String getSmallHelp() {
-        return "봇 개발시 디버그 정보 수집용 명령어";
+        return "(개발자 전용) 살충제! 살충제!";
     }
 
     @Override

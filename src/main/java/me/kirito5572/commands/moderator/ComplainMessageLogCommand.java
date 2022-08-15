@@ -120,7 +120,7 @@ public class ComplainMessageLogCommand implements ICommand {
 
     @Override
     public String getSmallHelp() {
-        return "신고/건의사항/이의제기 채팅 로그 조회 명령어";
+        return "(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅 로그를 조회하는 명령어입니다.";
     }
 
     @Override

@@ -1,12 +1,12 @@
 package me.kirito5572.commands;
 
+import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.App;
 import me.kirito5572.objects.CommandManager;
+import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
-import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -90,8 +90,7 @@ public class HelpCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "모르는 명령어는 어디서? 여기서.\n" +
-                "명령어: `" + App.getPREFIX() + getInvoke() + " [command]`";
+        return "모르는 명령어의 사용법을 조회합니다. /명령어 (조회가 필요한 명령어)";
     }
 
     @NotNull

@@ -74,7 +74,7 @@ public class BotInfoCommand implements ICommand {
 
     @Override
     public String getSmallHelp() {
-        return "other";
+        return "봇에 대한 정보를 표시합니다.";
     }
 
     @Override
