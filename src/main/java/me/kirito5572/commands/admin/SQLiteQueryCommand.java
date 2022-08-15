@@ -33,7 +33,16 @@ public class SQLiteQueryCommand implements ICommand {
 
             return;
         }
-        @Language("SQLite") String SQLQuery = args.toString();
+        StringBuilder builder = new StringBuilder();
+        for(String a : args) {
+            builder.append(a).append(" ");
+        }
+        @Language("SQLite") String SQLQuery = builder.toString();
+        if(!SQLQuery.contains(";")) {
+            builder.append(";");
+            SQLQuery = builder.toString();
+        }
+        builder.setLength(0);
         switch(args.get(0)) {
             case "INSERT":
             case "DELETE":
@@ -86,7 +95,8 @@ public class SQLiteQueryCommand implements ICommand {
 
                 } catch (SQLException sqlException) {
                     sqlException.printStackTrace();
-                    event.getChannel().sendMessage(sqlException.getSQLState()).queue();
+                    String a = sqlException.getMessage();
+                    if(a != null) event.getChannel().sendMessage(a).queue();
                 }
                 break;
         }
@@ -117,7 +127,8 @@ public class SQLiteQueryCommand implements ICommand {
             sqliteConnector.Insert_Query(sqlQuery, new int[0], new String[0]);
 
         } catch (SQLException sqlException) {
-            event.getChannel().sendMessage(sqlException.getSQLState()).queue();
+            String a = sqlException.getMessage();
+            if(a != null) event.getChannel().sendMessage(a).queue();
             sqlException.printStackTrace();
             return;
         }
