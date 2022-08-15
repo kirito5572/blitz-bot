@@ -38,9 +38,13 @@ public class SQLiteQueryCommand implements ICommand {
             case "INSERT":
             case "DELETE":
             case "UPDATE":
+            case "insert":
+            case "delete":
+            case "update":
                 insertDeleteUpdateQuery(SQLQuery, event);
                 break;
             case "SELECT":
+            case "select":
                 try {
                     ResultSet resultSet = sqliteConnector.Select_Query(SQLQuery, new int[0], new String[0]);
                     if(resultSet == null) {
@@ -51,7 +55,7 @@ public class SQLiteQueryCommand implements ICommand {
                     int columnCount = resultSetMetaData.getColumnCount();
                     int rowCount = resultSet.getRow() + 1;
                     String[][] returnData = new String[rowCount][columnCount];
-                    int i = 1;
+                    int i;
                     for(i = 1; i <= columnCount; i++) {
                         returnData[0][i - 1] = resultSetMetaData.getColumnName(i);
                     }
@@ -77,6 +81,7 @@ public class SQLiteQueryCommand implements ICommand {
                         allBuilder.append(insideBuilder.toString());
                         insideBuilder.setLength(0);
                     }
+                    event.getChannel().sendMessage(allBuilder.toString()).queue();
 
 
                 } catch (SQLException sqlException) {
