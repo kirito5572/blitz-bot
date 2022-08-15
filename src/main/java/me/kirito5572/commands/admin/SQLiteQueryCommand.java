@@ -62,7 +62,7 @@ public class SQLiteQueryCommand implements ICommand {
                     }
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
-                    int rowCount = resultSet.getRow() + 1;
+                    int rowCount = resultSet.getRow() + 1;  //아마 여기에 문제가 있을것으로 추정함
                     String[][] returnData = new String[rowCount][columnCount];
                     int i;
                     for(i = 1; i <= columnCount; i++) {
@@ -71,6 +71,7 @@ public class SQLiteQueryCommand implements ICommand {
                     i = 1;
                     while(resultSet.next()) {
                         for(int j = 1; j < columnCount; j++) {
+                            //TODO java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1 발생
                             returnData[i][j - 1] = resultSet.getString(j);
                         }
                         i++;
