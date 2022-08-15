@@ -1,7 +1,10 @@
 package me.kirito5572.objects;
 
-import me.kirito5572.commands.*;
+import me.kirito5572.commands.BotInfoCommand;
+import me.kirito5572.commands.HelpCommand;
+import me.kirito5572.commands.PingCommand;
 import me.kirito5572.commands.admin.EvalCommand;
+import me.kirito5572.commands.admin.SQLiteQueryCommand;
 import me.kirito5572.commands.moderator.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -44,6 +47,7 @@ public class CommandManager {
         addCommand(new ComplainMessageLogCommand(mySqlConnector));
         addCommand(new ComplainBanCommand(mySqlConnector));
         addCommand(new ComplainUnBanCommand(mySqlConnector));
+        addCommand(new SQLiteQueryCommand(sqliteConnector));
 
         /*
         addCommand(new JoinCommand());
