@@ -85,6 +85,7 @@ public class SQLiteQueryCommand implements ICommand {
 
 
                 } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
                     event.getChannel().sendMessage(sqlException.getSQLState()).queue();
                 }
                 break;
@@ -117,6 +118,7 @@ public class SQLiteQueryCommand implements ICommand {
 
         } catch (SQLException sqlException) {
             event.getChannel().sendMessage(sqlException.getSQLState()).queue();
+            sqlException.printStackTrace();
             return;
         }
         event.getChannel().sendMessage("실행 완료").queue();
