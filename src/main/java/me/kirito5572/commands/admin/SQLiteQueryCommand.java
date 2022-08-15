@@ -99,7 +99,7 @@ public class SQLiteQueryCommand implements ICommand {
 
     @Override
     public String getInvoke() {
-        return "SQLITE";
+        return "sqlite";
     }
 
     @Override
