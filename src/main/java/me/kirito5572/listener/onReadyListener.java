@@ -4,6 +4,7 @@ import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.App;
 import me.kirito5572.objects.MySQLConnector;
 import me.kirito5572.objects.OptionData;
+import me.kirito5572.objects.SQLITEConnector;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -21,11 +22,13 @@ import java.util.*;
 
 public class onReadyListener extends ListenerAdapter {
     private final MySQLConnector mySqlConnector;
+    private final SQLITEConnector sqliteConnector;
     private int i = 0;
     private final Logger logger = LoggerFactory.getLogger(MuteListener.class);
 
-    public onReadyListener(MySQLConnector mySqlConnector) {
+    public onReadyListener(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector) {
         this.mySqlConnector = mySqlConnector;
+        this.sqliteConnector = sqliteConnector;
     }
 
     @Override
@@ -117,13 +120,13 @@ public class onReadyListener extends ListenerAdapter {
 
     public void giveRoleListenerModule() {
         long time = System.currentTimeMillis() / 1000;
-        try (ResultSet resultSet = mySqlConnector.Select_Query(
-                "SELECT * FROM blitz_bot.GiveRoleBanTable WHERE endTime < ?;",
-                new int[]{mySqlConnector.STRING}, new String[]{String.valueOf(time)})) {
+        try (ResultSet resultSet = sqliteConnector.Select_Query(
+                "SELECT * FROM GiveRoleBanTable WHERE endTime < ?;",
+                new int[]{sqliteConnector.STRING}, new String[]{String.valueOf(time)})) {
             while (resultSet.next()) {
-                mySqlConnector.Insert_Query(
-                        "DELETE FROM blitz_bot.GiveRoleBanTable WHERE userId = ?;",
-                        new int[] {mySqlConnector.STRING}, new String[]{resultSet.getString("userId")});
+                sqliteConnector.Insert_Query(
+                        "DELETE FROM GiveRoleBanTable WHERE userId = ?;",
+                        new int[] {sqliteConnector.STRING}, new String[]{resultSet.getString("userId")});
             }
 
         } catch (SQLException sqlException) {

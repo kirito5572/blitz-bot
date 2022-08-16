@@ -134,7 +134,7 @@ public class App {
         filterListener noticeAutoTransListener = new filterListener(mySqlConnector);
         LogListener logListener = new LogListener(mySqlConnector);
         MuteListener muteListener = new MuteListener(mySqlConnector);
-        onReadyListener onReadyListener = new onReadyListener(mySqlConnector);
+        onReadyListener onReadyListener = new onReadyListener(mySqlConnector, sqliteConnector);
         DirectMessageListener directMessageListener = new DirectMessageListener(mySqlConnector);
 
         MessagePinListener messagePinListener = new MessagePinListener(sqliteConnector);
