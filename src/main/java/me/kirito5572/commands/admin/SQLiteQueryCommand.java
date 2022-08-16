@@ -60,9 +60,13 @@ public class SQLiteQueryCommand implements ICommand {
                         event.getChannel().sendMessage("NO DATA in TABLE").queue();
                         return;
                     }
+                    @Language("SQLite") String countQuery = SQLQuery.replaceFirst("\\*", "").replaceFirst("SELECT", "SELECT COUNT(*) ");
+                    System.out.println(countQuery);
+                    ResultSet countSet = sqliteConnector.Select_Query(countQuery, new int[0], new String[0]);
+                    countSet.next();
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
-                    int rowCount = resultSet.getRow() + 1;  //아마 여기에 문제가 있을것으로 추정함
+                    int rowCount = countSet.getInt(1) + 1;
                     String[][] returnData = new String[rowCount][columnCount];
                     int i;
                     for(i = 1; i <= columnCount; i++) {
@@ -71,7 +75,6 @@ public class SQLiteQueryCommand implements ICommand {
                     i = 1;
                     while(resultSet.next()) {
                         for(int j = 1; j < columnCount; j++) {
-                            //TODO java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1 발생
                             returnData[i][j - 1] = resultSet.getString(j);
                         }
                         i++;
@@ -84,13 +87,17 @@ public class SQLiteQueryCommand implements ICommand {
                         }
                         insideBuilder.append("\n");
                         String insideString = insideBuilder.toString();
-                        if(insideString.length() + allBuilder.length() >= 1999) {
+                        if(insideString.length() + allBuilder.length() >= 1980) {
+                            allBuilder.insert(0, "```sql\n");
+                            allBuilder.append("\n```");
                             event.getChannel().sendMessage(allBuilder.toString()).queue();
                             allBuilder.setLength(0);
                         }
                         allBuilder.append(insideBuilder.toString());
                         insideBuilder.setLength(0);
                     }
+                    allBuilder.insert(0, "```sql\n");
+                    allBuilder.append("\n```");
                     event.getChannel().sendMessage(allBuilder.toString()).queue();
 
 
@@ -98,6 +105,7 @@ public class SQLiteQueryCommand implements ICommand {
                     sqlException.printStackTrace();
                     String a = sqlException.getMessage();
                     if(a != null) event.getChannel().sendMessage(a).queue();
+                    return;
                 }
                 break;
         }

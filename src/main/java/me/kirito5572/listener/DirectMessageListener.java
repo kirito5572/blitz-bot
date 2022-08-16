@@ -133,6 +133,9 @@ public class DirectMessageListener extends ListenerAdapter {
         if(event.getMessage().getContentRaw().contains("!종료") || event.getMessage().getContentRaw().contains("!종료")) {
             return;
         }
+        if (!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
         List<TextChannel> textChannels = Objects.requireNonNull(event.getGuild().getCategoryById("1005116641509650482")).getTextChannels();
         for(TextChannel textChannel : textChannels) {
             if(textChannel.getId().equals(event.getChannel().getId())) {
