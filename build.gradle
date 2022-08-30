@@ -44,6 +44,8 @@ dependencies {
     //https://search.maven.org/artifact/ch.qos.logback/logback-classic
     //use legacy stable version 1.2.11
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.0'
+    //https://search.maven.org/artifact/org.fusesource.jansi/jansi
+    implementation group: 'org.fusesource.jansi', name: 'jansi', version: '2.4.0'
     //https://jsoup.org/download
     implementation group: 'org.jsoup', name:'jsoup', version: '1.15.3'
     //legacy
