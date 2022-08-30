@@ -7,7 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -40,8 +42,7 @@ public class getYoutubeSearch {
                 response.append(inputLine);
             }
             br.close();
-            JsonParser parser = new JsonParser();
-            JsonElement element = parser.parse(response.toString());
+            JsonElement element = JsonParser.parseString(response.toString());
             try {
                 for(int i = 0; i < 10; i++) {
                     returns[i][0] = element.getAsJsonObject().get("items").getAsJsonArray().get(i).getAsJsonObject().get("snippet").getAsJsonObject().get("title").getAsString();

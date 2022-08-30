@@ -39,6 +39,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 
 
 public class LogListener extends ListenerAdapter {
@@ -79,7 +81,22 @@ public class LogListener extends ListenerAdapter {
             for (Message.Attachment attachment : files) {
                 if (attachment.isImage()) {
                     i++;
-                    File file = attachment.downloadToFile().join();
+                    File file;
+                    try {
+                        file = attachment.downloadToFile().get();
+                    } catch (CancellationException e) {
+                        logger.error("로그 파일 다운로드에 실패했습니다.");
+                        logger.warn(e.getMessage());
+                        return;
+                    } catch (ExecutionException e) {
+                        logger.error("다운로드 할 파일에 봇이 접근할 수 없습니다.");
+                        logger.warn(e.getMessage());
+                        return;
+                    } catch (InterruptedException e) {
+                        logger.error("파일 다운로드중 작업이 취소되었습니다.");
+                        logger.warn(e.getMessage());
+                        return;
+                    }
                     try {
                         S3UploadObject(file, message.getId() + "_" + i);
                     } catch (SdkClientException e) {
