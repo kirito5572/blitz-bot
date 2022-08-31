@@ -20,11 +20,9 @@ public class Listener extends ListenerAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(Listener.class);
     private final CommandManager manager;
-    private final MySQLConnector mySqlConnector;
 
-    public Listener(CommandManager manager, MySQLConnector mySqlConnector) {
+    public Listener(CommandManager manager) {
         this.manager = manager;
-        this.mySqlConnector = mySqlConnector;
     }
 
     @Override

@@ -16,6 +16,7 @@ import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Date;
@@ -56,7 +57,8 @@ public class App {
             //Wargaming(Game STAFF)
             "268251437224427521",   //Cincin#2050(Duan)
             "742717525363523655",   //Jobasim#0302
-            "651303118239432704"    //[WG]Summer#6183
+            "651303118239432704",   //[WG]Summer#6183
+            "208385750146744321"    //Cynical Silicon#8458
 
     };
 
@@ -90,6 +92,21 @@ public class App {
     }
 
     public App() throws SQLException, ClassNotFoundException, URISyntaxException {
+        System.out.println("로그인 성공");
+        String tmp = "로그인 성공";
+        byte[] bytes;
+        String successString = null;
+        try {
+            bytes = tmp.getBytes("MS949");
+            successString = new String(bytes, "MS949");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        System.out.printf("%s: %s%n", successString, successString);
+
+        System.exit(-1);
+
+
         logger.info("Start up");
         if(OSStringData.contains("win")) {
             OS = WINDOWS;
@@ -130,7 +147,7 @@ public class App {
 
         logger.info("Loading Listeners");
         CommandManager commandManager = new CommandManager(mySqlConnector, sqliteConnector);
-        Listener listener = new Listener(commandManager, mySqlConnector);
+        Listener listener = new Listener(commandManager);
         filterListener noticeAutoTransListener = new filterListener(mySqlConnector);
         LogListener logListener = new LogListener(mySqlConnector);
         MuteListener muteListener = new MuteListener(mySqlConnector);
