@@ -1,36 +1,37 @@
 package me.kirito5572.commands.moderator;
 
-import me.kirito5572.listener.filterListener;
 import me.kirito5572.objects.EventPackage;
+import me.kirito5572.objects.FilterSystem;
 import me.kirito5572.objects.ICommand;
-import me.kirito5572.objects.MySQLConnector;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
 public class FilterWordAddCommand implements ICommand {
-    private final MySQLConnector mySqlConnector;
+    private final Logger logger = LoggerFactory.getLogger(FilterWordAddCommand.class);
+    private final FilterSystem filterSystem;
 
-    public FilterWordAddCommand(MySQLConnector mySqlConnector) {
-        this.mySqlConnector = mySqlConnector;
+    public FilterWordAddCommand(FilterSystem filterSystem) {
+        this.filterSystem = filterSystem;
     }
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
         if (Objects.requireNonNull(event.getGuild()).getId().equals("826704284003205160")) {
-            if (FilterWordRemoveCommand.FilterCommandAuthorityCheck(args, event)) return;
-            try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.FilterWord WHERE Word=?;", new int[]{mySqlConnector.STRING}, new String[]{args.get(0)})) {
-                if (resultSet.next()) {
-                    event.getChannel().sendMessage("이미 목록에 해당 단어가 존재합니다.").queue();
-                } else {
-                    mySqlConnector.Insert_Query("INSERT INTO blitz_bot.FilterWord (Word) VALUES (?);", new int[]{mySqlConnector.STRING}, new String[]{args.get(0)});
+            boolean isSuccess = filterSystem.commandAuthorityCheck(args, event, false);
+            if(isSuccess) {
+                try {
+                    filterSystem.wordUpdate(false, true, new String[]{args.get(0)});
+                    event.getChannel().sendMessage("단어 추가가 완료되었습니다.").queue();
+                } catch (SQLException sqlException) {
+                    logger.error(sqlException.getMessage());
+                    logger.error(sqlException.getSQLState());
+                    sqlException.printStackTrace();
                 }
-            } catch (SQLException ignored) {
             }
-            event.getChannel().sendMessage("단어 등록 완료").queue();
-            filterListener.getFilterDataFromDB(mySqlConnector);
         }
     }
 

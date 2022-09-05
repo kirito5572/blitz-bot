@@ -20,6 +20,7 @@ import static me.kirito5572.App.openFileData;
 public class getYoutubeSearch {
     private static final Logger logger = LoggerFactory.getLogger(getYoutubeSearch.class);
     private static final String youtubeKey = openFileData("YOUTUBE_DATA_API_KEY");
+    /** @noinspection unused*/
     public getYoutubeSearch() {
     }
     @Nullable

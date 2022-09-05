@@ -1,15 +1,12 @@
 package me.kirito5572.objects;
 
 import org.intellij.lang.annotations.Language;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
 import static me.kirito5572.App.openFileData;
 
 public class MySQLConnector {
-    private static final Logger logger = LoggerFactory.getLogger(MySQLConnector.class);
     private static Connection connection;
     private static String url;
     private static String user;
@@ -19,13 +16,13 @@ public class MySQLConnector {
     public final int INT = 1;
     public final int BOOLEAN = 2;
     public final int LONG = 3;
-    private final String driverName = "com.mysql.cj.jdbc.Driver";
 
 
     public MySQLConnector() throws ClassNotFoundException, SQLException {
         url = "jdbc:mysql://" + openFileData("endPoint") + "/blitz_bot?serverTimezone=UTC";
         user = "blitzbot";
         password = openFileData("SQLPassword");
+        String driverName = "com.mysql.cj.jdbc.Driver";
         Class.forName(driverName);
         connection = DriverManager.getConnection(url, user, password);
     }
@@ -101,9 +98,5 @@ public class MySQLConnector {
         PreparedStatement statement = connection.prepareStatement(Query);
         Query(statement, dataType, data);
         return statement.execute() ? 1 : 0;
-    }
-
-    public void filterRefresh() {
-
     }
 }

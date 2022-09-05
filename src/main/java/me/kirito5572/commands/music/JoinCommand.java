@@ -3,13 +3,13 @@ package me.kirito5572.commands.music;
 import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
+import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import me.kirito5572.objects.EventPackage;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +19,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/** @noinspection unused*/
 public class JoinCommand implements ICommand {
+    /** @noinspection unused*/
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
         TextChannel channel = event.getTextChannel();
@@ -97,6 +99,7 @@ public class JoinCommand implements ICommand {
         }
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getHelp() {
@@ -110,12 +113,14 @@ public class JoinCommand implements ICommand {
         return "join";
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getSmallHelp() {
         return "음성채널에 봇이 들어옵니다.";
     }
 
+    /** @noinspection unused*/
     @Override
     public boolean isAdminOnly() {
         return false;

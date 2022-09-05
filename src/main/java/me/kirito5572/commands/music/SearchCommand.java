@@ -1,15 +1,15 @@
 package me.kirito5572.commands.music;
 
+import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
+import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
 import me.kirito5572.objects.getYoutubeSearch;
-import me.duncte123.botcommons.messaging.EmbedUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import me.kirito5572.objects.EventPackage;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+/** @noinspection unused*/
 public class SearchCommand implements ICommand {
     private final Logger logger = LoggerFactory.getLogger(SearchCommand.class);
+    /** @noinspection unused*/
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         new Thread(() -> {
@@ -118,6 +120,7 @@ public class SearchCommand implements ICommand {
         }).start();
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getHelp() {
@@ -131,12 +134,14 @@ public class SearchCommand implements ICommand {
         return "search";
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getSmallHelp() {
         return "유튜브에서 노래를 검색합니다";
     }
 
+    /** @noinspection unused*/
     @Override
     public boolean isAdminOnly() {
         return false;

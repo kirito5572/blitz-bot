@@ -83,7 +83,7 @@ public class DirectMessageListener extends ListenerAdapter {
         int i = 0;
         try {
             i = mySqlConnector.Insert_Query("INSERT INTO blitz_bot.ComplainLog " +
-                            "(userId, createtime, endtime) VALUES (?, ?, ?);",
+                            "(userId, createTime, endTime) VALUES (?, ?, ?);",
                     new int[]{mySqlConnector.STRING, mySqlConnector.LONG, mySqlConnector.LONG},
                     new String[]{event.getUserId(), String.valueOf(System.currentTimeMillis() / 1000), "0"});
         } catch (SQLException sqlException) {

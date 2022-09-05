@@ -43,6 +43,6 @@ public class EventPackage {
     }
 
     public MessageChannel getMessageChannel() {
-        return null;
+        return this.textChannel;
     }
 }

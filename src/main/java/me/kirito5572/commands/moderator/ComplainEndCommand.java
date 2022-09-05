@@ -47,12 +47,12 @@ public class ComplainEndCommand implements ICommand {
                     if(!resultSet.next()) {
                         return;
                     }
-                    mySqlConnector.Insert_Query("UPDATE blitz_bot.ComplainLog SET endtime = ? WHERE Complain_int = ?",
+                    mySqlConnector.Insert_Query("UPDATE blitz_bot.ComplainLog SET endTime = ? WHERE Complain_int = ?",
                             new int[]{mySqlConnector.LONG, mySqlConnector.STRING},
                             new String[]{String.valueOf(endTime / 1000), resultSet.getString("Complain_int")});
 
                     Calendar calendar = Calendar.getInstance();
-                    calendar.setTimeInMillis(resultSet.getLong("createtime") * 1000);
+                    calendar.setTimeInMillis(resultSet.getLong("createTime") * 1000);
 
                     int mYear = calendar.get(Calendar.YEAR), mMonth = calendar.get(Calendar.MONTH) + 1, mDay = calendar.get(Calendar.DAY_OF_MONTH),
                             mHour = calendar.get(Calendar.HOUR_OF_DAY), mMin = calendar.get(Calendar.MINUTE), mSec = calendar.get(Calendar.SECOND);

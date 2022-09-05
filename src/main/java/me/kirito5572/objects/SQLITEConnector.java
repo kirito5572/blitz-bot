@@ -2,8 +2,6 @@ package me.kirito5572.objects;
 
 import me.kirito5572.App;
 import org.intellij.lang.annotations.Language;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -12,14 +10,10 @@ import java.sql.*;
 
 public class SQLITEConnector {
     private final MySQLConnector mySqlConnector;
-    private static final Logger logger = LoggerFactory.getLogger(SQLITEConnector.class);
     private static Connection connection;
     private static String dbUrl = "";
 
     public final int STRING = 0;
-    public final int INT = 1;
-    public final int BOOLEAN = 2;
-    public final int LONG = 3;
 
     public SQLITEConnector(MySQLConnector mySQLConnector) throws ClassNotFoundException, SQLException, URISyntaxException {
         this.mySqlConnector = mySQLConnector;

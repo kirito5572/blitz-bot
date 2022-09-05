@@ -7,7 +7,7 @@ plugins ({
     id 'net.nemerosa.versioning' version '2.6.1'
 })
 group 'me.kirito5572'
-version 'STABLE 0.1.2_1'
+version '0.1.4_beta_1'
 
 mainClassName = 'me.kirito5572.App'
 
@@ -71,6 +71,7 @@ dependencies {
 
 
 shadowJar {
+    //noinspection GrUnresolvedAccess
     zip64 true
     manifest {
         attributes(

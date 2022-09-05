@@ -68,7 +68,7 @@ public class onReadyListener extends ListenerAdapter {
 
     public void muteListenerModule(@NotNull ReadyEvent event) {
         try {
-            ResultSet resultSet = null;
+            ResultSet resultSet;
             try {
                 if(mySqlConnector.isConnectionClosed()){
                     MySQLConnector.reConnection();
@@ -132,7 +132,7 @@ public class onReadyListener extends ListenerAdapter {
         } catch (SQLException sqlException) {
             try {
                 MySQLConnector.reConnection();
-            } catch (SQLException throwables) {
+            } catch (SQLException throwable) {
                 logger.error(sqlException.getMessage());
             }
             logger.error(sqlException.getMessage());

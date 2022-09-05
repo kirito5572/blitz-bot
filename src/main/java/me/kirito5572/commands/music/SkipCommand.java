@@ -1,21 +1,23 @@
 package me.kirito5572.commands.music;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
 import me.kirito5572.music.TrackScheduler;
+import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 
+/** @noinspection unused*/
 public class SkipCommand implements ICommand {
+    /** @noinspection unused*/
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
         MessageChannel channel = event.getMessageChannel();
@@ -64,6 +66,7 @@ public class SkipCommand implements ICommand {
         channel.sendMessage("다음 노래로 넘깁니다.").queue();
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getHelp() {
@@ -77,12 +80,14 @@ public class SkipCommand implements ICommand {
         return "skip";
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getSmallHelp() {
         return "노래를 스킵합니다";
     }
 
+    /** @noinspection unused*/
     @Override
     public boolean isAdminOnly() {
         return false;

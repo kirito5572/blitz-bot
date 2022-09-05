@@ -1,17 +1,17 @@
 package me.kirito5572.commands.music;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
+import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import me.kirito5572.objects.EventPackage;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 
+/** @noinspection unused*/
 public class PlayCommand implements ICommand {
+    /** @noinspection unused*/
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
 
@@ -142,6 +144,7 @@ public class PlayCommand implements ICommand {
         }
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getHelp() {
@@ -157,12 +160,14 @@ public class PlayCommand implements ICommand {
         return "play";
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getSmallHelp() {
         return "URL의 노래를 재생합니다, 단축어: p";
     }
 
+    /** @noinspection unused*/
     @Override
     public boolean isAdminOnly() {
         return false;

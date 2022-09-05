@@ -27,16 +27,17 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+/** @noinspection ALL*/
 public class CommandManager {
     private final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
     private final Map<String, ICommand> commands = new HashMap<>();
 
-    public CommandManager(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector) {
+    public CommandManager(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector, FilterSystem filterSystem) {
         addCommand(new HelpCommand(this));
         addCommand(new PingCommand(mySqlConnector, sqliteConnector));
-        addCommand(new FilterWordAddCommand(mySqlConnector));
-        addCommand(new FilterWordRemoveCommand(mySqlConnector));
+        addCommand(new FilterWordAddCommand(filterSystem));
+        addCommand(new FilterWordRemoveCommand(filterSystem));
         addCommand(new MuteCommand(mySqlConnector));
         addCommand(new UnMuteCommand(mySqlConnector));
         addCommand(new MessagePinCommand(sqliteConnector));
@@ -229,11 +230,11 @@ public class CommandManager {
                 }
 
                 @NotNull
-                public List<IMentionable> getMentions(@NotNull MentionType... types) {
+                public List<IMentionable> getMentions(@NotNull MentionType @NotNull ... types) {
                     return null;
                 }
 
-                public boolean isMentioned(@NotNull IMentionable mentionable, @NotNull MentionType... types) {
+                public boolean isMentioned(@NotNull IMentionable mentionable, @NotNull MentionType @NotNull ... types) {
                     return false;
                 }
 
@@ -388,7 +389,7 @@ public class CommandManager {
                 }
 
                 @NotNull
-                public MessageAction editMessageFormat(@NotNull String format, @NotNull Object... args) {
+                public MessageAction editMessageFormat(@NotNull String format, @NotNull Object @NotNull ... args) {
                     return null;
                 }
 

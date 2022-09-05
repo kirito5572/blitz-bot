@@ -36,6 +36,7 @@ public class MuteListener extends ListenerAdapter {
                 }
             }
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
     }

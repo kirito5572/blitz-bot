@@ -2,19 +2,21 @@ package me.kirito5572.commands.music;
 
 import me.kirito5572.App;
 import me.kirito5572.music.PlayerManager;
+import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import me.kirito5572.objects.EventPackage;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 
+/** @noinspection unused*/
 public class VolumeCommand implements ICommand {
+    /** @noinspection unused*/
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         MessageChannel channel = event.getMessageChannel();
@@ -54,6 +56,7 @@ public class VolumeCommand implements ICommand {
         channel.sendMessage("볼륨이 " + joined + "으로 변경되었습니다.").queue();
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getHelp() {
@@ -68,12 +71,14 @@ public class VolumeCommand implements ICommand {
         return "vol";
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getSmallHelp() {
         return "볼륨 조절, 단축어: v";
     }
 
+    /** @noinspection unused*/
     @Override
     public boolean isAdminOnly() {
         return false;

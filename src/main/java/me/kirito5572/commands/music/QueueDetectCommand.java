@@ -1,21 +1,23 @@
 package me.kirito5572.commands.music;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
+import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 
+/** @noinspection unused*/
 public class QueueDetectCommand implements ICommand {
+    /** @noinspection unused*/
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         new Thread(() -> {
@@ -53,6 +55,7 @@ public class QueueDetectCommand implements ICommand {
         }).start();
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getHelp() {
@@ -69,12 +72,14 @@ public class QueueDetectCommand implements ICommand {
         return "queuedel";
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getSmallHelp() {
         return "재생목록을 정리합니다, 단축어: qd";
     }
 
+    /** @noinspection unused*/
     @Override
     public boolean isAdminOnly() {
         return false;

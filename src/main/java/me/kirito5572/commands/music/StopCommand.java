@@ -3,17 +3,19 @@ package me.kirito5572.commands.music;
 import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
+import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import me.kirito5572.objects.EventPackage;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 
+/** @noinspection unused*/
 public class StopCommand implements ICommand {
+    /** @noinspection unused*/
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
         PlayerManager playerManager = PlayerManager.getInstance();
@@ -39,6 +41,7 @@ public class StopCommand implements ICommand {
 
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getHelp() {
@@ -52,12 +55,14 @@ public class StopCommand implements ICommand {
         return "stop";
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getSmallHelp() {
         return "재생 정지";
     }
 
+    /** @noinspection unused*/
     @Override
     public boolean isAdminOnly() {
         return false;

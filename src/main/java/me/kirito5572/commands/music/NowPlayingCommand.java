@@ -1,23 +1,25 @@
 package me.kirito5572.commands.music;
 
-import me.kirito5572.App;
-import me.kirito5572.music.GuildMusicManager;
-import me.kirito5572.music.PlayerManager;
-import me.kirito5572.objects.ICommand;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import me.duncte123.botcommons.messaging.EmbedUtils;
+import me.kirito5572.App;
+import me.kirito5572.music.GuildMusicManager;
+import me.kirito5572.music.PlayerManager;
+import me.kirito5572.objects.EventPackage;
+import me.kirito5572.objects.ICommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import me.kirito5572.objects.EventPackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+/** @noinspection unused*/
 public class NowPlayingCommand implements ICommand {
+    /** @noinspection unused*/
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
         TextChannel channel = event.getTextChannel();
@@ -49,6 +51,7 @@ public class NowPlayingCommand implements ICommand {
         )).build()).queue();
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getHelp() {
@@ -63,6 +66,7 @@ public class NowPlayingCommand implements ICommand {
         return "nowplaying";
     }
 
+    /** @noinspection unused*/
     @NotNull
     @Override
     public String getSmallHelp() {
@@ -77,6 +81,7 @@ public class NowPlayingCommand implements ICommand {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
+    /** @noinspection unused*/
     @Override
     public boolean isAdminOnly() {
         return false;

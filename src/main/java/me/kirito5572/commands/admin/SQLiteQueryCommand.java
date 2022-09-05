@@ -136,6 +136,8 @@ public class SQLiteQueryCommand implements ICommand {
             sqliteConnector.Insert_Query(sqlQuery, new int[0], new String[0]);
 
         } catch (SQLException sqlException) {
+            logger.error(sqlException.getMessage());
+            logger.error(sqlException.getSQLState());
             String a = sqlException.getMessage();
             if(a != null) event.getChannel().sendMessage(a).queue();
             sqlException.printStackTrace();

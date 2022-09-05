@@ -2,10 +2,7 @@ package me.kirito5572;
 
 import me.duncte123.botcommons.web.WebUtils;
 import me.kirito5572.listener.*;
-import me.kirito5572.objects.CommandManager;
-import me.kirito5572.objects.MySQLConnector;
-import me.kirito5572.objects.SQLITEConnector;
-import me.kirito5572.objects.UnsupportedOSException;
+import me.kirito5572.objects.*;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
@@ -26,8 +23,6 @@ public class App {
     private final static Logger logger = LoggerFactory.getLogger(App.class);
 
     private final static String PREFIX = "!";
-
-    private static String[] FilterList = new String[0];
 
     private final static String OSStringData = System.getProperty("os.name").toLowerCase();
     public static int OS = 3;
@@ -128,10 +123,12 @@ public class App {
         SQLITEConnector sqliteConnector = new SQLITEConnector(mySqlConnector);
         logger.info("Connect Success with SQL Server/File");
 
+        FilterSystem filterSystem = new FilterSystem(mySqlConnector);
+
         logger.info("Loading Listeners");
-        CommandManager commandManager = new CommandManager(mySqlConnector, sqliteConnector);
+        CommandManager commandManager = new CommandManager(mySqlConnector, sqliteConnector, filterSystem);
         Listener listener = new Listener(commandManager);
-        filterListener noticeAutoTransListener = new filterListener(mySqlConnector);
+        filterListener filterListener = new filterListener(mySqlConnector, filterSystem);
         LogListener logListener = new LogListener(mySqlConnector);
         MuteListener muteListener = new MuteListener(mySqlConnector);
         onReadyListener onReadyListener = new onReadyListener(mySqlConnector, sqliteConnector);
@@ -143,7 +140,7 @@ public class App {
         try {
             JDABuilder.createDefault(openFileData("TOKEN"))
                     .setAutoReconnect(true)
-                    .addEventListeners(listener, giveRoleListener, noticeAutoTransListener, logListener,
+                    .addEventListeners(listener, giveRoleListener, filterListener, logListener,
                             muteListener, messagePinListener, onReadyListener, directMessageListener)
                     .setEnabledIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                     .setChunkingFilter(ChunkingFilter.ALL)
@@ -168,24 +165,6 @@ public class App {
      */
     public static String getPREFIX() {
         return PREFIX;
-    }
-
-    /**
-     * return FilterList
-     * @return the String array that filter word
-     */
-
-    public static String[] getFilterList() {
-        return FilterList;
-    }
-
-    /**
-     * setup FilterList
-     * @param filterList the String array that filter word
-     */
-
-    public static void setFilterList(String[] filterList) {
-        FilterList = filterList;
     }
 
     /**
@@ -234,7 +213,7 @@ public class App {
     }
 
     /**
-     * return moderator discor id list
+     * return moderator discord id list
      * @return the string array that moderator discord id
      */
 
