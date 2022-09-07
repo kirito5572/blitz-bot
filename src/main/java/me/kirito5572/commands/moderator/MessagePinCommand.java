@@ -77,4 +77,9 @@ public class MessagePinCommand implements ICommand {
     public boolean isAdminOnly() {
         return true;
     }
+
+    @Override
+    public boolean isOwnerOnly() {
+        return false;
+    }
 }

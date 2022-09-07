@@ -25,10 +25,11 @@ public class filterListener extends ListenerAdapter {
         this.filterSystem = filterSystem;
     }
 
+    /** @noinspection StatementWithEmptyBody*/
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        filterSystem.filterRefresh();
-        filterSystem.whiteFilterRefresh();
+        while(filterSystem.filterRefresh());
+        while(filterSystem.whiteFilterRefresh());
         logger.info("필터 ONLINE");
     }
 

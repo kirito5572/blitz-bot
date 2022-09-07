@@ -120,6 +120,11 @@ public class MuteCommand implements ICommand {
         return true;
     }
 
+    @Override
+    public boolean isOwnerOnly() {
+        return false;
+    }
+
     public Calendar time_convert(String time) {
         Date date = new Date();
         int temp_time;

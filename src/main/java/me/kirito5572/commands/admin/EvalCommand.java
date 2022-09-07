@@ -126,6 +126,11 @@ public class EvalCommand implements ICommand {
 
     @Override
     public boolean isAdminOnly() {
+        return false;
+    }
+
+    @Override
+    public boolean isOwnerOnly() {
         return true;
     }
 }

@@ -75,4 +75,9 @@ public class leaveCommand implements ICommand {
     public boolean isAdminOnly() {
         return false;
     }
+
+    @Override
+    public boolean isOwnerOnly() {
+        return false;
+    }
 }

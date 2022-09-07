@@ -14,8 +14,8 @@ import java.util.List;
 
 public class FilterSystem {
     private final Logger logger = LoggerFactory.getLogger(FilterSystem.class);
-    private List<String> filterList = new ArrayList<>();
-    private List<String[]> whiteFilterList = new ArrayList<>();
+    private final List<String> filterList = new ArrayList<>();
+    private final List<String[]> whiteFilterList = new ArrayList<>();
     private final MySQLConnector mySQLConnector;
 
     public FilterSystem(MySQLConnector mySQLConnector) {

@@ -81,4 +81,9 @@ public class BotInfoCommand implements ICommand {
     public boolean isAdminOnly() {
         return false;
     }
+
+    @Override
+    public boolean isOwnerOnly() {
+        return false;
+    }
 }

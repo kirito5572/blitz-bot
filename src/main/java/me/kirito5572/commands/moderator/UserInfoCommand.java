@@ -45,6 +45,7 @@ public class UserInfoCommand implements ICommand {
                 .setThumbnail(user.getEffectiveAvatarUrl())
                 .addField("유저이름#번호", String.format("%#s", user), false)
                 .addField("서버 표시 이름", member.getEffectiveName(), false)
+                .addField("서버장여부 ", member.isOwner() ? "예" : "아니요", false)
                 .addField("유저 ID + 언급 멘션", String.format("%s (%s)", user.getId(), member.getAsMention()), false)
                 .addField("디스코드 가입 일자", user.getTimeCreated().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault())), false)
                 .addField("서버 초대 일자", member.getTimeJoined().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault())), false)
@@ -78,5 +79,10 @@ public class UserInfoCommand implements ICommand {
     @Override
     public boolean isAdminOnly() {
         return true;
+    }
+
+    @Override
+    public boolean isOwnerOnly() {
+        return false;
     }
 }

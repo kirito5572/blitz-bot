@@ -54,4 +54,9 @@ public class FilterWordRemoveCommand implements ICommand {
     public boolean isAdminOnly() {
         return true;
     }
+
+    @Override
+    public boolean isOwnerOnly() {
+        return false;
+    }
 }
