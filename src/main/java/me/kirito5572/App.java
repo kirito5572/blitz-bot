@@ -128,7 +128,7 @@ public class App {
         logger.info("Loading Listeners");
         CommandManager commandManager = new CommandManager(mySqlConnector, sqliteConnector, filterSystem);
         Listener listener = new Listener(commandManager);
-        filterListener filterListener = new filterListener(mySqlConnector, filterSystem);
+        filterListener filterListener = new filterListener(filterSystem);
         LogListener logListener = new LogListener(mySqlConnector);
         MuteListener muteListener = new MuteListener(mySqlConnector);
         onReadyListener onReadyListener = new onReadyListener(mySqlConnector, sqliteConnector);

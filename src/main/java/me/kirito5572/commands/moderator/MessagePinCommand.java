@@ -6,6 +6,7 @@ import me.kirito5572.objects.ICommand;
 import me.kirito5572.objects.SQLITEConnector;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -41,7 +42,13 @@ public class MessagePinCommand implements ICommand {
                 EmbedBuilder builder = EmbedUtils.getDefaultEmbed()
                         .setTitle("고정된 메세지")
                         .setColor(Color.GREEN)
-                        .setDescription(event.getMessage().getContentRaw());
+                        .setDescription(event.getMessage().getContentRaw().substring(2));
+                List<Message.Attachment> attachments = event.getMessage().getAttachments();
+                if(!attachments.isEmpty()) {
+                    if(attachments.get(0).isImage()) {
+                        builder.setImage(attachments.get(0).getUrl());
+                    }
+                }
                 messageId = event.getChannel().sendMessageEmbeds(builder.build()).complete().getId();
                 sqliteConnector.Insert_Query("INSERT INTO Pin (channelId, messageId) VALUES (?, ?)", new int[]{sqliteConnector.STRING, sqliteConnector.STRING}, new String[]{channelId, messageId});
             }

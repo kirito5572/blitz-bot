@@ -23,7 +23,7 @@ public class MessagePinListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
-        if(event.getAuthor().getId().equals("592987181186940931")) {
+        if(event.getAuthor().getId().equals(event.getGuild().getSelfMember().getId())) {
             return;
         }
         try (ResultSet resultSet = sqliteConnector.Select_Query("SELECT * FROM Pin WHERE channelId=?;", new int[]{sqliteConnector.STRING}, new String[]{event.getChannel().getId()})) {

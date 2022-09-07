@@ -1,11 +1,11 @@
 package me.kirito5572.listener;
 
 import me.kirito5572.objects.FilterSystem;
-import me.kirito5572.objects.MySQLConnector;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
@@ -19,11 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 public class filterListener extends ListenerAdapter {
     private final Logger logger = LoggerFactory.getLogger(filterListener.class);
-    private final MySQLConnector mySqlConnector;
     private final FilterSystem filterSystem;
 
-    public filterListener(MySQLConnector mySqlConnector, FilterSystem filterSystem) {
-        this.mySqlConnector = mySqlConnector;
+    public filterListener(FilterSystem filterSystem) {
         this.filterSystem = filterSystem;
     }
 
@@ -38,6 +36,15 @@ public class filterListener extends ListenerAdapter {
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
         Member member = event.getMember();
         assert member != null;
+        if(member.getId().equals(event.getJDA().getSelfUser().getId())){
+            return;
+        }
+        if(event.getMessage().isWebhookMessage()) {
+            return;
+        }
+        if(member.getUser().isBot()) {
+            return;
+        }
         filter_data(member, event.getMessage());
     }
 
@@ -45,6 +52,12 @@ public class filterListener extends ListenerAdapter {
     public void onGuildMessageUpdate(@NotNull GuildMessageUpdateEvent event) {
         Member member = event.getMember();
         assert member != null;
+        if(member.getId().equals(event.getJDA().getSelfUser().getId())){
+            return;
+        }
+        if(event.getMessage().isWebhookMessage()) {
+            return;
+        }
         filter_data(member, event.getMessage());
     }
 
@@ -56,7 +69,7 @@ public class filterListener extends ListenerAdapter {
      *
      */
 
-    private void filter_data(@NotNull Member member,@NotNull Message message) {
+    private void filter_data(@NotNull Member member, @NotNull Message message) {
         Guild guild = member.getGuild();
         if (guild.getId().equals("826704284003205160")) {
             try {
@@ -84,16 +97,17 @@ public class filterListener extends ListenerAdapter {
         if (member.getUser().isBot()) {
             return;
         }
-        rawMessage = rawMessage.trim().replaceAll(" +", " ");
-        String match = "[^\uAC00-\uD7A3xfe0-9a-zA-Z\\s]";
+        rawMessage = rawMessage.trim().replaceAll("\\s+", " ");
+        String match = "[^\uAC00-\uD7A3xfe0-9a-zA-Z\s]";
         rawMessage = rawMessage.replaceAll(match, "");
+        String MessageFormatting = rawMessage;
         boolean filter = false;
         boolean filter_continue = false;
         for (String data : filterSystem.getFilterList()) {
-            if (rawMessage.contains(data)) {
+            if (MessageFormatting.contains(data)) {
                 for(String[] a : filterSystem.getWhiteFilterList()) {
                     if(data.equals(a[0])) {
-                        if(rawMessage.contains(a[1])) {
+                        if(MessageFormatting.contains(a[1])) {
                             filter_continue = true;
                             break;
                         }
@@ -104,7 +118,7 @@ public class filterListener extends ListenerAdapter {
                     continue;
                 }
                 filter = true;
-                break;
+                rawMessage = rawMessage.replaceAll(data, "(삭제됨)");
             }
         }
         if(filter) {
@@ -120,8 +134,10 @@ public class filterListener extends ListenerAdapter {
                 logger.info("특정 등급 이상 권한 부여자가 필터링에 걸리는 단어를 사용하였으나 통과되었습니다.");
                 return;
             }
+            TextChannel textchannel = message.getTextChannel();
             message.getTextChannel().deleteMessageById(message.getId()).complete();
-            message.getTextChannel().sendMessage(member.getAsMention() + ", 금지어 사용에 주의하여주십시오.").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+            textchannel.sendMessage(rawMessage).queue();
+            textchannel.sendMessage(member.getAsMention() + ", 금지어 사용에 주의하여주십시오.").complete().delete().queueAfter(10, TimeUnit.SECONDS);
         }
     }
 }

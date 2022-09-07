@@ -42,13 +42,14 @@ public class CommandManager {
         addCommand(new UnMuteCommand(mySqlConnector));
         addCommand(new MessagePinCommand(sqliteConnector));
         addCommand(new EvalCommand());
-        addCommand(new ClearCommand());
+        addCommand(new MessageBulkDeleteCommand());
         addCommand(new ComplainEndCommand(mySqlConnector));
         addCommand(new BotInfoCommand());
         addCommand(new ComplainMessageLogCommand(mySqlConnector));
         addCommand(new ComplainBanCommand(mySqlConnector));
         addCommand(new ComplainUnBanCommand(mySqlConnector));
         addCommand(new SQLiteQueryCommand(sqliteConnector));
+        addCommand(new UserInfoCommand());
 
         /*
         addCommand(new JoinCommand());
