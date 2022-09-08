@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class filterListener extends ListenerAdapter {
@@ -28,9 +29,17 @@ public class filterListener extends ListenerAdapter {
     /** @noinspection StatementWithEmptyBody*/
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        while(filterSystem.filterRefresh());
-        while(filterSystem.whiteFilterRefresh());
-        logger.info("필터 ONLINE");
+        boolean isFilter = filterSystem.filterRefresh();
+        if(!isFilter) {
+            logger.error("필터 OFFLINE");
+        }
+        boolean isWhiteFilter = filterSystem.whiteFilterRefresh();
+        if(!isWhiteFilter) {
+            logger.error("화이트리스트 OFFLINE");
+        }
+        if(isFilter && isWhiteFilter) {
+            logger.info("필터 ONLINE");
+        }
     }
 
     @Override
@@ -76,7 +85,8 @@ public class filterListener extends ListenerAdapter {
             try {
                 String message_raw = message.getContentRaw();
                 if (message_raw.length() > 1) {
-                    new Thread(() -> filter(Objects.requireNonNull(member), message)).start();
+                    ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4 );
+                    executor.execute(() -> filter(Objects.requireNonNull(member), message));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

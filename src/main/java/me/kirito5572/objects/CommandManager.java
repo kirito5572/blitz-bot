@@ -164,7 +164,7 @@ public class CommandManager {
         EventPackage eventPackage = new EventPackage(event.getChannel(), event.getMember(), event.getMessage());
         if (this.commands.containsKey(invoke)) {
             List<String> args = Arrays.asList(split).subList(1, split.length);
-            channel.sendTyping().complete();
+            channel.sendTyping().queue();
             this.commands.get(invoke).handle(args, eventPackage);
         }
 
