@@ -21,7 +21,7 @@ public class EventListener extends ListenerAdapter {
         if (guild.getId().equals("826704284003205160")) {
             if (event.getMessageId().equals("1017430875480268820")) {
                 try {
-                    mySQLConnector.Insert_Query("INSERT IGNORE INTO blitz_bot.Event (userId) VALUES ?",
+                    mySQLConnector.Insert_Query("INSERT IGNORE INTO blitz_bot.Event VALUES (?)",
                             new int[]{mySQLConnector.STRING},
                             new String[]{event.getMember().getId()});
                     event.getMember().getUser().openPrivateChannel().complete().sendMessage("이벤트에 정상 참여되었습니다.").queue();
