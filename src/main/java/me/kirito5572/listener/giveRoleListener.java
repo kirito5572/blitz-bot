@@ -30,9 +30,9 @@ public class giveRoleListener extends ListenerAdapter {
     public void onGuildMessageReactionAdd(@NotNull GuildMessageReactionAddEvent event) {
         Guild guild = event.getGuild();
         if (guild.getId().equals("826704284003205160")) {
-            Role role = guild.getRoleById("827207197183180821");
-            Member member = event.getMember();
             if (event.getMessageId().equals(Chatting)) {
+                Role role = guild.getRoleById("827207197183180821");
+                Member member = event.getMember();
                 long banTime = isBan(member);
                 if(banTime != 0) {
                     long time = banTime * 1000;
@@ -79,9 +79,9 @@ public class giveRoleListener extends ListenerAdapter {
     public void onGuildMessageReactionRemove(@NotNull GuildMessageReactionRemoveEvent event) {
         Guild guild = event.getGuild();
         if (guild.getId().equals("826704284003205160")) {
+            if (event.getMessageId().equals(Chatting)) {
             Role role = guild.getRoleById("827207197183180821");
             Member member = event.getMember();
-            if (event.getMessageId().equals(Chatting)) {
                 assert role != null;
                 assert member != null;
                 guild.removeRoleFromMember(member, role).complete();

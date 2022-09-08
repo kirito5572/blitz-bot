@@ -134,6 +134,8 @@ public class App {
         onReadyListener onReadyListener = new onReadyListener(mySqlConnector, sqliteConnector);
         DirectMessageListener directMessageListener = new DirectMessageListener(mySqlConnector);
 
+        EventListener eventListener = new EventListener(mySqlConnector);
+
         MessagePinListener messagePinListener = new MessagePinListener(sqliteConnector);
         giveRoleListener giveRoleListener = new giveRoleListener(sqliteConnector);
         logger.info("JDA start up, Connecting to discord.com");
@@ -141,7 +143,7 @@ public class App {
             JDABuilder.createDefault(openFileData("TOKEN"))
                     .setAutoReconnect(true)
                     .addEventListeners(listener, giveRoleListener, filterListener, logListener,
-                            muteListener, messagePinListener, onReadyListener, directMessageListener)
+                            muteListener, messagePinListener, onReadyListener, directMessageListener, eventListener)
                     .setEnabledIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                     .setChunkingFilter(ChunkingFilter.ALL)
                     .build().awaitReady();
