@@ -21,15 +21,18 @@ public class EventListener extends ListenerAdapter {
         if (guild.getId().equals("826704284003205160")) {
             if (event.getMessageId().equals("1017430875480268820")) {
                 try {
-                    mySQLConnector.Insert_Query("INSERT IGNORE INTO blitz_bot.Event VALUES (?)",
-                            new int[]{mySQLConnector.STRING},
-                            new String[]{event.getMember().getId()});
-                    event.getMember().getUser().openPrivateChannel().complete().sendMessage("이벤트에 정상 참여되었습니다.").queue();
-                } catch (SQLException sqlException) {
-                    event.getMember().getUser().openPrivateChannel().complete().sendMessage("""
-                            이벤트에 정상 참여되지 않았습니다.
-                            이미 이벤트에 참여되었거나 혹은 에러가 발생한 것입니다.
-                            다시 한번 이모지를 클릭하여 보시고, 그래도 되지 않을 경우 문의 부탁드립니다.""").queue();
+                    try {
+                        mySQLConnector.Insert_Query("INSERT IGNORE INTO blitz_bot.Event VALUES (?)",
+                                new int[]{mySQLConnector.STRING},
+                                new String[]{event.getMember().getId()});
+                        event.getMember().getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage("이벤트에 정상 참여되었습니다.")).queue();
+                    } catch (SQLException sqlException) {
+                        event.getMember().getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage("""
+                                이벤트에 정상 참여되지 않았습니다.
+                                이미 이벤트에 참여되었거나 혹은 에러가 발생한 것입니다.
+                                다시 한번 이모지를 클릭하여 보시고, 그래도 되지 않을 경우 문의 부탁드립니다.""")).queue();
+                    }
+                } catch (UnsupportedOperationException ignored) {
                 }
             }
         }
