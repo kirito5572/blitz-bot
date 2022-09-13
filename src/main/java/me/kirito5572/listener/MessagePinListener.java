@@ -28,7 +28,6 @@ public class MessagePinListener extends ListenerAdapter {
         try (ResultSet resultSet = sqliteConnector.Select_Query("SELECT * FROM Pin WHERE channelId=?;", new int[]{sqliteConnector.STRING}, new String[]{event.getChannel().getId()})) {
             if(resultSet.next()) {
                 try {
-                    //TODO beta3
                     event.getChannel().retrieveMessageById(resultSet.getString("messageId")).queue(message -> {
                         MessageEmbed embed = message.getEmbeds().get(0);
                         message.delete().queue();

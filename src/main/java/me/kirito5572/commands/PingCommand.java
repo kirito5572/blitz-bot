@@ -29,7 +29,6 @@ public class PingCommand implements ICommand {
             e.printStackTrace();
             return;
         }
-        //TODO beta3
         long b = event.getJDA().getGatewayPing();
         long mysqlStart = System.currentTimeMillis();
         long mysqlEnd = System.currentTimeMillis();

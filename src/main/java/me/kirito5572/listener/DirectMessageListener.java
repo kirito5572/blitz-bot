@@ -121,7 +121,6 @@ public class DirectMessageListener extends ListenerAdapter {
         Objects.requireNonNull(Objects.requireNonNull(event.getJDA().getGuildById("826704284003205160"))
                 .getCategoryById("1005116641509650482"))
                 .createTextChannel(event.getUserId()).queue(textChannel -> textChannel.sendMessageEmbeds(builder1.build()).queue());
-        //TODO beta3
         event.getChannel().sendMessageEmbeds(builder.build()).queue();
     }
 

@@ -103,7 +103,6 @@ public class EvalCommand implements ICommand {
             Object out = engine.evaluate(script);
 
             event.getChannel().sendMessage(out == null ? "에러 없이 실행이 완료되었습니다." : out.toString()).queue();
-            //TODO beta3
         } catch (Exception e) {
             event.getChannel().sendMessage(e.getMessage()).queue();
         }
