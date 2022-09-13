@@ -31,13 +31,16 @@ public class MessagePinListener extends ListenerAdapter {
                     event.getChannel().retrieveMessageById(resultSet.getString("messageId")).queue(message -> {
                         MessageEmbed embed = message.getEmbeds().get(0);
                         message.delete().queue();
-                        String messageId = event.getChannel().sendMessageEmbeds(embed).complete().getId();
-                        try {
-                            sqliteConnector.Insert_Query("UPDATE Pin SET messageId =? WHERE channelId = ?;", new int[]{sqliteConnector.STRING, sqliteConnector.STRING}, new String[]{messageId, event.getChannel().getId()});
-                        } catch (SQLException sqlException) {
-                            logger.error(sqlException.getMessage());
-                            sqlException.printStackTrace();
-                        }
+                        event.getChannel().sendMessageEmbeds(embed).queue(message1 -> {
+                            try {
+                                sqliteConnector.Insert_Query("UPDATE Pin SET messageId =? WHERE channelId = ?;",
+                                        new int[]{sqliteConnector.STRING, sqliteConnector.STRING},
+                                        new String[]{message1.getId(), event.getChannel().getId()});
+                            } catch (SQLException sqlException) {
+                                logger.error(sqlException.getMessage());
+                                sqlException.printStackTrace();
+                            }
+                        });
                     });
                 } catch (ErrorResponseException e) {
                     sqliteConnector.Insert_Query("DELETE FROM Pin WHERE channelId=?", new int[]{sqliteConnector.STRING}, new String[]{event.getChannel().getId()});
