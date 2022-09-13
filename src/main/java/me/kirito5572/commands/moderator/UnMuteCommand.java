@@ -33,12 +33,14 @@ public class UnMuteCommand implements ICommand {
             return;
         }
         if(args.isEmpty()) {
-            event.getChannel().sendMessage("유저명을 입력해주십시오").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+            event.getChannel().sendMessage("유저명을 입력해주십시오").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+            //TODO beta3
             return;
         }
         List<Member> foundMember = FinderUtil.findMembers(args.get(0), event.getGuild());
         if(foundMember.isEmpty()) {
-            event.getChannel().sendMessage("서버에 그런 유저는 존재하지 않습니다.").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+            event.getChannel().sendMessage("서버에 그런 유저는 존재하지 않습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+            //TODO beta3
             return;
         }
 

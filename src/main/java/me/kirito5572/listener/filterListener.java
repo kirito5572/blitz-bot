@@ -146,9 +146,10 @@ public class filterListener extends ListenerAdapter {
                 return;
             }
             TextChannel textchannel = message.getTextChannel();
-            message.getTextChannel().deleteMessageById(message.getId()).complete();
+            message.getTextChannel().deleteMessageById(message.getId()).queue();
             textchannel.sendMessage(rawMessage).queue();
-            textchannel.sendMessage(member.getAsMention() + ", 금지어 사용에 주의하여주십시오.").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+            textchannel.sendMessage(member.getAsMention() + ", 금지어 사용에 주의하여주십시오.").queue(message1 -> message1.delete().queueAfter(10, TimeUnit.SECONDS));
+            //TODO beta3
         }
     }
 }

@@ -32,12 +32,13 @@ public class MessagePinCommand implements ICommand {
             }
         }
         String channelId = event.getChannel().getId();
-        String messageId;
+        final String[] messageId = new String[1];
         try (ResultSet resultSet = sqliteConnector.Select_Query("SELECT * FROM Pin WHERE channelId=?;", new int[]{sqliteConnector.STRING}, new String[]{channelId})) {
             if(resultSet.next()) {
                 event.getChannel().deleteMessageById(resultSet.getString("messageId")).queue();
                 sqliteConnector.Insert_Query("DELETE FROM Pin WHERE channelId=?;" , new int[]{sqliteConnector.STRING}, new String[]{channelId});
-                event.getChannel().sendMessage("핀이 해제되었습니다.").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+                event.getChannel().sendMessage("핀이 해제되었습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+                //TODO beta3
             } else {
                 EmbedBuilder builder = EmbedUtils.getDefaultEmbed()
                         .setTitle("고정된 메세지")
@@ -49,8 +50,9 @@ public class MessagePinCommand implements ICommand {
                         builder.setImage(attachments.get(0).getUrl());
                     }
                 }
-                messageId = event.getChannel().sendMessageEmbeds(builder.build()).complete().getId();
-                sqliteConnector.Insert_Query("INSERT INTO Pin (channelId, messageId) VALUES (?, ?)", new int[]{sqliteConnector.STRING, sqliteConnector.STRING}, new String[]{channelId, messageId});
+                event.getChannel().sendMessageEmbeds(builder.build()).queue(message -> messageId[0] = message.getId());
+                //TODO beta3
+                sqliteConnector.Insert_Query("INSERT INTO Pin (channelId, messageId) VALUES (?, ?)", new int[]{sqliteConnector.STRING, sqliteConnector.STRING}, new String[]{channelId, messageId[0]});
             }
         } catch (Exception e) {
             e.printStackTrace();

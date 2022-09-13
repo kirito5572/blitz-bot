@@ -42,24 +42,24 @@ public class giveRoleListener extends ListenerAdapter {
                     int mYear = calendar.get(Calendar.YEAR), mMonth = calendar.get(Calendar.MONTH) + 1, mDay = calendar.get(Calendar.DAY_OF_MONTH),
                             mHour = calendar.get(Calendar.HOUR_OF_DAY), mMin = calendar.get(Calendar.MINUTE), mSec = calendar.get(Calendar.SECOND);
                     String Date = mYear + "년 " + mMonth + "월 " + mDay + "일 " + mHour + "시 " + mMin + "분 " + mSec + "초";
-                    member.getUser().openPrivateChannel().complete().sendMessage("현재 쿨타임 중입니다.\n 쿨타임 해제 시간: " + Date).queue();
+                    member.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage("현재 쿨타임 중입니다.\n 쿨타임 해제 시간: " + Date)).queue();
                     return;
                 }
                 String confirmBan = confirmCoolDown(member);
                 if(confirmBan.contains("#")) {
                     switch (confirmBan.split("#")[0]) {
-                        case "true/10" -> member.getUser().openPrivateChannel().complete().sendMessage("10초 동안 " + confirmBan.split("#")[1] + "회 이상 역할 부여를 시도하여 5분간 쿨타임에 걸렸습니다.").queue();
-                        case "true/3600" -> member.getUser().openPrivateChannel().complete().sendMessage("1시간 동안 " + confirmBan.split("#")[1] + "회 이상 역할 부여를 시도하여 6시간동안 쿨타임에 걸렸습니다.").queue();
-                        case "true/86400" -> member.getUser().openPrivateChannel().complete().sendMessage("하루 동안 " + confirmBan.split("#")[1] + "회 이상 역할 부여를 시도하여 7일동안 쿨타임에 걸렸습니다.").queue();
+                        case "true/10" -> member.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage("10초 동안 " + confirmBan.split("#")[1] + "회 이상 역할 부여를 시도하여 5분간 쿨타임에 걸렸습니다.")).queue();
+                        case "true/3600" -> member.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage("1시간 동안 " + confirmBan.split("#")[1] + "회 이상 역할 부여를 시도하여 6시간동안 쿨타임에 걸렸습니다.")).queue();
+                        case "true/86400" -> member.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage("하루 동안 " + confirmBan.split("#")[1] + "회 이상 역할 부여를 시도하여 7일동안 쿨타임에 걸렸습니다.")).queue();
                     }
                 } else {
                     if(confirmBan.contains("ban")) {
                         event.getGuild().ban(member, 0, "역할 스팸으로 밴").queue();
-                        member.getUser().openPrivateChannel().complete().sendMessage("30일 동안 40회 이상 역할 부여를 시도하여 서버에서 밴되었습니다. 관련 문의는 <@284508374924787713> 에게 부탁드립니다.").queue();
+                        member.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage("30일 동안 40회 이상 역할 부여를 시도하여 서버에서 밴되었습니다. 관련 문의는 <@284508374924787713> 에게 부탁드립니다.")).queue();
                     }
                 }
                 assert role != null;
-                guild.addRoleToMember(member, role).complete();
+                guild.addRoleToMember(member, role).submit();
                 boolean result = true;
                 try {
                     result = sqliteConnector.Insert_Query("INSERT INTO JoinDataTable (userId, approveTime, rejectTime) VALUES(?, ? ,?);",
@@ -84,7 +84,7 @@ public class giveRoleListener extends ListenerAdapter {
             Member member = event.getMember();
                 assert role != null;
                 assert member != null;
-                guild.removeRoleFromMember(member, role).complete();
+                guild.removeRoleFromMember(member, role).submit();
                 boolean result = true;
                 try {
                     result = sqliteConnector.Insert_Query("UPDATE JoinDataTable SET rejectTime =? WHERE userId = ? AND rejectTime = ?",

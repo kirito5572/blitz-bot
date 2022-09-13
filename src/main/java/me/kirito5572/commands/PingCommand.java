@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class PingCommand implements ICommand {
     private final MySQLConnector mySqlConnector;
@@ -21,7 +22,14 @@ public class PingCommand implements ICommand {
 
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
-        long a = event.getJDA().getRestPing().complete();
+        long a = 0;
+        try {
+            a = event.getJDA().getRestPing().submit().get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return;
+        }
+        //TODO beta3
         long b = event.getJDA().getGatewayPing();
         long mysqlStart = System.currentTimeMillis();
         long mysqlEnd = System.currentTimeMillis();

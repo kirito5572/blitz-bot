@@ -93,8 +93,8 @@ public class SearchCommand implements ICommand {
                         }
                         PlayerManager manager = PlayerManager.getInstance();
                         message.delete().complete();
-                        message = channel.sendMessage("노래가 추가되었습니다.").complete();
-                        message.delete().queueAfter(5, TimeUnit.SECONDS);
+                        channel.sendMessage("노래가 추가되었습니다.").queue(message1 -> message1.delete().queueAfter(5, TimeUnit.SECONDS));
+                        //TODO beta3
                         manager.loadAndPlay(channel, "https://youtu.be/" + data[a - 1][1]);
                         return;
 
@@ -103,12 +103,11 @@ public class SearchCommand implements ICommand {
                     }
                 }
                 message.delete().complete();
-                message = channel.sendMessage("대기 시간이 초과되어 삭제되었습니다.").complete();
-                message.delete().queueAfter(5,TimeUnit.SECONDS);
-
+                channel.sendMessage("대기 시간이 초과되어 삭제되었습니다.").queue(message1 -> message1.delete().queueAfter(5,TimeUnit.SECONDS));
+                //TODO beta3
             } catch (InterruptedException e) {
-                Message message = channel.sendMessage("ErrorCode : 0x5734 THREAD ERROR").complete();
-                message.delete().queueAfter(7,TimeUnit.SECONDS);
+                channel.sendMessage("ErrorCode : 0x5734 THREAD ERROR").queue(message -> message.delete().queueAfter(7,TimeUnit.SECONDS));
+                //TODO beta3
 
                 StackTraceElement[] eStackTrace = e.getStackTrace();
                 StringBuilder a = new StringBuilder();

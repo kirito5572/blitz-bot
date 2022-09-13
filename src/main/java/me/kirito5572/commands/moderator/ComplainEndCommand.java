@@ -84,9 +84,9 @@ public class ComplainEndCommand implements ICommand {
 
                 event.getTextChannel().delete().queue();
 
-                user.openPrivateChannel().complete().sendMessage("""
+                user.openPrivateChannel().flatMap(channel -> channel.sendMessage("""
                                 채팅이 종료되었습니다. 
-                                추가적인 채팅을 원하실경우 다시 이모지를 추가해주십시오.""").queue();
+                                추가적인 채팅을 원하실경우 다시 이모지를 추가해주십시오.""")).queue();
                 break;
             }
         }

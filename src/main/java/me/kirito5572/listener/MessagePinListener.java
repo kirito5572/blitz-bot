@@ -1,7 +1,6 @@
 package me.kirito5572.listener;
 
 import me.kirito5572.objects.SQLITEConnector;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
@@ -28,17 +27,22 @@ public class MessagePinListener extends ListenerAdapter {
         }
         try (ResultSet resultSet = sqliteConnector.Select_Query("SELECT * FROM Pin WHERE channelId=?;", new int[]{sqliteConnector.STRING}, new String[]{event.getChannel().getId()})) {
             if(resultSet.next()) {
-                Message message;
                 try {
-                    message = event.getChannel().retrieveMessageById(resultSet.getString("messageId")).complete();
+                    //TODO beta3
+                    event.getChannel().retrieveMessageById(resultSet.getString("messageId")).queue(message -> {
+                        MessageEmbed embed = message.getEmbeds().get(0);
+                        message.delete().queue();
+                        String messageId = event.getChannel().sendMessageEmbeds(embed).complete().getId();
+                        try {
+                            sqliteConnector.Insert_Query("UPDATE Pin SET messageId =? WHERE channelId = ?;", new int[]{sqliteConnector.STRING, sqliteConnector.STRING}, new String[]{messageId, event.getChannel().getId()});
+                        } catch (SQLException sqlException) {
+                            logger.error(sqlException.getMessage());
+                            sqlException.printStackTrace();
+                        }
+                    });
                 } catch (ErrorResponseException e) {
                     sqliteConnector.Insert_Query("DELETE FROM Pin WHERE channelId=?", new int[]{sqliteConnector.STRING}, new String[]{event.getChannel().getId()});
-                    return;
                 }
-                MessageEmbed embed = message.getEmbeds().get(0);
-                message.delete().queue();
-                String messageId = event.getChannel().sendMessageEmbeds(embed).complete().getId();
-                sqliteConnector.Insert_Query("UPDATE Pin SET messageId =? WHERE channelId = ?;", new int[]{sqliteConnector.STRING, sqliteConnector.STRING}, new String[]{messageId, event.getChannel().getId()});
             }
         } catch (Exception e) {
             e.printStackTrace();

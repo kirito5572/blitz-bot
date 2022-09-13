@@ -538,7 +538,7 @@ public class CommandManager {
                 }
             };
             EventPackage eventPackage = new EventPackage(event.getTextChannel(), event.getMember(), message);
-            event.reply("").complete().deleteOriginal().queueAfter(1L, TimeUnit.SECONDS);
+            event.reply("").queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(3L, TimeUnit.SECONDS));
             this.commands.get(invoke).handle(args, eventPackage);
         }
     }

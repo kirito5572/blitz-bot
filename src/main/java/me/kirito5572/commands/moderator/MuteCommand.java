@@ -45,25 +45,30 @@ public class MuteCommand implements ICommand {
             return;
         }
         if(args.isEmpty()) {
-            event.getChannel().sendMessage("유저명을 입력해주십시오").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+            event.getChannel().sendMessage("유저명을 입력해주십시오").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+            //TODO beta3
             return;
         }
         List<Member> foundMember = FinderUtil.findMembers(args.get(0), event.getGuild());
         if(foundMember.isEmpty()) {
-            event.getChannel().sendMessage("서버에 그런 유저는 존재하지 않습니다.").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+            event.getChannel().sendMessage("서버에 그런 유저는 존재하지 않습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+            //TODO beta3
             return;
         }
         if(args.size() == 1) {
-            event.getChannel().sendMessage("시간을 입력해주십시오").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+            event.getChannel().sendMessage("시간을 입력해주십시오").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+            //TODO beta3
             return;
         }
         Calendar return_time = time_convert(args.get(1));
         if(return_time == null) {
-            event.getChannel().sendMessage("입력된 시간값을 처리할 수 없습니다.").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+            event.getChannel().sendMessage("입력된 시간값을 처리할 수 없습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+            //TODO beta3
             return;
         }
         if(args.size() == 2) {
-            event.getChannel().sendMessage("사유를 입력하여 주십시오.").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+            event.getChannel().sendMessage("사유를 입력하여 주십시오.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+            //TODO beta3
             return;
         }
         StringBuilder stringBuilder = new StringBuilder();

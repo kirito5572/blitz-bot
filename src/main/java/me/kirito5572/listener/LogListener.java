@@ -191,16 +191,23 @@ public class LogListener extends ListenerAdapter {
                 embedBuilder.addField("데이터 없음", "데이터 없음", false);
             }
             embedBuilder.addField("삭제 시간", timeFormat.format(time), false);
-            Objects.requireNonNull(event.getGuild().getTextChannelById("829023428019355688")).sendMessageEmbeds(embedBuilder.build()).queue();
             if(isFile) {
                 try {
                     File file = S3DownloadObject(event.getMessageId() + "_" + 1);
-                    Objects.requireNonNull(event.getGuild().getTextChannelById("829023428019355688")).sendFile(file).queue();
+                    Objects.requireNonNull(event.getGuild().getTextChannelById("829023428019355688")).sendFile(file).queue(message ->
+                        embedBuilder.setImage("https://cdn.discordapp.com/attachments/829023428019355688/" +
+                                message.getId() + "/" + file.getName()));
+                    //TODO https://cdn.discordapp.com/attachments/1007289157409849446/1019237521466605709/unknown.png
+                    //이거 오랫동안 살아있는지 확인해보기 2022.09.13 업로드 후 삭제
+                } catch (AmazonS3Exception s3Exception) {
+                    logger.info("객체에 없는 파일을 요청했습니다.");
+                    embedBuilder.appendDescription("이미지가 포함된 글이나 이미지가 존재하지 않습니다(30일 이상 경과 or 업로드 안된 파일)");
                 } catch (IOException e) {
                     logger.error(e.getMessage());
                     e.printStackTrace();
                 }
             }
+            Objects.requireNonNull(event.getGuild().getTextChannelById("829023428019355688")).sendMessageEmbeds(embedBuilder.build()).queue();
             mySqlConnector.Insert_Query("DELETE FROM blitz_bot.ChattingDataTable WHERE messageId=?", new int[] {mySqlConnector.STRING}, new String[] {event.getMessageId()});
 
         } catch (SQLException e) {
