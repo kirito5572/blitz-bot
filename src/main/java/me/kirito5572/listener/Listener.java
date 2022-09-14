@@ -36,7 +36,7 @@ public class Listener extends ListenerAdapter {
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
         if(event.getMessage().getContentRaw().startsWith("!setup") && Objects.requireNonNull(event.getMember()).getId().equals("284508374924787713")) {
             try {
-                manager.getCommands().forEach(iCommand -> event.getGuild().upsertCommand(iCommand.getInvoke(), iCommand.getSmallHelp()).queue());
+                manager.getCommands().forEach(iCommand -> event.getGuild().upsertCommand(iCommand.getInvoke()[0], iCommand.getSmallHelp()).queue());
             } catch (ErrorResponseException e) {
                 event.getChannel().sendMessage(e.getMessage()).queue();
             } catch (Exception e) {

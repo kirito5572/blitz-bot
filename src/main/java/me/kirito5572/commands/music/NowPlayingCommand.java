@@ -3,7 +3,6 @@ package me.kirito5572.commands.music;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import me.duncte123.botcommons.messaging.EmbedUtils;
-import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
 import me.kirito5572.objects.EventPackage;
@@ -55,15 +54,13 @@ public class NowPlayingCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "현재 재생중인 음악은?\n" +
-                "단축어: np\n" +
-                "사용법: `" + App.getPREFIX() + getInvoke() + "`";
+        return "현재 재생중인 음악목록을 알려줍니다.";
     }
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "nowplaying";
+    public String[] getInvoke() {
+        return new String[] {"재생중","nowplaying", "np"};
     }
 
     /** @noinspection unused*/

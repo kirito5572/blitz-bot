@@ -41,8 +41,8 @@ public class FilterWordAddCommand implements ICommand {
     }
 
     @Override
-    public String getInvoke() {
-        return "단어추가";
+    public String[] getInvoke() {
+        return new String[] {"단어추가", "filteradd", "fa"};
     }
 
     @Override

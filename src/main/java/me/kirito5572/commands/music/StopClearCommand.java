@@ -1,6 +1,5 @@
 package me.kirito5572.commands.music;
 
-import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
 import me.kirito5572.objects.EventPackage;
@@ -46,15 +45,13 @@ public class StopClearCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "노래를 정지하고 재생목록을 초기화 하며 봇이 나갑니다\n" +
-                "단축어: sc" +
-                "사용법:`" + App.getPREFIX() + getInvoke() + "`";
+        return "노래를 정지하고 재생목록을 초기화 하며 봇이 나갑니다";
     }
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "stopclear";
+    public String[] getInvoke() {
+        return new String[] {"초기화","stopclear","sc"};
     }
 
     /** @noinspection unused*/

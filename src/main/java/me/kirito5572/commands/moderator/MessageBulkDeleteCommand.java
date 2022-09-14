@@ -115,8 +115,8 @@ public class MessageBulkDeleteCommand implements ICommand {
     }
 
     @Override
-    public String getInvoke() {
-        return "청소";
+    public String[] getInvoke() {
+        return new String[]{"청소", "delete", "d"};
     }
 
     @Override

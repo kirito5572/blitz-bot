@@ -2,7 +2,6 @@ package me.kirito5572.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
 import me.kirito5572.objects.EventPackage;
@@ -154,16 +153,13 @@ public class PlayCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "URL의 노래를 재생합니다\n" +
-                "단축어: p\n" +
-                "사용법 : '" + App.getPREFIX() + getInvoke() + "'[URL]\n" +
-                "사용가능 URL: youtube, soundcloud, bandcamp, youtube music";
+        return "URL의 노래를 재생합니다";
     }
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "play";
+    public String[] getInvoke() {
+        return new String[] {"재생","play","p"};
     }
 
     /** @noinspection unused*/

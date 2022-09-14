@@ -117,8 +117,8 @@ public class SQLiteQueryCommand implements ICommand {
     }
 
     @Override
-    public String getInvoke() {
-        return "sqlite";
+    public String[] getInvoke() {
+        return new String[] {"sqlite"};
     }
 
     @Override

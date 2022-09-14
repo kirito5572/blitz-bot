@@ -61,8 +61,8 @@ public class UnMuteCommand implements ICommand {
     }
 
     @Override
-    public String getInvoke() {
-        return "제재해제";
+    public String[] getInvoke() {
+        return new String[]{"제재해제", "unmute", "um"};
     }
 
     @Override

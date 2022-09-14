@@ -1,6 +1,5 @@
 package me.kirito5572.commands.music;
 
-import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
 import me.kirito5572.objects.EventPackage;
@@ -50,14 +49,13 @@ public class leaveCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "노래를 정지하고 나갑니다" +
-                "사용법 : '" + App.getPREFIX() + getInvoke() + "'";
+        return "노래를 정지하고 나갑니다";
     }
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "leave";
+    public String[] getInvoke() {
+        return new String[] {"퇴장","leave", "l"};
     }
 
     /** @noinspection unused*/

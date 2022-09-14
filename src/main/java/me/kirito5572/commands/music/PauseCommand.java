@@ -1,7 +1,6 @@
 package me.kirito5572.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
 import me.kirito5572.objects.EventPackage;
@@ -35,14 +34,13 @@ public class PauseCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "재생중인 노래를 일시정지 합니다." +
-                "사용법 `" + App.getPREFIX() + getInvoke() + "`";
+        return "재생중인 노래를 일시정지 합니다.";
     }
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "pause";
+    public String[] getInvoke() {
+        return new String[] {"일시정지", "pause"};
     }
 
     /** @noinspection unused*/

@@ -72,8 +72,8 @@ public class MessagePinCommand implements ICommand {
     }
 
     @Override
-    public String getInvoke() {
-        return "핀";
+    public String[] getInvoke() {
+        return new String[]{"핀", "pin"};
     }
 
     @Override

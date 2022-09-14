@@ -66,8 +66,8 @@ public class UserInfoCommand implements ICommand {
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "유저정보";
+    public String[] getInvoke() {
+        return new String[]{"유저정보", "userinfo", "ui"};
     }
 
     @NotNull

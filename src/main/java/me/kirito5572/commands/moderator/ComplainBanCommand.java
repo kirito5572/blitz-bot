@@ -76,8 +76,8 @@ public class ComplainBanCommand implements ICommand {
     }
 
     @Override
-    public String getInvoke() {
-        return "신고차단";
+    public String[] getInvoke() {
+        return new String[] {"신고차단", "complainban", "cb"};
     }
 
     @Override

@@ -41,8 +41,8 @@ public class FilterWordRemoveCommand implements ICommand {
     }
 
     @Override
-    public String getInvoke() {
-        return "단어삭제";
+    public String[] getInvoke() {
+        return new String[]{"단어삭제", "filterremove", "fr"};
     }
 
     @Override

@@ -98,8 +98,8 @@ public class ComplainEndCommand implements ICommand {
     }
 
     @Override
-    public String getInvoke() {
-        return "종료";
+    public String[] getInvoke() {
+        return new String[] {"종료", "exit"};
     }
 
     @Override

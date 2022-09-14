@@ -1,7 +1,6 @@
 package me.kirito5572.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
 import me.kirito5572.music.TrackScheduler;
@@ -71,14 +70,13 @@ public class SkipCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "이 노래를 그만 재생합니다." +
-                "사용법: `" + App.getPREFIX() + getInvoke() + "`";
+        return "이 노래를 그만 재생합니다";
     }
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "skip";
+    public String[] getInvoke() {
+        return new String[] {"스킵","skip","s"};
     }
 
     /** @noinspection unused*/

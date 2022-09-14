@@ -103,14 +103,13 @@ public class JoinCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "노래 틀도록 하기 위해 거치는 과정" +
-                "사용법 : '" + App.getPREFIX() + getInvoke() + "'";
+        return "음성 채널에 봇이 들어옵니다.";
     }
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "join";
+    public String[] getInvoke() {
+        return new String[] {"입장", "join", "j"};
     }
 
     /** @noinspection unused*/

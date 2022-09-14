@@ -106,8 +106,8 @@ public class MuteCommand implements ICommand {
     }
 
     @Override
-    public String getInvoke() {
-        return "제재";
+    public String[] getInvoke() {
+        return new String[]{"제재", "mute", "m"};
     }
 
     @Override

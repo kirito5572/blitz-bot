@@ -96,14 +96,13 @@ public class QueueCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "앞으로 재생될 남은 노래 목록\n" +
-                "사용법 `" + App.getPREFIX() + getInvoke() + "`";
+        return "앞으로 재생될 남은 노래 목록";
     }
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "queue";
+    public String[] getInvoke() {
+        return new String[] {"재생목록", "queue", "q"};
     }
 
     /** @noinspection unused*/

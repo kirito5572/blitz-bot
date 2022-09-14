@@ -115,8 +115,8 @@ public class EvalCommand implements ICommand {
     }
 
     @Override
-    public String getInvoke() {
-        return "eval";
+    public String[] getInvoke() {
+        return new String[] {"eval"};
     }
 
     @Override

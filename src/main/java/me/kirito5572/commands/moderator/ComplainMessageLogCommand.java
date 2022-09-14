@@ -114,8 +114,8 @@ public class ComplainMessageLogCommand implements ICommand {
     }
 
     @Override
-    public String getInvoke() {
-        return "로그";
+    public String[] getInvoke() {
+        return new String[] {"로그", "log"};
     }
 
     @Override

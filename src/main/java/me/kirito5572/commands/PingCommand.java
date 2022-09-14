@@ -78,8 +78,8 @@ public class PingCommand implements ICommand {
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "핑";
+    public String[] getInvoke() {
+        return new String[]{"핑", "ping"};
     }
 
     @NotNull

@@ -1,6 +1,5 @@
 package me.kirito5572.commands.music;
 
-import me.kirito5572.App;
 import me.kirito5572.music.PlayerManager;
 import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
@@ -61,15 +60,13 @@ public class VolumeCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "노래 소리 조절\n" +
-                "단축어: v\n"+
-                "사용법: `" + App.getPREFIX() + getInvoke() + "`(숫자)";
+        return "노래 소리 조절";
     }
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "vol";
+    public String[] getInvoke() {
+        return new String[] {"볼륨", "volume", "vol"};
     }
 
     /** @noinspection unused*/

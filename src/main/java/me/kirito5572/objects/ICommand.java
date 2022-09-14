@@ -9,7 +9,7 @@ public interface ICommand {
 
     String getHelp();
 
-    String getInvoke();
+    String[] getInvoke();
 
     String getSmallHelp();
 

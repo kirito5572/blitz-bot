@@ -1,7 +1,6 @@
 package me.kirito5572.commands.music;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import me.kirito5572.App;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
 import me.kirito5572.objects.EventPackage;
@@ -61,17 +60,13 @@ public class QueueDetectCommand implements ICommand {
     @NotNull
     @Override
     public String getHelp() {
-        return "재생목록 앞에서 부터\n" +
-                "숫자만큼 노래를 없앱니다.\n" +
-                "(숫자 미 입력시 전체 삭제)\n" +
-                "단축어: qd\n" +
-                "사용법: '" + App.getPREFIX() + getInvoke() + "'(숫자)";
+        return "재생목록을 정리합니다.";
     }
 
     @NotNull
     @Override
-    public String getInvoke() {
-        return "queuedel";
+    public String[] getInvoke() {
+        return new String[] {"재생목록삭제", "queuedelete", "qd"};
     }
 
     /** @noinspection unused*/
