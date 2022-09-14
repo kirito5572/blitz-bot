@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /** @noinspection unused*/
 public class QueueMixCommand implements ICommand {
@@ -23,7 +24,7 @@ public class QueueMixCommand implements ICommand {
         Collections.shuffle(queueList, random);
         queue.clear();
         queue.addAll(queueList);
-        event.getTextChannel().sendMessage("재생 목록이 셔플되었습니다.").queue();
+        event.getTextChannel().sendMessage("재생 목록이 셔플되었습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
     }
 
     /** @noinspection unused*/

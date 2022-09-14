@@ -9,7 +9,10 @@ import me.kirito5572.objects.ICommand;
 import me.kirito5572.objects.getYoutubeSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -47,72 +50,67 @@ public class SearchCommand implements ICommand {
                 channel.sendMessage("먼저 보이스 채널에 들어오세요").queue();
                 return;
             }
-            try {
-                String name = String.join("+", args);
-                String[][] data = getYoutubeSearch.Search(name);
-                if(data == null) {
-                    event.getChannel().sendMessage("youtube 검색에 문제가 발생했습니다").queue();
-                    return;
-                }
-                StringBuilder builder = new StringBuilder();
-                for(int i = 0; i < 10; i++) {
-                    builder.append(i + 1).append(". ").append(data[i][0]).append("\n");
-                }
-                EmbedBuilder builder1 = EmbedUtils.getDefaultEmbed()
-                        .setTitle("검색 결과")
-                        .setDescription(builder.toString());
+            String name = String.join("+", args);
+            String[][] data = getYoutubeSearch.Search(name);
+            if(data == null) {
+                event.getChannel().sendMessage("youtube 검색에 문제가 발생했습니다").queue();
+                return;
+            }
+            StringBuilder builder = new StringBuilder();
+            for(int i = 0; i < 10; i++) {
+                builder.append(i + 1).append(". ").append(data[i][0]).append("\n");
+            }
+            EmbedBuilder builder1 = EmbedUtils.getDefaultEmbed()
+                    .setTitle("검색 결과")
+                    .setDescription(builder.toString());
 
-                Message message = channel.sendMessageEmbeds(builder1.build()).complete();
-
-                for(int i = 0; i < 11; i++) {
-                    Thread.sleep(1000);
+            channel.sendMessageEmbeds(builder1.build()).queue(message -> {
+                for (int i = 0; i < 11; i++) {
                     try {
-                        int a = Integer.parseInt(event.getChannel().retrieveMessageById(event.getChannel().getLatestMessageId()).complete().getContentRaw());
-                        if(!audioManager.isConnected()) {
-                            audioManager.openAudioConnection(voiceChannel);
-                            Thread thread = new Thread(() -> {
-                                AudioManager audioManager1 = event.getGuild().getAudioManager();
-                                PlayerManager playerManager = PlayerManager.getInstance();
-                                GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
-                                while(true) {
-                                    try {
-                                        this.wait(1000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        event.getChannel().retrieveMessageById(event.getChannel().getLatestMessageId()).queue(lambdaMessage1 -> {
+                            int a = Integer.parseInt(lambdaMessage1.getContentRaw());
+                            if (!audioManager.isConnected()) {
+                                audioManager.openAudioConnection(voiceChannel);
+                                Thread thread = new Thread(() -> {
+                                    AudioManager audioManager1 = event.getGuild().getAudioManager();
+                                    PlayerManager playerManager = PlayerManager.getInstance();
+                                    GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
+                                    while (true) {
+                                        try {
+                                            this.wait(1000);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        if (!audioManager1.isConnected()) {
+                                            break;
+                                        }
+                                        if (!musicManager.player.isPaused()) {
+                                            assert voiceChannel != null;
+                                            JoinCommand.autoPaused(event, audioManager, voiceChannel, musicManager);
+                                        }
                                     }
-                                    if(!audioManager1.isConnected()) {
-                                        break;
-                                    }
-                                    if(!musicManager.player.isPaused()) {
-                                        assert voiceChannel != null;
-                                        JoinCommand.autoPaused(event, audioManager, voiceChannel, musicManager);
-                                    }
-                                }
-                            });
-                            thread.start();
-                        }
-                        PlayerManager manager = PlayerManager.getInstance();
-                        message.delete().complete();
-                        channel.sendMessage("노래가 추가되었습니다.").queue(message1 -> message1.delete().queueAfter(5, TimeUnit.SECONDS));
-                        manager.loadAndPlay(channel, "https://youtu.be/" + data[a - 1][1]);
+                                });
+                                thread.start();
+                            }
+                            PlayerManager manager = PlayerManager.getInstance();
+                            message.delete().queue();
+                            channel.sendMessage("노래가 추가되었습니다.").queue(message1 -> message1.delete().queueAfter(5, TimeUnit.SECONDS));
+                            manager.loadAndPlay(channel, "https://youtu.be/" + data[a - 1][1]);
+                        });
                         return;
 
                     } catch (Exception ignored) {
 
                     }
                 }
-                message.delete().complete();
+                message.delete().queue();
                 channel.sendMessage("대기 시간이 초과되어 삭제되었습니다.").queue(message1 -> message1.delete().queueAfter(5,TimeUnit.SECONDS));
-            } catch (InterruptedException e) {
-                channel.sendMessage("ErrorCode : 0x5734 THREAD ERROR").queue(message -> message.delete().queueAfter(7,TimeUnit.SECONDS));
-
-                StackTraceElement[] eStackTrace = e.getStackTrace();
-                StringBuilder a = new StringBuilder();
-                for (StackTraceElement stackTraceElement : eStackTrace) {
-                    a.append(stackTraceElement).append("\n");
-                }
-                logger.warn(a.toString());
-            }
+            });
         }).start();
     }
 

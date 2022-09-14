@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /** @noinspection unused*/
 public class StopCommand implements ICommand {
@@ -23,7 +24,7 @@ public class StopCommand implements ICommand {
         GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
 
         if(!audioManager.isConnected()) {
-            event.getChannel().sendMessage("음성 채널에 연결되어있지 않아 사용이 불가능합니다.").queue();
+            event.getChannel().sendMessage("음성 채널에 연결되어있지 않아 사용이 불가능합니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
 
             return;
         }
@@ -33,11 +34,11 @@ public class StopCommand implements ICommand {
 
         Member selfMember = event.getGuild().getSelfMember();
         if(!selfMember.hasPermission(Permission.VOICE_CONNECT)) {
-            event.getChannel().sendMessage("보이스채널 권한이 없습니다..").queue();
+            event.getChannel().sendMessage("보이스채널 권한이 없습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
 
-        event.getChannel().sendMessage("노래 재생을 멈춥니다.").queue();
+        event.getChannel().sendMessage("노래 재생을 멈춥니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
 
     }
 

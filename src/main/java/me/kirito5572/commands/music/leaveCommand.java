@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /** @noinspection unused*/
 public class leaveCommand implements ICommand {
@@ -26,27 +27,23 @@ public class leaveCommand implements ICommand {
         GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
         Member selfMember = event.getGuild().getSelfMember();
         if(!selfMember.hasPermission(Permission.VOICE_CONNECT)) {
-            channel.sendMessage("보이스채널 권한이 없습니다..").queue();
+            channel.sendMessage("보이스채널 권한이 없습니다..").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
         VoiceChannel voiceChannel = audioManager.getConnectedChannel();
-        if(voiceChannel == null) {
-            channel.sendMessage("봇이 보이스 채널에 있지 않습니다.").queue();
-            return;
-        }
-        if(!audioManager.isConnected()) {
-            channel.sendMessage("나갈 보이스 채널이 없습니다.").queue();
+        if((voiceChannel == null) || (!audioManager.isConnected())) {
+            channel.sendMessage("봇이 보이스 채널에 있지 않습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
         if(!voiceChannel.getMembers().contains(event.getMember())) {
-            channel.sendMessage("봇과 같은 보이스 채널에 있어야 합니다.").queue();
+            channel.sendMessage("봇과 같은 보이스 채널에 있어야 합니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
 
         audioManager.closeAudioConnection();
         musicManager.scheduler.getQueue().clear();
 
-        channel.sendMessage("보이스채널을 떠납니다.").queue();
+        channel.sendMessage("보이스채널을 떠납니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
     }
 
     /** @noinspection unused*/

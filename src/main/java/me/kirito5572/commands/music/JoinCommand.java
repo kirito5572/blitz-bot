@@ -28,7 +28,7 @@ public class JoinCommand implements ICommand {
         AudioManager audioManager = Objects.requireNonNull(event.getGuild()).getAudioManager();
 
         if(audioManager.isConnected()) {
-            channel.sendMessage("이미 보이스채널에 들어왔습니다.").queue();
+            channel.sendMessage("이미 보이스채널에 들어왔습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
 
@@ -36,7 +36,7 @@ public class JoinCommand implements ICommand {
 
         assert memberVoiceState != null;
         if(!memberVoiceState.inVoiceChannel()) {
-            channel.sendMessage("먼저 보이스 채널에 들어오세요").queue();
+            channel.sendMessage("먼저 보이스 채널에 들어오세요").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
 
@@ -45,12 +45,12 @@ public class JoinCommand implements ICommand {
 
         assert voiceChannel != null;
         if(!selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT)) {
-            channel.sendMessageFormat("%s 보이스 채널에 들어올 권한이 없습니다.",voiceChannel).queue();
+            channel.sendMessageFormat("%s 보이스 채널에 들어올 권한이 없습니다.",voiceChannel).queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
 
         audioManager.openAudioConnection(voiceChannel);
-        channel.sendMessage("보이스채널에 들어왔습니다.").queue();
+        channel.sendMessage("보이스채널에 들어왔습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
         Thread thread = new Thread(() -> {
             AudioManager audioManager1 = event.getGuild().getAudioManager();
             PlayerManager playerManager = PlayerManager.getInstance();

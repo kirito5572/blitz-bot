@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /** @noinspection unused*/
 public class SkipCommand implements ICommand {
@@ -28,17 +29,17 @@ public class SkipCommand implements ICommand {
 
         Member selfMember = event.getGuild().getSelfMember();
         if(!selfMember.hasPermission(Permission.VOICE_CONNECT)) {
-            channel.sendMessage("보이스채널 권한이 없습니다..").queue();
+            channel.sendMessage("보이스채널 권한이 없습니다..").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
 
         if (player.getPlayingTrack() == null) {
-            channel.sendMessage("노래를 재생하고 있지 않습니다.").queue();
+            channel.sendMessage("노래를 재생하고 있지 않습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
 
             return;
         }
         if (scheduler.getQueue().size() < 2) {
-            channel.sendMessage("스킵할 노래가 존재하지 않습니다.").queue();
+            channel.sendMessage("스킵할 노래가 존재하지 않습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
 
             return;
         }
@@ -63,7 +64,7 @@ public class SkipCommand implements ICommand {
             }
         }
 
-        channel.sendMessage("다음 노래로 넘깁니다.").queue();
+        channel.sendMessage("다음 노래로 넘깁니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
     }
 
     /** @noinspection unused*/

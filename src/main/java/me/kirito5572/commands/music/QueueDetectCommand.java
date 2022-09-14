@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /** @noinspection unused*/
 public class QueueDetectCommand implements ICommand {
@@ -29,28 +30,29 @@ public class QueueDetectCommand implements ICommand {
             String joined = String.join("", args);
             Member selfMember = event.getGuild().getSelfMember();
             if (!selfMember.hasPermission(Permission.VOICE_CONNECT)) {
-                channel.sendMessage("보이스채널 권한이 없습니다..").queue();
+                channel.sendMessage("보이스채널 권한이 없습니다..").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
                 return;
             }
 
             if (queue.isEmpty()) {
-                channel.sendMessage("재생목록이 비었습니다.").queue();
+                channel.sendMessage("재생목록이 비었습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
 
                 return;
             }
 
             System.out.println(queue.size());
-            String a = channel.sendMessage("재생목록을 비우는 중입니다.").complete().getId();
-
-            if (joined.equals("")) {
-                musicManager.scheduler.getQueue().clear();
-                channel.editMessageById(a, "재생목록을 초기화 했습니다.").queue();
-            } else {
-                for (int i = 0; i < Integer.parseInt(joined); i++) {
-                    musicManager.scheduler.nextTrack();
-                    channel.editMessageById(a, "재생목록에서" + joined + "개의 노래를 삭제했습니다.").queue();
+            channel.sendMessage("재생목록을 비우는 중입니다.").queue(message -> {
+                String a = message.getId();
+                if (joined.equals("")) {
+                    musicManager.scheduler.getQueue().clear();
+                    channel.editMessageById(a, "재생목록을 초기화 했습니다.").queue(message1 -> message1.delete().queueAfter(7, TimeUnit.SECONDS));
+                } else {
+                    for (int i = 0; i < Integer.parseInt(joined); i++) {
+                        musicManager.scheduler.nextTrack();
+                        channel.editMessageById(a, "재생목록에서" + joined + "개의 노래를 삭제했습니다.").queue(message1 -> message1.delete().queueAfter(7, TimeUnit.SECONDS));
+                    }
                 }
-            }
+            });
 
         }).start();
     }

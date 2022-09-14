@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /** @noinspection unused*/
 public class PlayCommand implements ICommand {
@@ -36,7 +37,7 @@ public class PlayCommand implements ICommand {
         GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
         AudioPlayer player = musicManager.player;
         if(!memberVoiceState.inVoiceChannel()) {
-            channel.sendMessage("먼저 보이스 채널에 들어오세요").queue();
+            channel.sendMessage("먼저 보이스 채널에 들어오세요").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
         if(!audioManager.isConnected()) {
@@ -45,7 +46,7 @@ public class PlayCommand implements ICommand {
 
             assert voiceChannel != null;
             if(!selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT)) {
-                channel.sendMessageFormat("%s 채널에 들어올 권한이 없습니다.",voiceChannel).queue();
+                channel.sendMessageFormat("%s 채널에 들어올 권한이 없습니다.",voiceChannel).queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
                 return;
             }
 
@@ -53,13 +54,13 @@ public class PlayCommand implements ICommand {
         if(player.isPaused()) {
             if(player.getPlayingTrack() != null) {
                 player.setPaused(false);
-                channel.sendMessage("일시정지 된 노래가 다시 재생됩니다.").queue();
+                channel.sendMessage("일시정지 된 노래가 다시 재생됩니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
 
                 return;
             } else {
                 player.setPaused(false);
                 if(args.isEmpty()) {
-                    channel.sendMessage("URL을 입력헤주세요").queue();
+                    channel.sendMessage("URL을 입력헤주세요").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
 
                     return;
                 }
@@ -69,8 +70,13 @@ public class PlayCommand implements ICommand {
         String input = String.join(" ", args);
 
         if(!isUrl(input) && !input.startsWith("ytsearch:")) {
-            channel.sendMessage("정확한 유튜브, 유튜브 뮤직, soundcloud 또는 bandcamp의 링크를 보내주세요.").queue();
-
+            channel.sendMessage("""
+                    아래 적혀져있는 플랫폼만 지원합니다..
+                    Youtube / Youtube music
+                    SoundCloud / Bandcamp
+                    Vimeo / Twitch(stream only)
+                    HTTP URL(지원 확장자: MP3, FLAC, WAV, MP4(with AAC), OGG/AAC streams)
+                    """).queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
         if(input.contains("music.youtube.com")) {
@@ -96,7 +102,7 @@ public class PlayCommand implements ICommand {
                     if(!musicManager1.player.isPaused()) {
                         assert voiceChannel != null;
                         if (voiceChannel.getMembers().size() < 2) {
-                            event.getChannel().sendMessage("사람이 아무도 없어, 노래가 일시 정지 되었습니다.").queue();
+                            event.getChannel().sendMessage("사람이 아무도 없어, 노래가 일시 정지 되었습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
                             musicManager1.player.setPaused(true);
                             new Thread(() -> {
                                 int i = 0;
@@ -112,7 +118,7 @@ public class PlayCommand implements ICommand {
                                         break;
                                     }
                                     if(i > 120) {
-                                        event.getChannel().sendMessage("오랫동안 사람이 아무도 없어, 노래 재생이 정지 되었습니다.").queue();
+                                        event.getChannel().sendMessage("오랫동안 사람이 아무도 없어, 노래 재생이 정지 되었습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
                                         audioManager.closeAudioConnection();
                                         break;
                                     }

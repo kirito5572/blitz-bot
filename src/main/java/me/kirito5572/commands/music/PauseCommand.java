@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /** @noinspection unused*/
 public class PauseCommand implements ICommand {
@@ -24,9 +25,9 @@ public class PauseCommand implements ICommand {
 
         if(player.getPlayingTrack() != null) {
             player.setPaused(true);
-            channel.sendMessage("일시 정지 되었습니다.").queue();
+            channel.sendMessage("일시 정지 되었습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
         } else {
-            channel.sendMessage("노래가 재생중이 아닙니다.").queue();
+            channel.sendMessage("노래가 재생중이 아닙니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
         }
     }
 

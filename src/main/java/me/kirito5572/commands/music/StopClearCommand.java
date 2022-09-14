@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /** @noinspection unused*/
 public class StopClearCommand implements ICommand {
@@ -22,7 +23,7 @@ public class StopClearCommand implements ICommand {
         AudioManager audioManager = Objects.requireNonNull(event.getGuild()).getAudioManager();
         GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
         if(!audioManager.isConnected()) {
-            event.getChannel().sendMessage("음성 채널에 연결되어있지 않아 사용이 불가능합니다.").queue();
+            event.getChannel().sendMessage("음성 채널에 연결되어있지 않아 사용이 불가능합니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
 
             return;
         }
@@ -33,11 +34,11 @@ public class StopClearCommand implements ICommand {
 
         Member selfMember = event.getGuild().getSelfMember();
         if(!selfMember.hasPermission(Permission.VOICE_CONNECT)) {
-            event.getChannel().sendMessage("보이스채널 권한이 없습니다.").queue();
+            event.getChannel().sendMessage("보이스채널 권한이 없습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
 
-        event.getChannel().sendMessage("노래 재생을 멈추고 재생목록을 비웁니다.").queue();
+        event.getChannel().sendMessage("플레이어를 초기화 합니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
 
     }
 

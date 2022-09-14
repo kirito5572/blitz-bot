@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /** @noinspection unused*/
 public class QueueCommand implements ICommand {
@@ -38,7 +39,7 @@ public class QueueCommand implements ICommand {
 
         if(queue.isEmpty()) {
             if(player.getPlayingTrack() == null) {
-                channel.sendMessage("재생목록이 비었습니다.").queue();
+                channel.sendMessage("재생목록이 비었습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
 
                 return;
             }

@@ -29,7 +29,7 @@ public class NowPlayingCommand implements ICommand {
 
         Member selfMember = event.getGuild().getSelfMember();
         if(!selfMember.hasPermission(Permission.VOICE_CONNECT)) {
-            channel.sendMessage("보이스채널 권한이 없습니다..").queue();
+            channel.sendMessage("봇에게 보이스 채널 입장 권한을 부여해 주세요.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
 
