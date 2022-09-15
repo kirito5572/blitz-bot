@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 public class CommandManager {
     private final Logger logger = LoggerFactory.getLogger(CommandManager.class);
 
-    private final Map<String[], ICommand> commands = new HashMap<>();
+    private final Map<String, ICommand> commands = new HashMap<>();
 
     public CommandManager(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector, FilterSystem filterSystem) {
         addCommand(new HelpCommand(this));
@@ -112,10 +112,12 @@ public class CommandManager {
      */
 
     private void addCommand(@NotNull ICommand command) {
-        if (!commands.containsKey(command.getInvoke())) {
-            commands.put(command.getInvoke(), command);
+        for(String invoke : command.getInvoke()) {
+            if (!commands.containsKey(invoke)) {
+                commands.put(invoke, command);
+            }
+            sleep();
         }
-        sleep();
     }
 
     /**
