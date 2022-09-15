@@ -123,11 +123,11 @@ public class App {
             logger.info("program version: " + getVersion());
         } else if(getVersion().contains("beta")) {
             appMode = APP_BETA;
-            PREFIX = "&";
+            PREFIX = "#";
             logger.warn("beta program version: " + getVersion());
         } else if(getVersion().contains("alpha")) {
             appMode = APP_ALPHA;
-            PREFIX = "&";
+            PREFIX = "#";
             logger.error("alpha program version: " + getVersion());
         } else {
             logger.error("unknown program version, shutdown program");
