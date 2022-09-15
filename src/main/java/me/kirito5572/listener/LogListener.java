@@ -55,6 +55,9 @@ public class LogListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
         boolean isFile = false;
 
         Message message = event.getMessage();
@@ -120,6 +123,9 @@ public class LogListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageUpdate(@NotNull GuildMessageUpdateEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
         if(event.getAuthor().isBot()) {
             return;
         }
@@ -162,6 +168,9 @@ public class LogListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageDelete(@NotNull GuildMessageDeleteEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
         EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
         Date time = new Date();
         try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ChattingDataTable WHERE messageId=?;",
@@ -218,6 +227,9 @@ public class LogListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
         EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy/MM/dd a hh:mm:ss");
@@ -231,6 +243,9 @@ public class LogListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
         EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
         Date date = new Date();
         Member member = event.getMember();
@@ -250,6 +265,9 @@ public class LogListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberRoleAdd(@NotNull GuildMemberRoleAddEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
         Date date = new Date();
         Member member = event.getMember();
         List<Role> roleList = event.getRoles();
@@ -269,6 +287,9 @@ public class LogListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberRoleRemove(@NotNull GuildMemberRoleRemoveEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
         Date date = new Date();
         Member member = event.getMember();
         List<Role> roleList = event.getRoles();

@@ -1,5 +1,6 @@
 package me.kirito5572.listener;
 
+import me.kirito5572.App;
 import me.kirito5572.objects.CommandManager;
 import me.kirito5572.objects.MySQLConnector;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -66,7 +67,7 @@ public class Listener extends ListenerAdapter {
 
         if (!event.getAuthor().isBot()) {
             if (!event.getMessage().isWebhookMessage()) {
-                if(event.getMessage().getContentRaw().startsWith("!"))
+                if(event.getMessage().getContentRaw().startsWith(App.getPREFIX()))
                 this.manager.handleCommand(event);
             }
         }

@@ -1,5 +1,6 @@
 package me.kirito5572.objects;
 
+import me.kirito5572.App;
 import me.kirito5572.commands.BotInfoCommand;
 import me.kirito5572.commands.HelpCommand;
 import me.kirito5572.commands.PingCommand;
@@ -159,7 +160,7 @@ public class CommandManager {
      */
     public void handleCommand(@NotNull GuildMessageReceivedEvent event) {
         TextChannel channel = event.getChannel();
-        String[] split = event.getMessage().getContentRaw().replaceFirst("(?i)" + Pattern.quote("!"), "").split("\\s+");
+        String[] split = event.getMessage().getContentRaw().replaceFirst("(?i)" + Pattern.quote(App.getPREFIX()), "").split("\\s+");
         String invoke = split[0].toLowerCase();
         EventPackage eventPackage = new EventPackage(event.getChannel(), event.getMember(), event.getMessage());
         if (this.commands.containsKey(invoke)) {
