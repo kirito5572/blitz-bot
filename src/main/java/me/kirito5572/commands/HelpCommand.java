@@ -18,9 +18,9 @@ public class HelpCommand implements ICommand {
     @NotNull
     private final Collection<ICommand> Commands;
 
-    private final Map<String[], ICommand> adminOnlyCommand = new HashMap<>();
-    private final Map<String[], ICommand> moderatorCommand = new HashMap<>();
-    private final Map<String[], ICommand> normalCommand = new HashMap<>();
+    private final Map<String, ICommands> adminOnlyCommand = new HashMap<>();
+    private final Map<String, ICommands> moderatorCommand = new HashMap<>();
+    private final Map<String, ICommands> normalCommand = new HashMap<>();
 
     public HelpCommand(@NotNull CommandManager manager) {
         this.manager = manager;
@@ -86,22 +86,25 @@ public class HelpCommand implements ICommand {
         builder.appendDescription(App.getPREFIX() + Arrays.toString(getInvoke()) + " <명령어>를 입력하면 명령어별 상세 정보를 볼 수 있습니다.");
         Commands.forEach(iCommand -> {
             if(iCommand.isAdminOnly()) {
-                if (!moderatorCommand.containsKey(iCommand.getInvoke())) {
-                    moderatorCommand.put(iCommand.getInvoke(), iCommand);
+                if (!moderatorCommand.containsKey(iCommand.getInvoke()[0])) {
+                    ICommands iCommands = new ICommands(iCommand.getInvoke(), iCommand);
+                    moderatorCommand.put(iCommand.getInvoke()[0], iCommands);
                 }
             } else if(iCommand.isOwnerOnly()) {
-                if (!adminOnlyCommand.containsKey(iCommand.getInvoke())) {
-                    adminOnlyCommand.put(iCommand.getInvoke(), iCommand);
+                if (!adminOnlyCommand.containsKey(iCommand.getInvoke()[0])) {
+                    ICommands iCommands = new ICommands(iCommand.getInvoke(), iCommand);
+                    adminOnlyCommand.put(iCommand.getInvoke()[0], iCommands);
                 }
             } else {
-                if (!normalCommand.containsKey(iCommand.getInvoke())) {
-                    normalCommand.put(iCommand.getInvoke(), iCommand);
+                if (!normalCommand.containsKey(iCommand.getInvoke()[0])) {
+                    ICommands iCommands = new ICommands(iCommand.getInvoke(), iCommand);
+                    normalCommand.put(iCommand.getInvoke()[0], iCommands);
                 }
             }
         });
-        moderatorCommand.forEach((strings, iCommand) -> builder1.addField(Arrays.toString(iCommand.getInvoke()), iCommand.getSmallHelp(), false));
-        adminOnlyCommand.forEach((strings, iCommand) -> builder2.addField(Arrays.toString(iCommand.getInvoke()), iCommand.getSmallHelp(), false));
-        normalCommand.forEach((strings, iCommand) -> builder.addField(Arrays.toString(iCommand.getInvoke()), iCommand.getSmallHelp(), false));
+        moderatorCommand.forEach((strings, commands) -> builder1.addField(Arrays.toString(commands.iCommand.getInvoke()), commands.iCommand.getSmallHelp(), false));
+        adminOnlyCommand.forEach((strings, commands) -> builder2.addField(Arrays.toString(commands.iCommand.getInvoke()), commands.iCommand.getSmallHelp(), false));
+        normalCommand.forEach((strings, commands) -> builder.addField(Arrays.toString(commands.iCommand.getInvoke()), commands.iCommand.getSmallHelp(), false));
         Member member = event.getMember();
         assert member != null;
         event.getChannel().sendMessageEmbeds(builder.build()).queue();
@@ -142,5 +145,15 @@ public class HelpCommand implements ICommand {
     @Override
     public boolean isOwnerOnly() {
         return false;
+    }
+
+}
+
+class ICommands {
+    String[] invoke;
+    ICommand iCommand;
+    ICommands(String[] value1, ICommand iCommand) {
+        this.invoke = value1;
+        this.iCommand = iCommand;
     }
 }
