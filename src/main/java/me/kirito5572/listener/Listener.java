@@ -66,10 +66,9 @@ public class Listener extends ListenerAdapter {
 
 
         if (!event.getAuthor().isBot()) {
-            System.out.println("여기 실행됨");
             if (!event.getMessage().isWebhookMessage()) {
-                System.out.println("여기도 실행됨");
                 System.out.println(event.getMessage().getContentRaw());
+                System.out.println(App.getPREFIX());
                 if(event.getMessage().getContentRaw().startsWith(App.getPREFIX())) {
                     this.manager.handleCommand(event);
                     System.out.println("여기까지 실행됨");
