@@ -23,8 +23,13 @@ public class App {
     private final static Logger logger = LoggerFactory.getLogger(App.class);
 
     private final static String PREFIX = "!";
+    private final static int APP_STABLE = 0;
+    private final static int APP_BETA = 1;
+    private final static int APP_ALPHA = 2;
+    private final static int APP_UNKNOWN = 3;
 
     private final static String OSStringData = System.getProperty("os.name").toLowerCase();
+    private static int appMode = 3;
     public static int OS = 3;
     public final static int WINDOWS = 0;
     public final static int MAC = 1;
@@ -113,9 +118,23 @@ public class App {
             System.exit(-1);
         }
         if(getVersion().contains("STABLE")) {
+            appMode = APP_STABLE;
             logger.info("program version: " + getVersion());
+        } else if(getVersion().contains("beta")) {
+            appMode = APP_BETA;
+            logger.warn("beta program version: " + getVersion());
+        } else if(getVersion().contains("alpha")) {
+            appMode = APP_ALPHA;
+            logger.error("alpha program version: " + getVersion());
         } else {
-            logger.warn("debug program version: " + getVersion());
+            logger.error("unknown program version, shutdown program");
+            System.exit(-1);
+        }
+        String TOKEN = null;
+        switch (appMode) {
+            case APP_STABLE -> TOKEN = openFileData("TOKEN");
+            case APP_BETA -> TOKEN = openFileData("BETA_TOKEN");
+            case APP_ALPHA -> TOKEN = openFileData("ALPHA_TOKEN");
         }
         WebUtils.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) JDA/4.4.0_352");
         logger.info("Connecting to SQL Server/File");
@@ -140,7 +159,7 @@ public class App {
         giveRoleListener giveRoleListener = new giveRoleListener(sqliteConnector);
         logger.info("JDA start up, Connecting to discord.com");
         try {
-            JDABuilder.createDefault(openFileData("TOKEN"))
+            JDABuilder.createDefault(TOKEN)
                     .setAutoReconnect(true)
                     .addEventListeners(listener, giveRoleListener, filterListener, logListener,
                             muteListener, messagePinListener, onReadyListener, directMessageListener, eventListener)
