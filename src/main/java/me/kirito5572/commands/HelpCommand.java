@@ -9,10 +9,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class HelpCommand implements ICommand {
 
@@ -20,6 +17,10 @@ public class HelpCommand implements ICommand {
     private final CommandManager manager;
     @NotNull
     private final Collection<ICommand> Commands;
+
+    private final Map<String[], ICommand> adminOnlyCommand = new HashMap<>();
+    private final Map<String[], ICommand> moderatorCommand = new HashMap<>();
+    private final Map<String[], ICommand> normalCommand = new HashMap<>();
 
     public HelpCommand(@NotNull CommandManager manager) {
         this.manager = manager;
@@ -85,13 +86,22 @@ public class HelpCommand implements ICommand {
         builder.appendDescription(App.getPREFIX() + Arrays.toString(getInvoke()) + " <명령어>를 입력하면 명령어별 상세 정보를 볼 수 있습니다.");
         Commands.forEach(iCommand -> {
             if(iCommand.isAdminOnly()) {
-                builder1.addField(Arrays.toString(iCommand.getInvoke()), iCommand.getSmallHelp(), false);
+                if (!moderatorCommand.containsKey(iCommand.getInvoke())) {
+                    moderatorCommand.put(iCommand.getInvoke(), iCommand);
+                }
             } else if(iCommand.isOwnerOnly()) {
-                builder2.addField(Arrays.toString(iCommand.getInvoke()), iCommand.getSmallHelp(), false);
+                if (!adminOnlyCommand.containsKey(iCommand.getInvoke())) {
+                    adminOnlyCommand.put(iCommand.getInvoke(), iCommand);
+                }
             } else {
-                builder.addField(Arrays.toString(iCommand.getInvoke()), iCommand.getSmallHelp(), false);
+                if (!normalCommand.containsKey(iCommand.getInvoke())) {
+                    normalCommand.put(iCommand.getInvoke(), iCommand);
+                }
             }
         });
+        moderatorCommand.forEach((strings, iCommand) -> builder1.addField(Arrays.toString(iCommand.getInvoke()), iCommand.getSmallHelp(), false));
+        adminOnlyCommand.forEach((strings, iCommand) -> builder2.addField(Arrays.toString(iCommand.getInvoke()), iCommand.getSmallHelp(), false));
+        normalCommand.forEach((strings, iCommand) -> builder.addField(Arrays.toString(iCommand.getInvoke()), iCommand.getSmallHelp(), false));
         Member member = event.getMember();
         assert member != null;
         event.getChannel().sendMessageEmbeds(builder.build()).queue();
