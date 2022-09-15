@@ -22,7 +22,7 @@ import java.util.jar.JarFile;
 public class App {
     private final static Logger logger = LoggerFactory.getLogger(App.class);
 
-    private static String PREFIX = "!";
+    private static String PREFIX;
     private final static int APP_STABLE = 0;
     private final static int APP_BETA = 1;
     private final static int APP_ALPHA = 2;
@@ -119,14 +119,15 @@ public class App {
         }
         if(getVersion().contains("STABLE")) {
             appMode = APP_STABLE;
+            PREFIX = "!";
             logger.info("program version: " + getVersion());
         } else if(getVersion().contains("beta")) {
             appMode = APP_BETA;
-            PREFIX = "!!";
+            PREFIX = "&";
             logger.warn("beta program version: " + getVersion());
         } else if(getVersion().contains("alpha")) {
             appMode = APP_ALPHA;
-            PREFIX = "!!";
+            PREFIX = "&";
             logger.error("alpha program version: " + getVersion());
         } else {
             logger.error("unknown program version, shutdown program");

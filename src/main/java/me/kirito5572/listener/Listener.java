@@ -35,7 +35,7 @@ public class Listener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
-        if(event.getMessage().getContentRaw().startsWith("!setup") && Objects.requireNonNull(event.getMember()).getId().equals("284508374924787713")) {
+        if(event.getMessage().getContentRaw().startsWith(App.getPREFIX() + "setup") && Objects.requireNonNull(event.getMember()).getId().equals("284508374924787713")) {
             try {
                 manager.getCommands().forEach(iCommand -> event.getGuild().upsertCommand(iCommand.getInvoke()[0], iCommand.getSmallHelp()).queue());
             } catch (ErrorResponseException e) {
@@ -45,7 +45,7 @@ public class Listener extends ListenerAdapter {
                 event.getChannel().sendMessage("에러 발생! 명령어 등록 또는 갱신 실패").queue();
             }
             event.getChannel().sendMessage("명령어 등록 또는 갱신 완료").queue();
-        } else if (event.getMessage().getContentRaw().startsWith("!update") && Objects.requireNonNull(event.getMember()).getId().equals("284508374924787713")){
+        } else if (event.getMessage().getContentRaw().startsWith(App.getPREFIX() + "update") && Objects.requireNonNull(event.getMember()).getId().equals("284508374924787713")){
             try {
                 event.getGuild().upsertCommand("종료","(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅을 종료하는 명령어입니다.").queue();
                 event.getGuild().upsertCommand("청소", "(관리자 전용) 메세지를 입력한 숫자만큼 대량 삭제 합니다.").queue();
