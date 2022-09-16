@@ -133,4 +133,9 @@ public class EvalCommand implements ICommand {
     public boolean isOwnerOnly() {
         return true;
     }
+
+    @Override
+    public boolean isMusicOnly() {
+        return false;
+    }
 }

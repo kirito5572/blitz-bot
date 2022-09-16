@@ -143,4 +143,9 @@ public class SearchCommand implements ICommand {
     public boolean isOwnerOnly() {
         return false;
     }
+
+    @Override
+    public boolean isMusicOnly() {
+        return true;
+    }
 }

@@ -17,4 +17,6 @@ public interface ICommand {
 
     boolean isOwnerOnly();
 
+    boolean isMusicOnly();
+
 }

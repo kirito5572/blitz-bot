@@ -20,6 +20,7 @@ public class HelpCommand implements ICommand {
 
     private final Map<String, ICommands> adminOnlyCommand = new HashMap<>();
     private final Map<String, ICommands> moderatorCommand = new HashMap<>();
+    private final Map<String, ICommands> musicOnlyCommand = new HashMap<>();
     private final Map<String, ICommands> normalCommand = new HashMap<>();
 
     public HelpCommand(@NotNull CommandManager manager) {
@@ -82,6 +83,7 @@ public class HelpCommand implements ICommand {
         EmbedBuilder builder = EmbedUtils.getDefaultEmbed().setTitle("명령어 리스트:");
         EmbedBuilder builder1 = EmbedUtils.getDefaultEmbed().setTitle("관리 명령어 리스트:");
         EmbedBuilder builder2 = EmbedUtils.getDefaultEmbed().setTitle("전용 명령어 리스트:");
+        EmbedBuilder builder3 = EmbedUtils.getDefaultEmbed().setTitle("음악 명령어 리스트:");
 
         builder.appendDescription(App.getPREFIX() + Arrays.toString(getInvoke()) + " <명령어>를 입력하면 명령어별 상세 정보를 볼 수 있습니다.");
         Commands.forEach(iCommand -> {
@@ -95,6 +97,11 @@ public class HelpCommand implements ICommand {
                     ICommands iCommands = new ICommands(iCommand.getInvoke(), iCommand);
                     adminOnlyCommand.put(iCommand.getInvoke()[0], iCommands);
                 }
+            } else if (iCommand.isMusicOnly()) {
+                if (!musicOnlyCommand.containsKey(iCommand.getInvoke()[0])) {
+                    ICommands iCommands = new ICommands(iCommand.getInvoke(), iCommand);
+                    musicOnlyCommand.put(iCommand.getInvoke()[0], iCommands);
+                }
             } else {
                 if (!normalCommand.containsKey(iCommand.getInvoke()[0])) {
                     ICommands iCommands = new ICommands(iCommand.getInvoke(), iCommand);
@@ -104,10 +111,12 @@ public class HelpCommand implements ICommand {
         });
         moderatorCommand.forEach((strings, commands) -> builder1.addField(Arrays.toString(commands.iCommand.getInvoke()), commands.iCommand.getSmallHelp(), false));
         adminOnlyCommand.forEach((strings, commands) -> builder2.addField(Arrays.toString(commands.iCommand.getInvoke()), commands.iCommand.getSmallHelp(), false));
+        musicOnlyCommand.forEach((strings, commands) -> builder3.addField(Arrays.toString(commands.iCommand.getInvoke()), commands.iCommand.getSmallHelp(), false));
         normalCommand.forEach((strings, commands) -> builder.addField(Arrays.toString(commands.iCommand.getInvoke()), commands.iCommand.getSmallHelp(), false));
         Member member = event.getMember();
         assert member != null;
         event.getChannel().sendMessageEmbeds(builder.build()).queue();
+        event.getChannel().sendMessageEmbeds(builder3.build()).queue();
 
         if(member.getRoles().contains(event.getGuild().getRoleById("827010848442548254")) ||                  //R:모더레이터
                 member.getRoles().contains(event.getGuild().getRoleById("827009999145926657")) ||             //R:Administrator
@@ -144,6 +153,11 @@ public class HelpCommand implements ICommand {
 
     @Override
     public boolean isOwnerOnly() {
+        return false;
+    }
+
+    @Override
+    public boolean isMusicOnly() {
         return false;
     }
 

@@ -136,6 +136,11 @@ public class SQLiteQueryCommand implements ICommand {
         return true;
     }
 
+    @Override
+    public boolean isMusicOnly() {
+        return false;
+    }
+
     public void insertDeleteUpdateQuery(@Language("SQLite") String sqlQuery, EventPackage event) {
         try {
             sqliteConnector.Insert_Query(sqlQuery, new int[0], new String[0]);
@@ -150,4 +155,5 @@ public class SQLiteQueryCommand implements ICommand {
         }
         event.getChannel().sendMessage("실행 완료").queue();
     }
+
 }

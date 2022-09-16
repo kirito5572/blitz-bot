@@ -125,6 +125,11 @@ public class MuteCommand implements ICommand {
         return false;
     }
 
+    @Override
+    public boolean isMusicOnly() {
+        return false;
+    }
+
     public Calendar time_convert(String time) {
         Date date = new Date();
         int temp_time;

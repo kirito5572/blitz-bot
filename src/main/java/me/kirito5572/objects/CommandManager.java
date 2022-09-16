@@ -7,6 +7,7 @@ import me.kirito5572.commands.PingCommand;
 import me.kirito5572.commands.admin.EvalCommand;
 import me.kirito5572.commands.admin.SQLiteQueryCommand;
 import me.kirito5572.commands.moderator.*;
+import me.kirito5572.commands.music.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -52,57 +53,20 @@ public class CommandManager {
         addCommand(new SQLiteQueryCommand(sqliteConnector));
         addCommand(new UserInfoCommand());
 
-        /*
+        //music commands
         addCommand(new JoinCommand());
         addCommand(new leaveCommand());
         addCommand(new NowPlayingCommand());
-        addCommand(new NowPlayingCommand() {
-            @Override
-            public @NotNull String getInvoke() {
-                return "np";
-            }
-        });
         addCommand(new PauseCommand());
         addCommand(new PlayCommand());
-        addCommand(new PlayCommand() {
-            @Override
-            public @NotNull String getInvoke() {
-                return "p";
-            }
-        });
         addCommand(new QueueCommand());
         addCommand(new QueueDetectCommand());
-        addCommand(new QueueDetectCommand() {
-            @Override
-            public @NotNull String getInvoke() {
-                return "qd";
-            }
-        });
         addCommand(new QueueMixCommand());
-        addCommand(new QueueMixCommand() {
-            @Override
-            public @NotNull String getInvoke() {
-                return "qm";
-            }
-        });
         addCommand(new SearchCommand());
         addCommand(new SkipCommand());
         addCommand(new StopClearCommand());
-        addCommand(new StopClearCommand() {
-            @Override
-            public @NotNull String getInvoke() {
-                return "sc";
-            }
-        });
         addCommand(new StopCommand());
         addCommand(new VolumeCommand());
-        addCommand(new VolumeCommand() {
-            @Override
-            public @NotNull String getInvoke() {
-                return "v";
-            }
-        });
-         */
 
     }
 
