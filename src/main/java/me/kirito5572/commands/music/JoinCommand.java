@@ -57,7 +57,7 @@ public class JoinCommand implements ICommand {
             GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
             while(true) {
                 try {
-                    this.wait(1000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
