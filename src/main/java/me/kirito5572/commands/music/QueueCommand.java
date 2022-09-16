@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
@@ -57,7 +58,7 @@ public class QueueCommand implements ICommand {
         if(queue.size() < maxTrackCount) {
             maxTrackCount = queue.size();
         }
-        if(minTrackCount >= queue.size()) {
+        if(minTrackCount > queue.size()) {
             channel.sendMessage( "`" + App.getPREFIX() + "queue " + joined + "`는 비어있습니다.\n`" +
                     App.getPREFIX() + "queue " + (int)Math.ceil((queue.size() + 1) / 20.0) +
                     "`까지 재생목록이 존재합니다.").queue();
@@ -86,7 +87,7 @@ public class QueueCommand implements ICommand {
             }
         }
         if(queue.size() > maxTrackCount) {
-            builder.appendDescription("다음 재생목록 확인: `"+ App.getPREFIX() + getInvoke() + " " + (Integer.parseInt(joined) + 1) + "`");
+            builder.appendDescription("다음 재생목록 확인: `"+ App.getPREFIX() + Arrays.toString(getInvoke()) + " " + (Integer.parseInt(joined) + 1) + "`");
         }
 
         channel.sendMessageEmbeds(builder.build()).queue();

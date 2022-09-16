@@ -41,11 +41,11 @@ public class MuteCommand implements ICommand {
             }
         }
         Role role = event.getGuild().getRoleById("827098219061444618");
-        if(!event.getGuild().getId().equals("826704284003205160")) {
-            return;
-        }
         if(args.isEmpty()) {
             event.getChannel().sendMessage("유저명을 입력해주십시오").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+            return;
+        }
+        if(!event.getGuild().getId().equals("826704284003205160")) {
             return;
         }
         List<Member> foundMember = FinderUtil.findMembers(args.get(0), event.getGuild());

@@ -22,7 +22,7 @@ public class PingCommand implements ICommand {
 
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
-        long a = 0;
+        long a;
         try {
             a = event.getJDA().getRestPing().submit().get();
         } catch (InterruptedException | ExecutionException e) {

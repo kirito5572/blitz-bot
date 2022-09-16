@@ -91,7 +91,7 @@ public class PlayCommand implements ICommand {
                 GuildMusicManager musicManager1 = playerManager1.getGuildMusicManager(event.getGuild());
                 while(true) {
                     try {
-                        this.wait(1000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

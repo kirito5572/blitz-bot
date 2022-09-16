@@ -164,8 +164,8 @@ public class HelpCommand implements ICommand {
 }
 
 class ICommands {
-    String[] invoke;
-    ICommand iCommand;
+    final String[] invoke;
+    final ICommand iCommand;
     ICommands(String[] value1, ICommand iCommand) {
         this.invoke = value1;
         this.iCommand = iCommand;

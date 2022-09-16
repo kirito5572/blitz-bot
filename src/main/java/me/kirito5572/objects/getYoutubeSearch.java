@@ -26,6 +26,7 @@ public class getYoutubeSearch {
     @Nullable
     public static String[][] Search(@NotNull String name) {
         try {
+            //GCP 연결해서 API 갱신 필요함, 오랫동안 안써서 그런건지 만료된듯
             String[][] returns = new String[10][2];
             String apiURL = "https://www.googleapis.com/youtube/v3/search";
             apiURL += "?key=" + youtubeKey;
@@ -36,6 +37,7 @@ public class getYoutubeSearch {
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
 
+            System.out.println(url.toString());
             BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
             String inputLine;
             StringBuilder response = new StringBuilder();
@@ -55,12 +57,7 @@ public class getYoutubeSearch {
             return returns;
 
         } catch (IOException e) {
-            StackTraceElement[] eStackTrace = e.getStackTrace();
-            StringBuilder a = new StringBuilder();
-            for (StackTraceElement stackTraceElement : eStackTrace) {
-                a.append(stackTraceElement).append("\n");
-            }
-            logger.warn(a.toString());
+            e.printStackTrace();
         }
         return null;
     }
