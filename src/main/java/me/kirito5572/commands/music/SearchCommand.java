@@ -65,21 +65,19 @@ public class SearchCommand implements ICommand {
 
             channel.sendMessageEmbeds(builder1.build()).queue(message -> {
                 for (int i = 0; i < 11; i++) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    Thread waitThread = Thread.currentThread();
                     try {
                         event.getChannel().retrieveMessageById(event.getChannel().getLatestMessageId()).queue(lambdaMessage1 -> {
                             int a = 0;
                             boolean pass;
                             try {
+                                System.out.println(lambdaMessage1.getContentRaw());
                                 a = Integer.parseInt(lambdaMessage1.getContentRaw());
                                 pass = false;
                             } catch (NumberFormatException e) {
                                 pass = true;
                             }
+                            System.out.println(pass + "입니다.");
                             if(!pass) {
                                 if (!audioManager.isConnected()) {
                                     audioManager.openAudioConnection(voiceChannel);
@@ -109,8 +107,16 @@ public class SearchCommand implements ICommand {
                                 channel.sendMessage("노래가 추가되었습니다.").queue(message1 -> message1.delete().queueAfter(5, TimeUnit.SECONDS));
                                 manager.loadAndPlay(channel, "https://youtu.be/" + data[a - 1][1]);
                             }
+                            waitThread.notify();
                         });
                     } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println(i + " 초가 지났습니다.");
+                    try {
+                        Thread.currentThread().wait();
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
