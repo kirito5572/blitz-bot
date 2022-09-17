@@ -65,6 +65,7 @@ public class SearchCommand implements ICommand {
 
             channel.sendMessageEmbeds(builder1.build()).queue(message -> {
                 for (int i = 0; i < 11; i++) {
+                    System.out.println(i + " 초가 지났습니다.");
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
