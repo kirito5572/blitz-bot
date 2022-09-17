@@ -72,15 +72,18 @@ public class SearchCommand implements ICommand {
                         e.printStackTrace();
                     }
                     try {
+                        System.out.println("1초 딜레이가 끝났습니다.");
                         event.getChannel().retrieveMessageById(event.getChannel().getLatestMessageId()).queue(lambdaMessage1 -> {
                             int a = 0;
                             boolean pass;
                             try {
+                                System.out.println(lambdaMessage1.getContentRaw());
                                 a = Integer.parseInt(lambdaMessage1.getContentRaw());
                                 pass = false;
                             } catch (NumberFormatException e) {
                                 pass = true;
                             }
+                            System.out.println(pass + "입니다.");
                             if(!pass) {
                                 if (!audioManager.isConnected()) {
                                     audioManager.openAudioConnection(voiceChannel);
@@ -113,8 +116,8 @@ public class SearchCommand implements ICommand {
                         });
                         return;
 
-                    } catch (Exception ignored) {
-
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
                 message.delete().queue();
