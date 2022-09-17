@@ -8,10 +8,7 @@ import me.kirito5572.objects.ICommand;
 import me.kirito5572.objects.getYoutubeSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -65,56 +62,52 @@ public class SearchCommand implements ICommand {
 
             channel.sendMessageEmbeds(builder1.build()).queue(message -> {
                 for (int i = 0; i < 11; i++) {
-                    Thread waitThread = Thread.currentThread();
                     try {
-                        event.getChannel().retrieveMessageById(event.getChannel().getLatestMessageId()).queue(lambdaMessage1 -> {
-                            int a = 0;
-                            boolean pass;
-                            try {
-                                System.out.println(lambdaMessage1.getContentRaw());
-                                a = Integer.parseInt(lambdaMessage1.getContentRaw());
-                                pass = false;
-                            } catch (NumberFormatException e) {
-                                pass = true;
-                            }
-                            System.out.println(pass + "입니다.");
-                            if(!pass) {
-                                if (!audioManager.isConnected()) {
-                                    audioManager.openAudioConnection(voiceChannel);
-                                    Thread thread = new Thread(() -> {
-                                        AudioManager audioManager1 = event.getGuild().getAudioManager();
-                                        PlayerManager playerManager = PlayerManager.getInstance();
-                                        GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
-                                        while (true) {
-                                            try {
-                                                Thread.sleep(1000);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                            if (!audioManager1.isConnected()) {
-                                                break;
-                                            }
-                                            if (!musicManager.player.isPaused()) {
-                                                assert voiceChannel != null;
-                                                JoinCommand.autoPaused(event, audioManager, voiceChannel, musicManager);
-                                            }
+                        Message message1 = event.getChannel().retrieveMessageById(event.getChannel().getLatestMessageId()).complete();
+                        int a = 0;
+                        boolean pass;
+                        try {
+                            System.out.println(message1.getContentRaw());
+                            a = Integer.parseInt(message1.getContentRaw());
+                            pass = false;
+                        } catch (NumberFormatException e) {
+                            pass = true;
+                        }
+                        System.out.println(pass + "입니다.");
+                        if(!pass) {
+                            if (!audioManager.isConnected()) {
+                                audioManager.openAudioConnection(voiceChannel);
+                                Thread thread = new Thread(() -> {
+                                    AudioManager audioManager1 = event.getGuild().getAudioManager();
+                                    PlayerManager playerManager = PlayerManager.getInstance();
+                                    GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
+                                    while (true) {
+                                        try {
+                                            Thread.sleep(1000);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
                                         }
-                                    });
-                                    thread.start();
-                                }
-                                PlayerManager manager = PlayerManager.getInstance();
-                                message.delete().queue();
-                                channel.sendMessage("노래가 추가되었습니다.").queue(message1 -> message1.delete().queueAfter(5, TimeUnit.SECONDS));
-                                manager.loadAndPlay(channel, "https://youtu.be/" + data[a - 1][1]);
+                                        if (!audioManager1.isConnected()) {
+                                            break;
+                                        }
+                                        if (!musicManager.player.isPaused()) {
+                                            assert voiceChannel != null;
+                                            JoinCommand.autoPaused(event, audioManager, voiceChannel, musicManager);
+                                        }
+                                    }
+                                });
+                                thread.start();
                             }
-                            waitThread.notify();
-                        });
+                            PlayerManager manager = PlayerManager.getInstance();
+                            message.delete().queue();
+                            channel.sendMessage("노래가 추가되었습니다.").queue(message2 -> message2.delete().queueAfter(5, TimeUnit.SECONDS));
+                            manager.loadAndPlay(channel, "https://youtu.be/" + data[a - 1][1]);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     System.out.println(i + " 초가 지났습니다.");
                     try {
-                        Thread.currentThread().wait();
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
