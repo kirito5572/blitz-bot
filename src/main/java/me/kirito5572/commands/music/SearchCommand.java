@@ -100,6 +100,7 @@ public class SearchCommand implements ICommand {
                         message.delete().queue();
                         channel.sendMessage("노래가 추가되었습니다.").queue(message2 -> message2.delete().queueAfter(5, TimeUnit.SECONDS));
                         manager.loadAndPlay(channel, "https://youtu.be/" + data[a - 1][1]);
+                        return;
                     }
                 } catch (Exception ignored) {
                 }
