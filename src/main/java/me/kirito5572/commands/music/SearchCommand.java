@@ -60,62 +60,57 @@ public class SearchCommand implements ICommand {
                     .setTitle("검색 결과")
                     .setDescription(builder.toString());
 
-            channel.sendMessageEmbeds(builder1.build()).queue(message -> {
-                for (int i = 0; i < 11; i++) {
+            Message message = channel.sendMessageEmbeds(builder1.build()).complete();
+            for (int i = 0; i < 11; i++) {
+                try {
+                    Message message1 = event.getChannel().retrieveMessageById(event.getChannel().getLatestMessageId()).complete();
+                    int a = 0;
+                    boolean pass;
                     try {
-                        Message message1 = event.getChannel().retrieveMessageById(event.getChannel().getLatestMessageId()).complete();
-                        int a = 0;
-                        boolean pass;
-                        try {
-                            System.out.println(message1.getContentRaw());
-                            a = Integer.parseInt(message1.getContentRaw());
-                            pass = false;
-                        } catch (NumberFormatException e) {
-                            pass = true;
-                        }
-                        System.out.println(pass + "입니다.");
-                        if(!pass) {
-                            if (!audioManager.isConnected()) {
-                                audioManager.openAudioConnection(voiceChannel);
-                                Thread thread = new Thread(() -> {
-                                    AudioManager audioManager1 = event.getGuild().getAudioManager();
-                                    PlayerManager playerManager = PlayerManager.getInstance();
-                                    GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
-                                    while (true) {
-                                        try {
-                                            Thread.sleep(1000);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                        if (!audioManager1.isConnected()) {
-                                            break;
-                                        }
-                                        if (!musicManager.player.isPaused()) {
-                                            assert voiceChannel != null;
-                                            JoinCommand.autoPaused(event, audioManager, voiceChannel, musicManager);
-                                        }
+                        a = Integer.parseInt(message1.getContentRaw());
+                        pass = false;
+                    } catch (NumberFormatException e) {
+                        pass = true;
+                    }
+                    if(!pass) {
+                        if (!audioManager.isConnected()) {
+                            audioManager.openAudioConnection(voiceChannel);
+                            Thread thread = new Thread(() -> {
+                                AudioManager audioManager1 = event.getGuild().getAudioManager();
+                                PlayerManager playerManager = PlayerManager.getInstance();
+                                GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
+                                while (true) {
+                                    try {
+                                        Thread.sleep(1000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
                                     }
-                                });
-                                thread.start();
-                            }
-                            PlayerManager manager = PlayerManager.getInstance();
-                            message.delete().queue();
-                            channel.sendMessage("노래가 추가되었습니다.").queue(message2 -> message2.delete().queueAfter(5, TimeUnit.SECONDS));
-                            manager.loadAndPlay(channel, "https://youtu.be/" + data[a - 1][1]);
+                                    if (!audioManager1.isConnected()) {
+                                        break;
+                                    }
+                                    if (!musicManager.player.isPaused()) {
+                                        assert voiceChannel != null;
+                                        JoinCommand.autoPaused(event, audioManager, voiceChannel, musicManager);
+                                    }
+                                }
+                            });
+                            thread.start();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        PlayerManager manager = PlayerManager.getInstance();
+                        message.delete().queue();
+                        channel.sendMessage("노래가 추가되었습니다.").queue(message2 -> message2.delete().queueAfter(5, TimeUnit.SECONDS));
+                        manager.loadAndPlay(channel, "https://youtu.be/" + data[a - 1][1]);
                     }
-                    System.out.println(i + " 초가 지났습니다.");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                } catch (Exception ignored) {
                 }
-                message.delete().queue();
-                channel.sendMessage("대기 시간이 초과되어 삭제되었습니다.").queue(message1 -> message1.delete().queueAfter(5,TimeUnit.SECONDS));
-            });
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            message.delete().queue();
+            channel.sendMessage("대기 시간이 초과되어 삭제되었습니다.").queue(message1 -> message1.delete().queueAfter(5,TimeUnit.SECONDS));
         }).start();
     }
 
