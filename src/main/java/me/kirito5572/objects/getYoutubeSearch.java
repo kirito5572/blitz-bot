@@ -1,5 +1,6 @@
 package me.kirito5572.objects;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.NotNull;
@@ -26,11 +27,10 @@ public class getYoutubeSearch {
     @Nullable
     public static String[][] Search(@NotNull String name) {
         try {
-            //GCP 연결해서 API 갱신 필요함, 오랫동안 안써서 그런건지 만료된듯
             String[][] returns = new String[10][2];
             String apiURL = "https://www.googleapis.com/youtube/v3/search";
             apiURL += "?key=" + youtubeKey;
-            apiURL += "&part=snippet&type=video&maxResults=10&videoEmbeddable=true";
+            apiURL += "&part=snippet&type=video&maxResults=10&order=relevance&safeSearch=none";
             apiURL += "&q=" + URLEncoder.encode(name, StandardCharsets.UTF_8);
 
             URL url = new URL(apiURL);
@@ -46,10 +46,11 @@ public class getYoutubeSearch {
             }
             br.close();
             JsonElement element = JsonParser.parseString(response.toString());
+            JsonArray items = element.getAsJsonObject().get("items").getAsJsonArray();
             try {
                 for(int i = 0; i < 10; i++) {
-                    returns[i][0] = element.getAsJsonObject().get("items").getAsJsonArray().get(i).getAsJsonObject().get("snippet").getAsJsonObject().get("title").getAsString();
-                    returns[i][1] = element.getAsJsonObject().get("items").getAsJsonArray().get(i).getAsJsonObject().get("id").getAsJsonObject().get("videoId").getAsString();
+                    returns[i][0] = items.get(i).getAsJsonObject().get("snippet").getAsJsonObject().get("title").getAsString();
+                    returns[i][1] = items.get(i).getAsJsonObject().get("id").getAsJsonObject().get("videoId").getAsString();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
