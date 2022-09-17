@@ -65,25 +65,21 @@ public class SearchCommand implements ICommand {
 
             channel.sendMessageEmbeds(builder1.build()).queue(message -> {
                 for (int i = 0; i < 11; i++) {
-                    System.out.println(i + " 초가 지났습니다.");
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     try {
-                        System.out.println("1초 딜레이가 끝났습니다.");
                         event.getChannel().retrieveMessageById(event.getChannel().getLatestMessageId()).queue(lambdaMessage1 -> {
                             int a = 0;
                             boolean pass;
                             try {
-                                System.out.println(lambdaMessage1.getContentRaw());
                                 a = Integer.parseInt(lambdaMessage1.getContentRaw());
                                 pass = false;
                             } catch (NumberFormatException e) {
                                 pass = true;
                             }
-                            System.out.println(pass + "입니다.");
                             if(!pass) {
                                 if (!audioManager.isConnected()) {
                                     audioManager.openAudioConnection(voiceChannel);
@@ -114,8 +110,6 @@ public class SearchCommand implements ICommand {
                                 manager.loadAndPlay(channel, "https://youtu.be/" + data[a - 1][1]);
                             }
                         });
-                        return;
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
