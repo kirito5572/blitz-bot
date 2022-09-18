@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class UserInfoCommand implements ICommand {
     @Override
@@ -27,7 +28,7 @@ public class UserInfoCommand implements ICommand {
             List<Member> foundMember;
             foundMember = FinderUtil.findMembers(joined, guild);
             if (foundMember.isEmpty()) {
-                event.getChannel().sendMessage("해당 유저를 봇이 찾을수 없거나, 인수가 잘못 입력되었습니다.").queue();
+                event.getChannel().sendMessage("해당 유저를 봇이 찾을수 없거나, 인수가 잘못 입력되었습니다.").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
                 return;
             }
             user = foundMember.get(0).getUser();

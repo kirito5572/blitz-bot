@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class ComplainEndCommand implements ICommand {
     private final MySQLConnector mySqlConnector;
@@ -34,7 +35,7 @@ public class ComplainEndCommand implements ICommand {
                 if(user == null) {
                     event.getChannel().sendMessage("""
                                     봇이 이 유저를 더 이상 찾을수 없습니다. 
-                                    \\종료 또는 !종료를 사용하여 채팅을 종료하여 주세요.""").queue();
+                                    \\종료 또는 !종료를 사용하여 채팅을 종료하여 주세요.""").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
                     break;
                 }
 

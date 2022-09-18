@@ -52,6 +52,8 @@ public class CommandManager {
         addCommand(new ComplainUnBanCommand(mySqlConnector));
         addCommand(new SQLiteQueryCommand(sqliteConnector));
         addCommand(new UserInfoCommand());
+        addCommand(new BanCommand());
+        addCommand(new UnBanCommand());
 
         //music commands
         addCommand(new JoinCommand());

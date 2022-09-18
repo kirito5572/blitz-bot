@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class FilterWordAddCommand implements ICommand {
     private final Logger logger = LoggerFactory.getLogger(FilterWordAddCommand.class);
@@ -25,7 +26,7 @@ public class FilterWordAddCommand implements ICommand {
             if(isSuccess) {
                 try {
                     filterSystem.wordUpdate(false, true, new String[]{args.get(0)});
-                    event.getChannel().sendMessage("단어 추가가 완료되었습니다.").queue();
+                    event.getChannel().sendMessage("단어 추가가 완료되었습니다.").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
                 } catch (SQLException sqlException) {
                     logger.error(sqlException.getMessage());
                     logger.error(sqlException.getSQLState());

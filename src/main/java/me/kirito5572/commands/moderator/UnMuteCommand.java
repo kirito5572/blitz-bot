@@ -48,7 +48,7 @@ public class UnMuteCommand implements ICommand {
                 mySqlConnector.Insert_Query("UPDATE blitz_bot.MuteTable SET isEnd = 1 WHERE userId = ?",
                         new int[] {mySqlConnector.STRING}, new String[] {resultSet.getString("userId")});
             } else {
-                event.getChannel().sendMessage("해당 유저는 현재 제재중이지 않습니다.").queue();
+                event.getChannel().sendMessage("해당 유저는 현재 제재중이지 않습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
             }
         } catch (SQLException e) {
             e.printStackTrace();

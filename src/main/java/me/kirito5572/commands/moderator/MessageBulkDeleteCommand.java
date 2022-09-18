@@ -24,7 +24,7 @@ public class MessageBulkDeleteCommand implements ICommand {
         Member selfMember = Objects.requireNonNull(event.getGuild()).getSelfMember();
         Member member = event.getMember();
         if(!selfMember.hasPermission(Permission.MESSAGE_MANAGE)) {
-            channel.sendMessage("봇이 메세지를 삭제할 권한이 없습니다.").queue();
+            channel.sendMessage("봇이 메세지를 삭제할 권한이 없습니다.").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
             return;
         }
         assert member != null;
@@ -38,24 +38,24 @@ public class MessageBulkDeleteCommand implements ICommand {
                     event.getChannel().sendMessage("""
                     차단할 유저를 찾을수 없습니다.
                     다시한번 확인후에 입력해주세요.
-                    예시: kirito5572, `@kirito5572#5572`, kirito5572#5572, 284508374924787713 등""").queue();
+                    예시: kirito5572, `@kirito5572#5572`, kirito5572#5572, 284508374924787713 등""").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
                     return;
                 } else if(foundMembers.size() != 1) {
                     event.getChannel().sendMessage("""
                     검색 된 유저가 2명 이상입니다.
                     이름으로 입력이 아닌, ID나 멘션을 하여 입력해주시기 바랍니다.
-                    예시: `@kirito5572#5572`, kirito5572#5572, 284508374924787713 등""").queue();
+                    예시: `@kirito5572#5572`, kirito5572#5572, 284508374924787713 등""").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
                     return;
                 }
                 deleteMember = foundMembers.get(0);
             }
             if (deleteCount.equals("")) {
-                channel.sendMessage("삭제할 메세지 숫자만큼 명령어 뒤에 숫자를 입력해주세요").queue();
+                channel.sendMessage("삭제할 메세지 숫자만큼 명령어 뒤에 숫자를 입력해주세요").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
             }
             if (Integer.parseInt(deleteCount) < 1) {
-                channel.sendMessage("1보다 큰 숫자를 입력해주세요").queue();
+                channel.sendMessage("1보다 큰 숫자를 입력해주세요").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
             } else if (Integer.parseInt(deleteCount) > 100) {
-                channel.sendMessage("100보다 작은 숫자를 입력해주세요").queue();
+                channel.sendMessage("100보다 작은 숫자를 입력해주세요").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
             }
             if(deleteMember == null) {
                 channel.getIterableHistory()
@@ -105,7 +105,7 @@ public class MessageBulkDeleteCommand implements ICommand {
             }
 
         } else {
-            channel.sendMessage("이 명령어를 사용할 권한이 없습니다.").queue();
+            channel.sendMessage("이 명령어를 사용할 권한이 없습니다.").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
         }
     }
 

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ComplainUnBanCommand implements ICommand {
     private final MySQLConnector mySqlConnector;
@@ -27,7 +28,7 @@ public class ComplainUnBanCommand implements ICommand {
             event.getChannel().sendMessage("""
                     차단 해제할 유저를 입력해주세요.
                     <유저명/@유저/유저명#숫자/유저ID>등
-                    예시: kirito5572, `@kirito5572#5572`, kirito5572#5572, 284508374924787713 등""").queue();
+                    예시: kirito5572, `@kirito5572#5572`, kirito5572#5572, 284508374924787713 등""").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
             return;
         }
         List<Member> foundMembers = FinderUtil.findMembers(args.get(0), event.getGuild());
@@ -35,13 +36,13 @@ public class ComplainUnBanCommand implements ICommand {
             event.getChannel().sendMessage("""
                     차단해제할 유저를 찾을수 없습니다.
                     다시한번 확인후에 입력해주세요.
-                    예시: kirito5572, `@kirito5572#5572`, kirito5572#5572, 284508374924787713 등""").queue();
+                    예시: kirito5572, `@kirito5572#5572`, kirito5572#5572, 284508374924787713 등""").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
             return;
         } else if(foundMembers.size() != 1) {
             event.getChannel().sendMessage("""
                     검색 된 유저가 2명 이상입니다.
                     이름으로 입력이 아닌, ID나 멘션을 하여 입력해주시기 바랍니다.
-                    예시: `@kirito5572#5572`, kirito5572#5572, 284508374924787713 등""").queue();
+                    예시: `@kirito5572#5572`, kirito5572#5572, 284508374924787713 등""").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
             return;
         }
         List<String> complainBanUserList = OptionData.getComplainBanUserList();
@@ -53,7 +54,7 @@ public class ComplainUnBanCommand implements ICommand {
                     new String[]{foundMembers.get(0).getId()});
         } catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());
-            event.getChannel().sendMessage("SQL 에러로 명령어가 정상실행 되지 않았습니다.").queue();
+            event.getChannel().sendMessage("SQL 에러로 명령어가 정상실행 되지 않았습니다.").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
             return;
         }
 
