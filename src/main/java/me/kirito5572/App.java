@@ -117,15 +117,15 @@ public class App {
             e.printStackTrace();
             System.exit(-1);
         }
-        if(getVersion().contains("STABLE")) {
+        if(getVersion().contains("STABLE") || getVersion().contains("stable")) {
             appMode = APP_STABLE;
             PREFIX = "!";
             logger.info("program version: " + getVersion());
-        } else if(getVersion().contains("beta")) {
+        } else if(getVersion().contains("BETA") || getVersion().contains("beta")) {
             appMode = APP_BETA;
             PREFIX = "#";
             logger.warn("beta program version: " + getVersion());
-        } else if(getVersion().contains("alpha")) {
+        } else if(getVersion().contains("ALPHA") || getVersion().contains("alpha")) {
             appMode = APP_ALPHA;
             PREFIX = "#";
             logger.error("alpha program version: " + getVersion());

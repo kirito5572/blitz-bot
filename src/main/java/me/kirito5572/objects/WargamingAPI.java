@@ -16,7 +16,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class WargamingAPI {
@@ -31,7 +30,7 @@ public class WargamingAPI {
 
         JsonElement element = JsonParser.parseString(achievementJsonData);
         JsonObject data = element.getAsJsonObject().get("data").getAsJsonObject();
-        for(String value : data.keySet()) {
+        for (String value : data.keySet()) {
             JsonObject object = data.get(value).getAsJsonObject();
             AchievementData achievementData = new AchievementData();
             achievementData.achievement_id = object.get("achievement_id").getAsString();
@@ -52,8 +51,6 @@ public class WargamingAPI {
             e.printStackTrace();
         }
         WargamingAPI wargamingAPI = new WargamingAPI(sqliteConnector);
-        TournamentData[] tournamentData = wargamingAPI.getTournamentData();
-        System.out.println(Arrays.toString(Arrays.stream(tournamentData).toArray()));
     }
 
     public String getWargamingPlayer(String nickname) throws SQLException {
@@ -296,7 +293,7 @@ public class WargamingAPI {
             JsonArray jsonArray = element.getAsJsonObject().get("data").getAsJsonArray();
             int i = 0;
             data = new TournamentData[jsonArray.size()];
-            for(JsonElement element1 : jsonArray) {
+            for (JsonElement element1 : jsonArray) {
                 TournamentData tournamentData = new TournamentData();
                 tournamentData.title = element1.getAsJsonObject().get("title").getAsString();
                 tournamentData.logo = element1.getAsJsonObject().get("logo").getAsJsonObject().get("original").getAsString();
@@ -351,6 +348,7 @@ public class WargamingAPI {
         public int reCalibrationBattleLeft; //검증전투 남은횟수
         public int rating;                  //현재 MMR
     }
+
     public static class AllDataObject {
         public int battles;                 //전투수
         public int wins;                    //승리
@@ -360,6 +358,7 @@ public class WargamingAPI {
         public int spotted;                 //스팟
         public float accuracy;              //정확도(hits / shots)
     }
+
     public static class Achievement {
         public int armorPiercer;
         public int medalFadin;
@@ -511,698 +510,701 @@ public class WargamingAPI {
         public String name;
     }
 
-    public String achievementJsonData = """
-            {
-              "status": "ok",
-              "meta": {
-                "count": 137
-              },
-              "data": {
-                "armorPiercer": {
-                  "achievement_id": "armorPiercer",
-                  "section": "title",
-                  "name": "사격의 달인 (armorPiercer)"
-                },
-                "medalFadin": {
-                  "achievement_id": "medalFadin",
-                  "section": "epic",
-                  "name": "파딘 훈장 (medalFadin)"
-                },
-                "medalCarius": {
-                  "achievement_id": "medalCarius",
-                  "section": "step",
-                  "name": "카리우스 훈장"
-                },
-                "medalEkins": {
-                  "achievement_id": "medalEkins",
-                  "section": "step",
-                  "name": "에킨스 훈장"
-                },
-                "collectorGuP": {
-                  "achievement_id": "collectorGuP",
-                  "section": "commemorative",
-                  "name": "GuP: 수집가 (collectorGuP)"
-                },
-                "medalHalonen": {
-                  "achievement_id": "medalHalonen",
-                  "section": "epic",
-                  "name": "할로넨 훈장 (medalHalonen)"
-                },
-                "heroesOfRassenay": {
-                  "achievement_id": "heroesOfRassenay",
-                  "section": "epic",
-                  "name": "라세이니 훈장 (heroesOfRassenay)"
-                },
-                "firstVictory": {
-                  "achievement_id": "firstVictory",
-                  "section": "commemorative",
-                  "name": "첫 승리 (firstVictory)"
-                },
-                "defender": {
-                  "achievement_id": "defender",
-                  "section": "battle",
-                  "name": "수비수 (defender)"
-                },
-                "creative": {
-                  "achievement_id": "creative",
-                  "section": "commemorative",
-                  "name": "콘테스트 제패 (creative)"
-                },
-                "eSportFinal": {
-                  "achievement_id": "eSportFinal",
-                  "section": "commemorative",
-                  "name": "블리츠 트위스터 컵 온라인 결선 진출 (eSportFinal)"
-                },
-                "supporter": {
-                  "achievement_id": "supporter",
-                  "section": "battle",
-                  "name": "연맹 (supporter)"
-                },
-                "goldClanRibbonSEA": {
-                  "achievement_id": "goldClanRibbonSEA",
-                  "section": "commemorative",
-                  "name": "시즌 골드 수장 (goldClanRibbonSEA)"
-                },
-                "platinumTwisterMedalSEA": {
-                  "achievement_id": "platinumTwisterMedalSEA",
-                  "section": "commemorative",
-                  "name": "시즌 플래티넘 휘장 (platinumTwisterMedalSEA)"
-                },
-                "medalLehvaslaiho": {
-                  "achievement_id": "medalLehvaslaiho",
-                  "section": "epic",
-                  "name": "레배슬라이호 훈장 (medalLehvaslaiho)"
-                },
-                "tankExpert": {
-                  "achievement_id": "tankExpert",
-                  "section": "title",
-                  "name": "전문가 (tankExpert)"
-                },
-                "eSportQualification": {
-                  "achievement_id": "eSportQualification",
-                  "section": "commemorative",
-                  "name": "블리츠 트위스터 컵 예선 참가 (eSportQualification)"
-                },
-                "MarkI": {
-                  "achievement_id": "MarkI",
-                  "section": "commemorative",
-                  "name": "전차 100주년 (MarkI)"
-                },
-                "medalSupremacy": {
-                  "achievement_id": "medalSupremacy",
-                  "section": "step",
-                  "name": "쟁탈전 훈장"
-                },
-                "participantofWGFest2017": {
-                  "achievement_id": "participantofWGFest2017",
-                  "section": "commemorative",
-                  "name": "WG Fest 2017 참여 (participantofWGFest2017)"
-                },
-                "medalTournamentOffseason1": {
-                  "achievement_id": "medalTournamentOffseason1",
-                  "section": "commemorative",
-                  "name": "오프 시즌 참여 (medalTournamentOffseason1)"
-                },
-                "jointVictory": {
-                  "achievement_id": "jointVictory",
-                  "section": "platoon",
-                  "name": "소대전 승리"
-                },
-                "platinumClanRibbonRU": {
-                  "achievement_id": "platinumClanRibbonRU",
-                  "section": "commemorative",
-                  "name": "시즌 플래티넘 수장 (platinumClanRibbonRU)"
-                },
-                "medalTournamentOffseason4": {
-                  "achievement_id": "medalTournamentOffseason4",
-                  "section": "commemorative",
-                  "name": "오프 시즌 참여 (medalTournamentOffseason4)"
-                },
-                "sniper": {
-                  "achievement_id": "sniper",
-                  "section": "title",
-                  "name": "저격수 (sniper)"
-                },
-                "titleSniper": {
-                  "achievement_id": "titleSniper",
-                  "section": "title",
-                  "name": "명사수 (titleSniper)"
-                },
-                "medalCrucialContribution": {
-                  "achievement_id": "medalCrucialContribution",
-                  "section": "platoon",
-                  "name": "최고 공헌자 (medalCrucialContribution)"
-                },
-                "scout": {
-                  "achievement_id": "scout",
-                  "section": "battle",
-                  "name": "정찰병 (scout)"
-                },
-                "goldTwisterMedalRU": {
-                  "achievement_id": "goldTwisterMedalRU",
-                  "section": "commemorative",
-                  "name": "시즌 골드 휘장 (goldTwisterMedalRU)"
-                },
-                "tankExpert3": {
-                  "achievement_id": "tankExpert3",
-                  "section": "title",
-                  "name": "전문가: 중국 (tankExpert3)"
-                },
-                "tankExpert2": {
-                  "achievement_id": "tankExpert2",
-                  "section": "title",
-                  "name": "전문가: 미국 (tankExpert2)"
-                },
-                "tankExpert1": {
-                  "achievement_id": "tankExpert1",
-                  "section": "title",
-                  "name": "전문가: 독일 (tankExpert1)"
-                },
-                "tankExpert0": {
-                  "achievement_id": "tankExpert0",
-                  "section": "title",
-                  "name": "전문가: 소련 (tankExpert0)"
-                },
-                "markOfMastery": {
-                  "achievement_id": "markOfMastery",
-                  "section": "battle",
-                  "name": "숙련의 증표: 전차 에이스 (markOfMastery)"
-                },
-                "tankExpert6": {
-                  "achievement_id": "tankExpert6",
-                  "section": "title",
-                  "name": "전문가: 일본 (tankExpert6)"
-                },
-                "tankExpert5": {
-                  "achievement_id": "tankExpert5",
-                  "section": "title",
-                  "name": "전문가: 영국 (tankExpert5)"
-                },
-                "tankExpert4": {
-                  "achievement_id": "tankExpert4",
-                  "section": "title",
-                  "name": "전문가: 프랑스 (tankExpert4)"
-                },
-                "goldTwisterMedalEU": {
-                  "achievement_id": "goldTwisterMedalEU",
-                  "section": "commemorative",
-                  "name": "시즌 골드 휘장 (goldTwisterMedalEU)"
-                },
-                "ChristmasTreeLevelUpNY2019": {
-                  "achievement_id": "ChristmasTreeLevelUpNY2019",
-                  "section": "commemorative",
-                  "name": "신년 나무 명예 장식자 (ChristmasTreeLevelUpNY2019)"
-                },
-                "medalLavrinenko": {
-                  "achievement_id": "medalLavrinenko",
-                  "section": "step",
-                  "name": "라브리넨코 훈장"
-                },
-                "medalKolobanov": {
-                  "achievement_id": "medalKolobanov",
-                  "section": "epic",
-                  "name": "콜로바노프 훈장 (medalKolobanov)"
-                },
-                "medalLafayettePool": {
-                  "achievement_id": "medalLafayettePool",
-                  "section": "epic",
-                  "name": "풀 훈장 (medalLafayettePool)"
-                },
-                "goldClanRibbonEU": {
-                  "achievement_id": "goldClanRibbonEU",
-                  "section": "commemorative",
-                  "name": "시즌 골드 수장 (goldClanRibbonEU)"
-                },
-                "olimpicGolden": {
-                  "achievement_id": "olimpicGolden",
-                  "section": "commemorative",
-                  "name": "블리츠 게임즈: 금메달 (olimpicGolden)"
-                },
-                "medalKnispel": {
-                  "achievement_id": "medalKnispel",
-                  "section": "step",
-                  "name": "크니스펠 훈장"
-                },
-                "invader": {
-                  "achievement_id": "invader",
-                  "section": "battle",
-                  "name": "침략자 (invader)"
-                },
-                "goldTwisterMedalNA": {
-                  "achievement_id": "goldTwisterMedalNA",
-                  "section": "commemorative",
-                  "name": "시즌 골드 휘장 (goldTwisterMedalNA)"
-                },
-                "mechanicEngineer": {
-                  "achievement_id": "mechanicEngineer",
-                  "section": "title",
-                  "name": "수석 전차 개발자 (mechanicEngineer)"
-                },
-                "markOfMasteryII": {
-                  "achievement_id": "markOfMasteryII",
-                  "section": "battle",
-                  "name": "숙련의 증표: 2급 (markOfMasteryII)"
-                },
-                "firstBlood": {
-                  "achievement_id": "firstBlood",
-                  "section": "commemorative",
-                  "name": "첫 격파 (firstBlood)"
-                },
-                "medalKay": {
-                  "achievement_id": "medalKay",
-                  "section": "step",
-                  "name": "케이 훈장"
-                },
-                "medalOrlik": {
-                  "achievement_id": "medalOrlik",
-                  "section": "epic",
-                  "name": "오를리크 훈장 (medalOrlik)"
-                },
-                "medalBrothersInArms": {
-                  "achievement_id": "medalBrothersInArms",
-                  "section": "platoon",
-                  "name": "전우애 (medalBrothersInArms)"
-                },
-                "medalAbrams": {
-                  "achievement_id": "medalAbrams",
-                  "section": "step",
-                  "name": "에이브럼스 훈장"
-                },
-                "medalAtgm": {
-                  "achievement_id": "medalAtgm",
-                  "section": "commemorative",
-                  "name": "미사일맨 (medalAtgm)"
-                },
-                "mainGun": {
-                  "achievement_id": "mainGun",
-                  "section": "battle",
-                  "name": "능력자 (mainGun)"
-                },
-                "ironMan": {
-                  "achievement_id": "ironMan",
-                  "section": "commemorative",
-                  "name": "냉철함 (ironMan)"
-                },
-                "platinumClanRibbonEU": {
-                  "achievement_id": "platinumClanRibbonEU",
-                  "section": "commemorative",
-                  "name": "시즌 플래티넘 수장 (platinumClanRibbonEU)"
-                },
-                "platinumClanRibbonSEA": {
-                  "achievement_id": "platinumClanRibbonSEA",
-                  "section": "commemorative",
-                  "name": "시즌 플래티넘 수장 (platinumClanRibbonSEA)"
-                },
-                "warrior": {
-                  "achievement_id": "warrior",
-                  "section": "battle",
-                  "name": "탑건 (warrior)"
-                },
-                "goldClanRibbonRU": {
-                  "achievement_id": "goldClanRibbonRU",
-                  "section": "commemorative",
-                  "name": "시즌 골드 수장 (goldClanRibbonRU)"
-                },
-                "medalRadleyWalters": {
-                  "achievement_id": "medalRadleyWalters",
-                  "section": "epic",
-                  "name": "래들리-월터스 훈장 (medalRadleyWalters)"
-                },
-                "raider": {
-                  "achievement_id": "raider",
-                  "section": "title",
-                  "name": "침입자 (raider)"
-                },
-                "participantofNewStart": {
-                  "achievement_id": "participantofNewStart",
-                  "section": "commemorative",
-                  "name": "새로운 시작 참여 (participantofNewStart)"
-                },
-                "diamondClanRibbon": {
-                  "achievement_id": "diamondClanRibbon",
-                  "section": "commemorative",
-                  "name": "시즌 다이아몬드 수장 (diamondClanRibbon)"
-                },
-                "medalBillotte": {
-                  "achievement_id": "medalBillotte",
-                  "section": "epic",
-                  "name": "비요트 훈장 (medalBillotte)"
-                },
-                "platinumTwisterMedalEU": {
-                  "achievement_id": "platinumTwisterMedalEU",
-                  "section": "commemorative",
-                  "name": "시즌 플래티넘 휘장 (platinumTwisterMedalEU)"
-                },
-                "diehard": {
-                  "achievement_id": "diehard",
-                  "section": "title",
-                  "name": "생존자 (diehard)"
-                },
-                "masterofContinents": {
-                  "achievement_id": "masterofContinents",
-                  "section": "commemorative",
-                  "name": "최강자 (masterofContinents)"
-                },
-                "evileye": {
-                  "achievement_id": "evileye",
-                  "section": "battle",
-                  "name": "정찰 임무 (evileye)"
-                },
-                "cadet": {
-                  "achievement_id": "cadet",
-                  "section": "commemorative",
-                  "name": "후보생 (cadet)"
-                },
-                "medalBlitzMasters": {
-                  "achievement_id": "medalBlitzMasters",
-                  "section": "commemorative",
-                  "name": "블리츠 마스터 2022 참가자 (medalBlitzMasters)"
-                },
-                "supremacyHunter": {
-                  "achievement_id": "supremacyHunter",
-                  "section": "commemorative",
-                  "name": "최고 격파왕 (supremacyHunter)"
-                },
-                "newbieT3485Win": {
-                  "achievement_id": "newbieT3485Win",
-                  "section": "commemorative",
-                  "name": "T-34-85: 첫 승리 (newbieT3485Win)"
-                },
-                "continentalContender": {
-                  "achievement_id": "continentalContender",
-                  "section": "commemorative",
-                  "name": "도전자 (continentalContender)"
-                },
-                "steelwall": {
-                  "achievement_id": "steelwall",
-                  "section": "battle",
-                  "name": "철벽 (steelwall)"
-                },
-                "supremacyLegend": {
-                  "achievement_id": "supremacyLegend",
-                  "section": "commemorative",
-                  "name": "최고 공격수 (supremacyLegend)"
-                },
-                "punisher": {
-                  "achievement_id": "punisher",
-                  "section": "platoon",
-                  "name": "복수자"
-                },
-                "eSport": {
-                  "achievement_id": "eSport",
-                  "section": "commemorative",
-                  "name": "블리츠 트위스터 컵의 영광 (eSport)"
-                },
-                "platinumTwisterMark": {
-                  "achievement_id": "platinumTwisterMark",
-                  "section": "commemorative",
-                  "name": "시즌 플래티넘 훈장 (platinumTwisterMark)"
-                },
-                "goldClanRibbonNA": {
-                  "achievement_id": "goldClanRibbonNA",
-                  "section": "commemorative",
-                  "name": "시즌 골드 수장 (goldClanRibbonNA)"
-                },
-                "medalPoppel": {
-                  "achievement_id": "medalPoppel",
-                  "section": "step",
-                  "name": "포펠 훈장"
-                },
-                "mechanicEngineer6": {
-                  "achievement_id": "mechanicEngineer6",
-                  "section": "title",
-                  "name": "전차 개발자: 일본 (mechanicEngineer6)"
-                },
-                "mechanicEngineer4": {
-                  "achievement_id": "mechanicEngineer4",
-                  "section": "title",
-                  "name": "전차 개발자: 프랑스 (mechanicEngineer4)"
-                },
-                "goldTwisterMedalSEA": {
-                  "achievement_id": "goldTwisterMedalSEA",
-                  "section": "commemorative",
-                  "name": "시즌 골드 휘장 (goldTwisterMedalSEA)"
-                },
-                "mechanicEngineer2": {
-                  "achievement_id": "mechanicEngineer2",
-                  "section": "title",
-                  "name": "전차 개발자: 미국 (mechanicEngineer2)"
-                },
-                "mechanicEngineer3": {
-                  "achievement_id": "mechanicEngineer3",
-                  "section": "title",
-                  "name": "전차 개발자: 중국 (mechanicEngineer3)"
-                },
-                "mechanicEngineer0": {
-                  "achievement_id": "mechanicEngineer0",
-                  "section": "title",
-                  "name": "전차 개발자: 소련 (mechanicEngineer0)"
-                },
-                "mechanicEngineer1": {
-                  "achievement_id": "mechanicEngineer1",
-                  "section": "title",
-                  "name": "전차 개발자: 독일 (mechanicEngineer1)"
-                },
-                "mechanicEngineer5": {
-                  "achievement_id": "mechanicEngineer5",
-                  "section": "title",
-                  "name": "전차 개발자: 영국 (mechanicEngineer5)"
-                },
-                "medalTarczay": {
-                  "achievement_id": "medalTarczay",
-                  "section": "epic",
-                  "name": "타르차이 훈장 (medalTarczay)"
-                },
-                "sinai": {
-                  "achievement_id": "sinai",
-                  "section": "title",
-                  "name": "시나이 반도의 사자 (sinai)"
-                },
-                "pattonValley": {
-                  "achievement_id": "pattonValley",
-                  "section": "title",
-                  "name": "패튼의 골짜기 (pattonValley)"
-                },
-                "newbieDoubleWin": {
-                  "achievement_id": "newbieDoubleWin",
-                  "section": "commemorative",
-                  "name": "더블 (newbieDoubleWin)"
-                },
-                "medalDeLanglade": {
-                  "achievement_id": "medalDeLanglade",
-                  "section": "epic",
-                  "name": "드 랑글라드 훈장 (medalDeLanglade)"
-                },
-                "diamondTwisterMedal": {
-                  "achievement_id": "diamondTwisterMedal",
-                  "section": "commemorative",
-                  "name": "시즌 다이아몬드 휘장 (diamondTwisterMedal)"
-                },
-                "beasthunter": {
-                  "achievement_id": "beasthunter",
-                  "section": "title",
-                  "name": "사냥꾼 (beasthunter)"
-                },
-                "supremacyVeteran": {
-                  "achievement_id": "supremacyVeteran",
-                  "section": "commemorative",
-                  "name": "최고 전문가 (supremacyVeteran)"
-                },
-                "newbieShermanWin": {
-                  "achievement_id": "newbieShermanWin",
-                  "section": "commemorative",
-                  "name": "Sherman Easy 8: 첫 승리 (newbieShermanWin)"
-                },
-                "kamikaze": {
-                  "achievement_id": "kamikaze",
-                  "section": "title",
-                  "name": "카미카제 (kamikaze)"
-                },
-                "olimpicBronze": {
-                  "achievement_id": "olimpicBronze",
-                  "section": "commemorative",
-                  "name": "블리츠 게임즈: 동메달 (olimpicBronze)"
-                },
-                "newbieType58TUWin": {
-                  "achievement_id": "newbieType58TUWin",
-                  "section": "commemorative",
-                  "name": "Type 58: 첫 승리 (newbieType58TUWin)"
-                },
-                "medalTournamentOffseason3": {
-                  "achievement_id": "medalTournamentOffseason3",
-                  "section": "commemorative",
-                  "name": "오프 시즌 참여 (medalTournamentOffseason3)"
-                },
-                "medalTournamentOffseason2": {
-                  "achievement_id": "medalTournamentOffseason2",
-                  "section": "commemorative",
-                  "name": "오프 시즌 참여 (medalTournamentOffseason2)"
-                },
-                "medalOskin": {
-                  "achievement_id": "medalOskin",
-                  "section": "epic",
-                  "name": "오스킨 훈장 (medalOskin)"
-                },
-                "invincible": {
-                  "achievement_id": "invincible",
-                  "section": "title",
-                  "name": "천하무적 (invincible)"
-                },
-                "platinumClanRibbonNA": {
-                  "achievement_id": "platinumClanRibbonNA",
-                  "section": "commemorative",
-                  "name": "시즌 플래티넘 수장 (platinumClanRibbonNA)"
-                },
-                "platinumTwisterMedalRU": {
-                  "achievement_id": "platinumTwisterMedalRU",
-                  "section": "commemorative",
-                  "name": "시즌 플래티넘 휘장 (platinumTwisterMedalRU)"
-                },
-                "newbieTrippleWin": {
-                  "achievement_id": "newbieTrippleWin",
-                  "section": "commemorative",
-                  "name": "트리플 (newbieTrippleWin)"
-                },
-                "continentalViceChampion": {
-                  "achievement_id": "continentalViceChampion",
-                  "section": "commemorative",
-                  "name": "이인자 (continentalViceChampion)"
-                },
-                "olimpicSilver": {
-                  "achievement_id": "olimpicSilver",
-                  "section": "commemorative",
-                  "name": "블리츠 게임즈: 은메달 (olimpicSilver)"
-                },
-                "markOfMasteryI": {
-                  "achievement_id": "markOfMasteryI",
-                  "section": "battle",
-                  "name": "숙련의 증표: 1급 (markOfMasteryI)"
-                },
-                "continentalCompetitor": {
-                  "achievement_id": "continentalCompetitor",
-                  "section": "commemorative",
-                  "name": "참가자 (continentalCompetitor)"
-                },
-                "newbieTigerWin": {
-                  "achievement_id": "newbieTigerWin",
-                  "section": "commemorative",
-                  "name": "Tiger I: 첫 승리 (newbieTigerWin)"
-                },
-                "medalTournamentSummerSeason": {
-                  "achievement_id": "medalTournamentSummerSeason",
-                  "section": "commemorative",
-                  "name": "여름 시즌 참여자 (medalTournamentSummerSeason)"
-                },
-                "mousebane": {
-                  "achievement_id": "mousebane",
-                  "section": "title",
-                  "name": "쥐사냥꾼 (mousebane)"
-                },
-                "medalBrunoPietro": {
-                  "achievement_id": "medalBrunoPietro",
-                  "section": "epic",
-                  "name": "브루노 훈장 (medalBrunoPietro)"
-                },
-                "medalTournamentSpringSeason": {
-                  "achievement_id": "medalTournamentSpringSeason",
-                  "section": "commemorative",
-                  "name": "봄 시즌 참여자 (medalTournamentSpringSeason)"
-                },
-                "goldTwisterMark": {
-                  "achievement_id": "goldTwisterMark",
-                  "section": "commemorative",
-                  "name": "시즌 골드 훈장 (goldTwisterMark)"
-                },
-                "collectorWarhammer": {
-                  "achievement_id": "collectorWarhammer",
-                  "section": "commemorative",
-                  "name": "Warhammer 40,000: 수집가 (collectorWarhammer)"
-                },
-                "markOfMasteryIII": {
-                  "achievement_id": "markOfMasteryIII",
-                  "section": "battle",
-                  "name": "숙련의 증표: 3급 (markOfMasteryIII)"
-                },
-                "medalLeClerc": {
-                  "achievement_id": "medalLeClerc",
-                  "section": "step",
-                  "name": "르클레르 훈장"
-                },
-                "medalTournamentProfessional": {
-                  "achievement_id": "medalTournamentProfessional",
-                  "section": "commemorative",
-                  "name": "프로페셔널 (medalTournamentProfessional)"
-                },
-                "medalCommunityChampion": {
-                  "achievement_id": "medalCommunityChampion",
-                  "section": "commemorative",
-                  "name": "커뮤니티 챔피언 (medalCommunityChampion)"
-                },
-                "diamondTwisterMark": {
-                  "achievement_id": "diamondTwisterMark",
-                  "section": "commemorative",
-                  "name": "시즌 다이아몬드 훈장 (diamondTwisterMark)"
-                },
-                "platinumTwisterMedalNA": {
-                  "achievement_id": "platinumTwisterMedalNA",
-                  "section": "commemorative",
-                  "name": "시즌 플래티넘 휘장 (platinumTwisterMedalNA)"
-                },
-                "handOfDeath": {
-                  "achievement_id": "handOfDeath",
-                  "section": "title",
-                  "name": "사신 (handOfDeath)"
-                },
-                "medalTournamentWinterSeason": {
-                  "achievement_id": "medalTournamentWinterSeason",
-                  "section": "commemorative",
-                  "name": "겨울 시즌 참여자 (medalTournamentWinterSeason)"
-                },
-                "huntsman": {
-                  "achievement_id": "huntsman",
-                  "section": "commemorative",
-                  "name": "수색대 (huntsman)"
-                },
-                "camper": {
-                  "achievement_id": "camper",
-                  "section": "battle",
-                  "name": "전차 저격수 (camper)"
-                },
-                "medalNikolas": {
-                  "achievement_id": "medalNikolas",
-                  "section": "epic",
-                  "name": "니콜스 훈장 (medalNikolas)"
-                },
-                "androidTest": {
-                  "achievement_id": "androidTest",
-                  "section": "commemorative",
-                  "name": "안드로이드에서 블리츠 테스트 (androidTest)"
-                },
-                "sturdy": {
-                  "achievement_id": "sturdy",
-                  "section": "commemorative",
-                  "name": "스파르타인 (sturdy)"
-                },
-                "medalTwitch": {
-                  "achievement_id": "medalTwitch",
-                  "section": "commemorative",
-                  "name": "Twitch 투사 (medalTwitch)"
-                },
-                "medalWGfestTicket": {
-                  "achievement_id": "medalWGfestTicket",
-                  "section": "commemorative",
-                  "name": "WG Fest 2018 참여 (medalWGfestTicket)"
-                },
-                "championofNewStart": {
-                  "achievement_id": "championofNewStart",
-                  "section": "commemorative",
-                  "name": "새로운 시작 챔피언 (championofNewStart)"
-                },
-                "medalTournamentAutumnSeason": {
-                  "achievement_id": "medalTournamentAutumnSeason",
-                  "section": "commemorative",
-                  "name": "가을 시즌 참여자 (medalTournamentAutumnSeason)"
-                }
-              }
-            }""";
+    public String achievementJsonData;
+    {
+        achievementJsonData = """
+                {
+                  "status": "ok",
+                  "meta": {
+                    "count": 137
+                  },
+                  "data": {
+                    "armorPiercer": {
+                      "achievement_id": "armorPiercer",
+                      "section": "title",
+                      "name": "사격의 달인 (armorPiercer)"
+                    },
+                    "medalFadin": {
+                      "achievement_id": "medalFadin",
+                      "section": "epic",
+                      "name": "파딘 훈장 (medalFadin)"
+                    },
+                    "medalCarius": {
+                      "achievement_id": "medalCarius",
+                      "section": "step",
+                      "name": "카리우스 훈장"
+                    },
+                    "medalEkins": {
+                      "achievement_id": "medalEkins",
+                      "section": "step",
+                      "name": "에킨스 훈장"
+                    },
+                    "collectorGuP": {
+                      "achievement_id": "collectorGuP",
+                      "section": "commemorative",
+                      "name": "GuP: 수집가 (collectorGuP)"
+                    },
+                    "medalHalonen": {
+                      "achievement_id": "medalHalonen",
+                      "section": "epic",
+                      "name": "할로넨 훈장 (medalHalonen)"
+                    },
+                    "heroesOfRassenay": {
+                      "achievement_id": "heroesOfRassenay",
+                      "section": "epic",
+                      "name": "라세이니 훈장 (heroesOfRassenay)"
+                    },
+                    "firstVictory": {
+                      "achievement_id": "firstVictory",
+                      "section": "commemorative",
+                      "name": "첫 승리 (firstVictory)"
+                    },
+                    "defender": {
+                      "achievement_id": "defender",
+                      "section": "battle",
+                      "name": "수비수 (defender)"
+                    },
+                    "creative": {
+                      "achievement_id": "creative",
+                      "section": "commemorative",
+                      "name": "콘테스트 제패 (creative)"
+                    },
+                    "eSportFinal": {
+                      "achievement_id": "eSportFinal",
+                      "section": "commemorative",
+                      "name": "블리츠 트위스터 컵 온라인 결선 진출 (eSportFinal)"
+                    },
+                    "supporter": {
+                      "achievement_id": "supporter",
+                      "section": "battle",
+                      "name": "연맹 (supporter)"
+                    },
+                    "goldClanRibbonSEA": {
+                      "achievement_id": "goldClanRibbonSEA",
+                      "section": "commemorative",
+                      "name": "시즌 골드 수장 (goldClanRibbonSEA)"
+                    },
+                    "platinumTwisterMedalSEA": {
+                      "achievement_id": "platinumTwisterMedalSEA",
+                      "section": "commemorative",
+                      "name": "시즌 플래티넘 휘장 (platinumTwisterMedalSEA)"
+                    },
+                    "medalLehvaslaiho": {
+                      "achievement_id": "medalLehvaslaiho",
+                      "section": "epic",
+                      "name": "레배슬라이호 훈장 (medalLehvaslaiho)"
+                    },
+                    "tankExpert": {
+                      "achievement_id": "tankExpert",
+                      "section": "title",
+                      "name": "전문가 (tankExpert)"
+                    },
+                    "eSportQualification": {
+                      "achievement_id": "eSportQualification",
+                      "section": "commemorative",
+                      "name": "블리츠 트위스터 컵 예선 참가 (eSportQualification)"
+                    },
+                    "MarkI": {
+                      "achievement_id": "MarkI",
+                      "section": "commemorative",
+                      "name": "전차 100주년 (MarkI)"
+                    },
+                    "medalSupremacy": {
+                      "achievement_id": "medalSupremacy",
+                      "section": "step",
+                      "name": "쟁탈전 훈장"
+                    },
+                    "participantofWGFest2017": {
+                      "achievement_id": "participantofWGFest2017",
+                      "section": "commemorative",
+                      "name": "WG Fest 2017 참여 (participantofWGFest2017)"
+                    },
+                    "medalTournamentOffseason1": {
+                      "achievement_id": "medalTournamentOffseason1",
+                      "section": "commemorative",
+                      "name": "오프 시즌 참여 (medalTournamentOffseason1)"
+                    },
+                    "jointVictory": {
+                      "achievement_id": "jointVictory",
+                      "section": "platoon",
+                      "name": "소대전 승리"
+                    },
+                    "platinumClanRibbonRU": {
+                      "achievement_id": "platinumClanRibbonRU",
+                      "section": "commemorative",
+                      "name": "시즌 플래티넘 수장 (platinumClanRibbonRU)"
+                    },
+                    "medalTournamentOffseason4": {
+                      "achievement_id": "medalTournamentOffseason4",
+                      "section": "commemorative",
+                      "name": "오프 시즌 참여 (medalTournamentOffseason4)"
+                    },
+                    "sniper": {
+                      "achievement_id": "sniper",
+                      "section": "title",
+                      "name": "저격수 (sniper)"
+                    },
+                    "titleSniper": {
+                      "achievement_id": "titleSniper",
+                      "section": "title",
+                      "name": "명사수 (titleSniper)"
+                    },
+                    "medalCrucialContribution": {
+                      "achievement_id": "medalCrucialContribution",
+                      "section": "platoon",
+                      "name": "최고 공헌자 (medalCrucialContribution)"
+                    },
+                    "scout": {
+                      "achievement_id": "scout",
+                      "section": "battle",
+                      "name": "정찰병 (scout)"
+                    },
+                    "goldTwisterMedalRU": {
+                      "achievement_id": "goldTwisterMedalRU",
+                      "section": "commemorative",
+                      "name": "시즌 골드 휘장 (goldTwisterMedalRU)"
+                    },
+                    "tankExpert3": {
+                      "achievement_id": "tankExpert3",
+                      "section": "title",
+                      "name": "전문가: 중국 (tankExpert3)"
+                    },
+                    "tankExpert2": {
+                      "achievement_id": "tankExpert2",
+                      "section": "title",
+                      "name": "전문가: 미국 (tankExpert2)"
+                    },
+                    "tankExpert1": {
+                      "achievement_id": "tankExpert1",
+                      "section": "title",
+                      "name": "전문가: 독일 (tankExpert1)"
+                    },
+                    "tankExpert0": {
+                      "achievement_id": "tankExpert0",
+                      "section": "title",
+                      "name": "전문가: 소련 (tankExpert0)"
+                    },
+                    "markOfMastery": {
+                      "achievement_id": "markOfMastery",
+                      "section": "battle",
+                      "name": "숙련의 증표: 전차 에이스 (markOfMastery)"
+                    },
+                    "tankExpert6": {
+                      "achievement_id": "tankExpert6",
+                      "section": "title",
+                      "name": "전문가: 일본 (tankExpert6)"
+                    },
+                    "tankExpert5": {
+                      "achievement_id": "tankExpert5",
+                      "section": "title",
+                      "name": "전문가: 영국 (tankExpert5)"
+                    },
+                    "tankExpert4": {
+                      "achievement_id": "tankExpert4",
+                      "section": "title",
+                      "name": "전문가: 프랑스 (tankExpert4)"
+                    },
+                    "goldTwisterMedalEU": {
+                      "achievement_id": "goldTwisterMedalEU",
+                      "section": "commemorative",
+                      "name": "시즌 골드 휘장 (goldTwisterMedalEU)"
+                    },
+                    "ChristmasTreeLevelUpNY2019": {
+                      "achievement_id": "ChristmasTreeLevelUpNY2019",
+                      "section": "commemorative",
+                      "name": "신년 나무 명예 장식자 (ChristmasTreeLevelUpNY2019)"
+                    },
+                    "medalLavrinenko": {
+                      "achievement_id": "medalLavrinenko",
+                      "section": "step",
+                      "name": "라브리넨코 훈장"
+                    },
+                    "medalKolobanov": {
+                      "achievement_id": "medalKolobanov",
+                      "section": "epic",
+                      "name": "콜로바노프 훈장 (medalKolobanov)"
+                    },
+                    "medalLafayettePool": {
+                      "achievement_id": "medalLafayettePool",
+                      "section": "epic",
+                      "name": "풀 훈장 (medalLafayettePool)"
+                    },
+                    "goldClanRibbonEU": {
+                      "achievement_id": "goldClanRibbonEU",
+                      "section": "commemorative",
+                      "name": "시즌 골드 수장 (goldClanRibbonEU)"
+                    },
+                    "olimpicGolden": {
+                      "achievement_id": "olimpicGolden",
+                      "section": "commemorative",
+                      "name": "블리츠 게임즈: 금메달 (olimpicGolden)"
+                    },
+                    "medalKnispel": {
+                      "achievement_id": "medalKnispel",
+                      "section": "step",
+                      "name": "크니스펠 훈장"
+                    },
+                    "invader": {
+                      "achievement_id": "invader",
+                      "section": "battle",
+                      "name": "침략자 (invader)"
+                    },
+                    "goldTwisterMedalNA": {
+                      "achievement_id": "goldTwisterMedalNA",
+                      "section": "commemorative",
+                      "name": "시즌 골드 휘장 (goldTwisterMedalNA)"
+                    },
+                    "mechanicEngineer": {
+                      "achievement_id": "mechanicEngineer",
+                      "section": "title",
+                      "name": "수석 전차 개발자 (mechanicEngineer)"
+                    },
+                    "markOfMasteryII": {
+                      "achievement_id": "markOfMasteryII",
+                      "section": "battle",
+                      "name": "숙련의 증표: 2급 (markOfMasteryII)"
+                    },
+                    "firstBlood": {
+                      "achievement_id": "firstBlood",
+                      "section": "commemorative",
+                      "name": "첫 격파 (firstBlood)"
+                    },
+                    "medalKay": {
+                      "achievement_id": "medalKay",
+                      "section": "step",
+                      "name": "케이 훈장"
+                    },
+                    "medalOrlik": {
+                      "achievement_id": "medalOrlik",
+                      "section": "epic",
+                      "name": "오를리크 훈장 (medalOrlik)"
+                    },
+                    "medalBrothersInArms": {
+                      "achievement_id": "medalBrothersInArms",
+                      "section": "platoon",
+                      "name": "전우애 (medalBrothersInArms)"
+                    },
+                    "medalAbrams": {
+                      "achievement_id": "medalAbrams",
+                      "section": "step",
+                      "name": "에이브럼스 훈장"
+                    },
+                    "medalAtgm": {
+                      "achievement_id": "medalAtgm",
+                      "section": "commemorative",
+                      "name": "미사일맨 (medalAtgm)"
+                    },
+                    "mainGun": {
+                      "achievement_id": "mainGun",
+                      "section": "battle",
+                      "name": "능력자 (mainGun)"
+                    },
+                    "ironMan": {
+                      "achievement_id": "ironMan",
+                      "section": "commemorative",
+                      "name": "냉철함 (ironMan)"
+                    },
+                    "platinumClanRibbonEU": {
+                      "achievement_id": "platinumClanRibbonEU",
+                      "section": "commemorative",
+                      "name": "시즌 플래티넘 수장 (platinumClanRibbonEU)"
+                    },
+                    "platinumClanRibbonSEA": {
+                      "achievement_id": "platinumClanRibbonSEA",
+                      "section": "commemorative",
+                      "name": "시즌 플래티넘 수장 (platinumClanRibbonSEA)"
+                    },
+                    "warrior": {
+                      "achievement_id": "warrior",
+                      "section": "battle",
+                      "name": "탑건 (warrior)"
+                    },
+                    "goldClanRibbonRU": {
+                      "achievement_id": "goldClanRibbonRU",
+                      "section": "commemorative",
+                      "name": "시즌 골드 수장 (goldClanRibbonRU)"
+                    },
+                    "medalRadleyWalters": {
+                      "achievement_id": "medalRadleyWalters",
+                      "section": "epic",
+                      "name": "래들리-월터스 훈장 (medalRadleyWalters)"
+                    },
+                    "raider": {
+                      "achievement_id": "raider",
+                      "section": "title",
+                      "name": "침입자 (raider)"
+                    },
+                    "participantofNewStart": {
+                      "achievement_id": "participantofNewStart",
+                      "section": "commemorative",
+                      "name": "새로운 시작 참여 (participantofNewStart)"
+                    },
+                    "diamondClanRibbon": {
+                      "achievement_id": "diamondClanRibbon",
+                      "section": "commemorative",
+                      "name": "시즌 다이아몬드 수장 (diamondClanRibbon)"
+                    },
+                    "medalBillotte": {
+                      "achievement_id": "medalBillotte",
+                      "section": "epic",
+                      "name": "비요트 훈장 (medalBillotte)"
+                    },
+                    "platinumTwisterMedalEU": {
+                      "achievement_id": "platinumTwisterMedalEU",
+                      "section": "commemorative",
+                      "name": "시즌 플래티넘 휘장 (platinumTwisterMedalEU)"
+                    },
+                    "diehard": {
+                      "achievement_id": "diehard",
+                      "section": "title",
+                      "name": "생존자 (diehard)"
+                    },
+                    "masterofContinents": {
+                      "achievement_id": "masterofContinents",
+                      "section": "commemorative",
+                      "name": "최강자 (masterofContinents)"
+                    },
+                    "evileye": {
+                      "achievement_id": "evileye",
+                      "section": "battle",
+                      "name": "정찰 임무 (evileye)"
+                    },
+                    "cadet": {
+                      "achievement_id": "cadet",
+                      "section": "commemorative",
+                      "name": "후보생 (cadet)"
+                    },
+                    "medalBlitzMasters": {
+                      "achievement_id": "medalBlitzMasters",
+                      "section": "commemorative",
+                      "name": "블리츠 마스터 2022 참가자 (medalBlitzMasters)"
+                    },
+                    "supremacyHunter": {
+                      "achievement_id": "supremacyHunter",
+                      "section": "commemorative",
+                      "name": "최고 격파왕 (supremacyHunter)"
+                    },
+                    "newbieT3485Win": {
+                      "achievement_id": "newbieT3485Win",
+                      "section": "commemorative",
+                      "name": "T-34-85: 첫 승리 (newbieT3485Win)"
+                    },
+                    "continentalContender": {
+                      "achievement_id": "continentalContender",
+                      "section": "commemorative",
+                      "name": "도전자 (continentalContender)"
+                    },
+                    "steelwall": {
+                      "achievement_id": "steelwall",
+                      "section": "battle",
+                      "name": "철벽 (steelwall)"
+                    },
+                    "supremacyLegend": {
+                      "achievement_id": "supremacyLegend",
+                      "section": "commemorative",
+                      "name": "최고 공격수 (supremacyLegend)"
+                    },
+                    "punisher": {
+                      "achievement_id": "punisher",
+                      "section": "platoon",
+                      "name": "복수자"
+                    },
+                    "eSport": {
+                      "achievement_id": "eSport",
+                      "section": "commemorative",
+                      "name": "블리츠 트위스터 컵의 영광 (eSport)"
+                    },
+                    "platinumTwisterMark": {
+                      "achievement_id": "platinumTwisterMark",
+                      "section": "commemorative",
+                      "name": "시즌 플래티넘 훈장 (platinumTwisterMark)"
+                    },
+                    "goldClanRibbonNA": {
+                      "achievement_id": "goldClanRibbonNA",
+                      "section": "commemorative",
+                      "name": "시즌 골드 수장 (goldClanRibbonNA)"
+                    },
+                    "medalPoppel": {
+                      "achievement_id": "medalPoppel",
+                      "section": "step",
+                      "name": "포펠 훈장"
+                    },
+                    "mechanicEngineer6": {
+                      "achievement_id": "mechanicEngineer6",
+                      "section": "title",
+                      "name": "전차 개발자: 일본 (mechanicEngineer6)"
+                    },
+                    "mechanicEngineer4": {
+                      "achievement_id": "mechanicEngineer4",
+                      "section": "title",
+                      "name": "전차 개발자: 프랑스 (mechanicEngineer4)"
+                    },
+                    "goldTwisterMedalSEA": {
+                      "achievement_id": "goldTwisterMedalSEA",
+                      "section": "commemorative",
+                      "name": "시즌 골드 휘장 (goldTwisterMedalSEA)"
+                    },
+                    "mechanicEngineer2": {
+                      "achievement_id": "mechanicEngineer2",
+                      "section": "title",
+                      "name": "전차 개발자: 미국 (mechanicEngineer2)"
+                    },
+                    "mechanicEngineer3": {
+                      "achievement_id": "mechanicEngineer3",
+                      "section": "title",
+                      "name": "전차 개발자: 중국 (mechanicEngineer3)"
+                    },
+                    "mechanicEngineer0": {
+                      "achievement_id": "mechanicEngineer0",
+                      "section": "title",
+                      "name": "전차 개발자: 소련 (mechanicEngineer0)"
+                    },
+                    "mechanicEngineer1": {
+                      "achievement_id": "mechanicEngineer1",
+                      "section": "title",
+                      "name": "전차 개발자: 독일 (mechanicEngineer1)"
+                    },
+                    "mechanicEngineer5": {
+                      "achievement_id": "mechanicEngineer5",
+                      "section": "title",
+                      "name": "전차 개발자: 영국 (mechanicEngineer5)"
+                    },
+                    "medalTarczay": {
+                      "achievement_id": "medalTarczay",
+                      "section": "epic",
+                      "name": "타르차이 훈장 (medalTarczay)"
+                    },
+                    "sinai": {
+                      "achievement_id": "sinai",
+                      "section": "title",
+                      "name": "시나이 반도의 사자 (sinai)"
+                    },
+                    "pattonValley": {
+                      "achievement_id": "pattonValley",
+                      "section": "title",
+                      "name": "패튼의 골짜기 (pattonValley)"
+                    },
+                    "newbieDoubleWin": {
+                      "achievement_id": "newbieDoubleWin",
+                      "section": "commemorative",
+                      "name": "더블 (newbieDoubleWin)"
+                    },
+                    "medalDeLanglade": {
+                      "achievement_id": "medalDeLanglade",
+                      "section": "epic",
+                      "name": "드 랑글라드 훈장 (medalDeLanglade)"
+                    },
+                    "diamondTwisterMedal": {
+                      "achievement_id": "diamondTwisterMedal",
+                      "section": "commemorative",
+                      "name": "시즌 다이아몬드 휘장 (diamondTwisterMedal)"
+                    },
+                    "beasthunter": {
+                      "achievement_id": "beasthunter",
+                      "section": "title",
+                      "name": "사냥꾼 (beasthunter)"
+                    },
+                    "supremacyVeteran": {
+                      "achievement_id": "supremacyVeteran",
+                      "section": "commemorative",
+                      "name": "최고 전문가 (supremacyVeteran)"
+                    },
+                    "newbieShermanWin": {
+                      "achievement_id": "newbieShermanWin",
+                      "section": "commemorative",
+                      "name": "Sherman Easy 8: 첫 승리 (newbieShermanWin)"
+                    },
+                    "kamikaze": {
+                      "achievement_id": "kamikaze",
+                      "section": "title",
+                      "name": "카미카제 (kamikaze)"
+                    },
+                    "olimpicBronze": {
+                      "achievement_id": "olimpicBronze",
+                      "section": "commemorative",
+                      "name": "블리츠 게임즈: 동메달 (olimpicBronze)"
+                    },
+                    "newbieType58TUWin": {
+                      "achievement_id": "newbieType58TUWin",
+                      "section": "commemorative",
+                      "name": "Type 58: 첫 승리 (newbieType58TUWin)"
+                    },
+                    "medalTournamentOffseason3": {
+                      "achievement_id": "medalTournamentOffseason3",
+                      "section": "commemorative",
+                      "name": "오프 시즌 참여 (medalTournamentOffseason3)"
+                    },
+                    "medalTournamentOffseason2": {
+                      "achievement_id": "medalTournamentOffseason2",
+                      "section": "commemorative",
+                      "name": "오프 시즌 참여 (medalTournamentOffseason2)"
+                    },
+                    "medalOskin": {
+                      "achievement_id": "medalOskin",
+                      "section": "epic",
+                      "name": "오스킨 훈장 (medalOskin)"
+                    },
+                    "invincible": {
+                      "achievement_id": "invincible",
+                      "section": "title",
+                      "name": "천하무적 (invincible)"
+                    },
+                    "platinumClanRibbonNA": {
+                      "achievement_id": "platinumClanRibbonNA",
+                      "section": "commemorative",
+                      "name": "시즌 플래티넘 수장 (platinumClanRibbonNA)"
+                    },
+                    "platinumTwisterMedalRU": {
+                      "achievement_id": "platinumTwisterMedalRU",
+                      "section": "commemorative",
+                      "name": "시즌 플래티넘 휘장 (platinumTwisterMedalRU)"
+                    },
+                    "newbieTrippleWin": {
+                      "achievement_id": "newbieTrippleWin",
+                      "section": "commemorative",
+                      "name": "트리플 (newbieTrippleWin)"
+                    },
+                    "continentalViceChampion": {
+                      "achievement_id": "continentalViceChampion",
+                      "section": "commemorative",
+                      "name": "이인자 (continentalViceChampion)"
+                    },
+                    "olimpicSilver": {
+                      "achievement_id": "olimpicSilver",
+                      "section": "commemorative",
+                      "name": "블리츠 게임즈: 은메달 (olimpicSilver)"
+                    },
+                    "markOfMasteryI": {
+                      "achievement_id": "markOfMasteryI",
+                      "section": "battle",
+                      "name": "숙련의 증표: 1급 (markOfMasteryI)"
+                    },
+                    "continentalCompetitor": {
+                      "achievement_id": "continentalCompetitor",
+                      "section": "commemorative",
+                      "name": "참가자 (continentalCompetitor)"
+                    },
+                    "newbieTigerWin": {
+                      "achievement_id": "newbieTigerWin",
+                      "section": "commemorative",
+                      "name": "Tiger I: 첫 승리 (newbieTigerWin)"
+                    },
+                    "medalTournamentSummerSeason": {
+                      "achievement_id": "medalTournamentSummerSeason",
+                      "section": "commemorative",
+                      "name": "여름 시즌 참여자 (medalTournamentSummerSeason)"
+                    },
+                    "mousebane": {
+                      "achievement_id": "mousebane",
+                      "section": "title",
+                      "name": "쥐사냥꾼 (mousebane)"
+                    },
+                    "medalBrunoPietro": {
+                      "achievement_id": "medalBrunoPietro",
+                      "section": "epic",
+                      "name": "브루노 훈장 (medalBrunoPietro)"
+                    },
+                    "medalTournamentSpringSeason": {
+                      "achievement_id": "medalTournamentSpringSeason",
+                      "section": "commemorative",
+                      "name": "봄 시즌 참여자 (medalTournamentSpringSeason)"
+                    },
+                    "goldTwisterMark": {
+                      "achievement_id": "goldTwisterMark",
+                      "section": "commemorative",
+                      "name": "시즌 골드 훈장 (goldTwisterMark)"
+                    },
+                    "collectorWarhammer": {
+                      "achievement_id": "collectorWarhammer",
+                      "section": "commemorative",
+                      "name": "Warhammer 40,000: 수집가 (collectorWarhammer)"
+                    },
+                    "markOfMasteryIII": {
+                      "achievement_id": "markOfMasteryIII",
+                      "section": "battle",
+                      "name": "숙련의 증표: 3급 (markOfMasteryIII)"
+                    },
+                    "medalLeClerc": {
+                      "achievement_id": "medalLeClerc",
+                      "section": "step",
+                      "name": "르클레르 훈장"
+                    },
+                    "medalTournamentProfessional": {
+                      "achievement_id": "medalTournamentProfessional",
+                      "section": "commemorative",
+                      "name": "프로페셔널 (medalTournamentProfessional)"
+                    },
+                    "medalCommunityChampion": {
+                      "achievement_id": "medalCommunityChampion",
+                      "section": "commemorative",
+                      "name": "커뮤니티 챔피언 (medalCommunityChampion)"
+                    },
+                    "diamondTwisterMark": {
+                      "achievement_id": "diamondTwisterMark",
+                      "section": "commemorative",
+                      "name": "시즌 다이아몬드 훈장 (diamondTwisterMark)"
+                    },
+                    "platinumTwisterMedalNA": {
+                      "achievement_id": "platinumTwisterMedalNA",
+                      "section": "commemorative",
+                      "name": "시즌 플래티넘 휘장 (platinumTwisterMedalNA)"
+                    },
+                    "handOfDeath": {
+                      "achievement_id": "handOfDeath",
+                      "section": "title",
+                      "name": "사신 (handOfDeath)"
+                    },
+                    "medalTournamentWinterSeason": {
+                      "achievement_id": "medalTournamentWinterSeason",
+                      "section": "commemorative",
+                      "name": "겨울 시즌 참여자 (medalTournamentWinterSeason)"
+                    },
+                    "huntsman": {
+                      "achievement_id": "huntsman",
+                      "section": "commemorative",
+                      "name": "수색대 (huntsman)"
+                    },
+                    "camper": {
+                      "achievement_id": "camper",
+                      "section": "battle",
+                      "name": "전차 저격수 (camper)"
+                    },
+                    "medalNikolas": {
+                      "achievement_id": "medalNikolas",
+                      "section": "epic",
+                      "name": "니콜스 훈장 (medalNikolas)"
+                    },
+                    "androidTest": {
+                      "achievement_id": "androidTest",
+                      "section": "commemorative",
+                      "name": "안드로이드에서 블리츠 테스트 (androidTest)"
+                    },
+                    "sturdy": {
+                      "achievement_id": "sturdy",
+                      "section": "commemorative",
+                      "name": "스파르타인 (sturdy)"
+                    },
+                    "medalTwitch": {
+                      "achievement_id": "medalTwitch",
+                      "section": "commemorative",
+                      "name": "Twitch 투사 (medalTwitch)"
+                    },
+                    "medalWGfestTicket": {
+                      "achievement_id": "medalWGfestTicket",
+                      "section": "commemorative",
+                      "name": "WG Fest 2018 참여 (medalWGfestTicket)"
+                    },
+                    "championofNewStart": {
+                      "achievement_id": "championofNewStart",
+                      "section": "commemorative",
+                      "name": "새로운 시작 챔피언 (championofNewStart)"
+                    },
+                    "medalTournamentAutumnSeason": {
+                      "achievement_id": "medalTournamentAutumnSeason",
+                      "section": "commemorative",
+                      "name": "가을 시즌 참여자 (medalTournamentAutumnSeason)"
+                    }
+                  }
+                }""";
+    }
 }
