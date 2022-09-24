@@ -4,6 +4,8 @@ import org.intellij.lang.annotations.Language;
 
 import java.sql.*;
 
+import static me.kirito5572.App.openFileData;
+
 public class MySQLConnector {
     private static Connection connection;
     private static String url;
@@ -17,12 +19,12 @@ public class MySQLConnector {
 
 
     public MySQLConnector() throws ClassNotFoundException, SQLException {
-        //url = "jdbc:mysql://" + openFileData("endPoint") + "/blitz_bot?serverTimezone=UTC";
+        url = "jdbc:mysql://" + openFileData("endPoint") + "/blitz_bot?serverTimezone=UTC";
         user = "blitzbot";
-        //password = openFileData("SQLPassword");
+        password = openFileData("SQLPassword");
         String driverName = "com.mysql.cj.jdbc.Driver";
         Class.forName(driverName);
-        //connection = DriverManager.getConnection(url, user, password);
+        connection = DriverManager.getConnection(url, user, password);
     }
 
     /**
