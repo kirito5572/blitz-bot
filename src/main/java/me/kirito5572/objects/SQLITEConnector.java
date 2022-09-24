@@ -20,13 +20,17 @@ public class SQLITEConnector {
         Class.forName("org.sqlite.JDBC");
         String FilePath = new File(getClass().getProtectionDomain().getCodeSource().getLocation()
                 .toURI()).getAbsolutePath();
-        FilePath = FilePath.substring(0, FilePath.lastIndexOf("blitz_bot"));
-        if(App.OS == App.WINDOWS) {
-            dbUrl = FilePath + "sqlite.db";
-        } else if(App.OS == App.UNIX) {
-            dbUrl = FilePath + "sqlite.db";
-        } else if(App.OS == App.MAC) {
-            dbUrl = FilePath + "sqlite.db";
+        try {
+            FilePath = FilePath.substring(0, FilePath.lastIndexOf("blitz_bot"));
+            if(App.OS == App.WINDOWS) {
+                dbUrl = FilePath + "sqlite.db";
+            } else if(App.OS == App.UNIX) {
+                dbUrl = FilePath + "sqlite.db";
+            } else if(App.OS == App.MAC) {
+                dbUrl = FilePath + "sqlite.db";
+            }
+        } catch (StringIndexOutOfBoundsException e) {
+            dbUrl = "C:\\Users\\CKIRUser\\IdeaProjects\\blitz-bot\\build\\libs\\sqlite.db";
         }
         connection = DriverManager.getConnection("jdbc:sqlite:" + dbUrl);
     }

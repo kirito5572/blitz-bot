@@ -7,7 +7,7 @@ plugins ({
     id 'net.nemerosa.versioning' version '2.6.1'
 })
 group 'me.kirito5572'
-version '0.2.0_beta'
+version '0.2.0_stable'
 
 mainClassName = 'me.kirito5572.App'
 

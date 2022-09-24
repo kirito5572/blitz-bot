@@ -45,7 +45,9 @@ public class filterListener extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
         Member member = event.getMember();
-        assert member != null;
+        if(member == null) {
+            return;
+        }
         if(member.getId().equals(event.getJDA().getSelfUser().getId())){
             return;
         }
