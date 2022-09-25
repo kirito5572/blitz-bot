@@ -169,10 +169,12 @@ public class onReadyListener extends ListenerAdapter {
             }
 
         } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
             try {
-                MySQLConnector.reConnection();
+                sqliteConnector.reConnection();
             } catch (SQLException throwable) {
                 logger.error(sqlException.getMessage());
+                throwable.printStackTrace();
             }
             logger.error(sqlException.getMessage());
         }
