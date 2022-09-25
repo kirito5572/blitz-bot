@@ -121,13 +121,9 @@ public class WargamingAPI {
                     if(date.getTime() == calendar.getTime().getTime()) {
                         //조회를 하려고 하는 날(date)이 오늘 인 경우
                         dataObject = getUserPersonalData(id);
-                        String json  = new Gson().toJson(dataObject);
-                        wargamingConnector.Insert_Query_Wargaming("UPDATE `" + id + "` SET data = ? WHERE input_time = ?",
-                                new int[]{ wargamingConnector.STRING, wargamingConnector.STRING},
-                                new String[]{json, String.valueOf(date.getTime())});
                     }
                 } else {
-                    //조회를 하려고 하는 날(date)에 데이터가 없을 경우 pass
+                    //조회를 하려고 하는 날(date)에 데이터가 없을 경우
                     //그런데 그 날이 오늘 인 경우
                     if(date.getTime() == calendar.getTime().getTime()) {
                         dataObject = getUserPersonalData(id);
@@ -135,6 +131,18 @@ public class WargamingAPI {
                         wargamingConnector.Insert_Query_Wargaming("INSERT INTO `" + id + "` (input_time, data) VALUES (?, ?)",
                                 new int[]{wargamingConnector.STRING, wargamingConnector.STRING},
                                 new String[]{String.valueOf(date.getTime()), json});
+                    } else if(date.getTime() < calendar.getTime().getTime()) {
+                        //인접한 날짜의 데이터를 가져온다
+                        ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming(
+                                "SELECT input_time, ABS(input_time - `" + date.getTime() + "`) AS Distance " +
+                                        "FROM `" + id + "` ORDER BY Distance LIMIT 1",
+                                new int[]{}, new String[]{});
+                        if(resultSet1.next()) {
+                            //데이터가 존재할 경우
+                            dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
+                        }
+                        //만약 데이터가 존재하지 않을 경우
+                        // = 오늘 최초 조회를 진행 한 경우이므로 위의 if에 빠지게 된다
                     }
                 }
             } catch (SQLException sqlException) {

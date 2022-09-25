@@ -23,13 +23,13 @@ public class App {
     private final static Logger logger = LoggerFactory.getLogger(App.class);
 
     private static String PREFIX;
-    private final static int APP_STABLE = 0;
-    private final static int APP_BETA = 1;
-    private final static int APP_ALPHA = 2;
+    public final static int APP_STABLE = 0;
+    public final static int APP_BETA = 1;
+    public  final static int APP_ALPHA = 2;
     private final static int APP_UNKNOWN = 3;
 
     private final static String OSStringData = System.getProperty("os.name").toLowerCase();
-    private static int appMode = 3;
+    public static int appMode = 3;
     public static int OS = 3;
     public final static int WINDOWS = 0;
     public final static int MAC = 1;

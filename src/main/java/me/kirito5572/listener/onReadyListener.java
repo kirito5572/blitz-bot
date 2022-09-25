@@ -39,7 +39,14 @@ public class onReadyListener extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         startUpGetData();
-        autoActivityChangeModule(event);
+
+        if(App.appMode == App.APP_ALPHA) {
+            Objects.requireNonNull(event.getJDA().getPresence()).setActivity(Activity.watching("알파 테스트에 오신것을 환영합니다."));
+        } else if(App.appMode == App.APP_BETA) {
+            Objects.requireNonNull(event.getJDA().getPresence()).setActivity(Activity.watching("베타 테스트에 오신것을 환영합니다."));
+        } else if(App.appMode == App.APP_STABLE) {
+            autoActivityChangeModule(event);
+        }
 
         final int[] i = {0};
         try {
