@@ -163,9 +163,10 @@ public class WargamingAPI {
             ratingDataObject.wins = rating.get("wins").getAsInt();
             ratingDataObject.losses = rating.get("losses").getAsInt();
             ratingDataObject.survived = rating.get("survived_battles").getAsInt();
-            ratingDataObject.frags = rating.get("frags").getAsInt();
+            ratingDataObject.frags = rating.get("frags").getAsLong();
             ratingDataObject.spotted = rating.get("spotted").getAsInt();
-            ratingDataObject.accuracy = rating.get("hits").getAsFloat() / rating.get("shots").getAsFloat();
+            ratingDataObject.hits = rating.get("hits").getAsLong();
+            ratingDataObject.shots = rating.get("shots").getAsLong();
             ratingDataObject.current_season = rating.get("current_season").getAsInt();
             ratingDataObject.reCalibration = rating.get("is_recalibration").getAsBoolean();
             ratingDataObject.reCalibrationTime = rating.get("recalibration_start_time").getAsLong();
@@ -180,7 +181,8 @@ public class WargamingAPI {
             allDataObject.survived = all.get("survived_battles").getAsInt();
             allDataObject.frags = all.get("frags").getAsInt();
             allDataObject.spotted = all.get("spotted").getAsInt();
-            allDataObject.accuracy = all.get("hits").getAsFloat() / all.get("shots").getAsFloat();
+            allDataObject.hits = all.get("hits").getAsLong();
+            allDataObject.shots = all.get("shots").getAsLong();
             dataObject.allDataObject = allDataObject;
         } catch (IOException e) {
             e.printStackTrace();
@@ -398,9 +400,10 @@ public class WargamingAPI {
         public int wins;                    //승리
         public int losses;                  //패배
         public int survived;                //생존
-        public int frags;                   //격파
-        public int spotted;                 //스팟
-        public float accuracy;              //정확도(hits / shots)
+        public long frags;                  //격파
+        public long spotted;                //스팟
+        public long hits;                   //명중한 탄
+        public long shots;                  //발사한 탄
         public int current_season;          //현재 시즌
         public boolean reCalibration;       //검증전투 여부
         public long reCalibrationTime;      //검증전투 시작시간
@@ -413,9 +416,10 @@ public class WargamingAPI {
         public int wins;                    //승리
         public int losses;                  //패배
         public int survived;                //생존
-        public int frags;                   //격파
-        public int spotted;                 //스팟
-        public double accuracy;              //정확도(hits / shots)
+        public long frags;                   //격파
+        public long spotted;                 //스팟
+        public long hits;                   //명중한 탄
+        public long shots;                  //발사한 탄
     }
 
     public static class Achievement {

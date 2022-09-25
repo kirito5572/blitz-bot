@@ -145,12 +145,12 @@ public class SearchBlitzStatCommand implements ICommand{
         if(option == ALL) {
             WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(id, today);
             if(game_type == ALL) {
-                int battles = dataObject.allDataObject.battles + dataObject.ratingDataObject.battles;
-                int wins = dataObject.allDataObject.wins + dataObject.ratingDataObject.wins;
-                double accuracy = dataObject.allDataObject.accuracy + dataObject.ratingDataObject.accuracy;
-                int frags = dataObject.allDataObject.frags + dataObject.ratingDataObject.frags;
-                int spotted = dataObject.allDataObject.spotted + dataObject.ratingDataObject.spotted;
-                int survived = dataObject.allDataObject.survived + dataObject.ratingDataObject.survived;
+                int battles = dataObject.allDataObject.battles;
+                int wins = dataObject.allDataObject.wins;
+                double accuracy = ((double) dataObject.allDataObject.hits / (double) dataObject.allDataObject.shots);
+                long frags = dataObject.allDataObject.frags;
+                long spotted = dataObject.allDataObject.spotted;
+                int survived = dataObject.allDataObject.survived;
                 builder.setTitle("전적 조회(전체 전투)")
                         .addField("전투", String.valueOf(battles), true)
                         .addField("승률", String.valueOf(((double) wins / (double) battles) * 10000 / 100.0), true)
@@ -160,12 +160,13 @@ public class SearchBlitzStatCommand implements ICommand{
                         .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 100 / 100.0), true)
                         .setFooter(args.get(0));
             } else if(game_type == AVG) {
-                int battles = dataObject.allDataObject.battles;
-                int wins = dataObject.allDataObject.wins;
-                double accuracy = dataObject.allDataObject.accuracy;
-                int frags = dataObject.allDataObject.frags;
-                int spotted = dataObject.allDataObject.spotted;
-                int survived = dataObject.allDataObject.survived;
+                int battles = dataObject.allDataObject.battles - dataObject.ratingDataObject.battles;
+                int wins = dataObject.allDataObject.wins - dataObject.ratingDataObject.wins;
+                double accuracy = ((double) (dataObject.allDataObject.hits - dataObject.ratingDataObject.hits)) /
+                        ((double) (dataObject.allDataObject.shots - dataObject.ratingDataObject.hits));
+                long frags = dataObject.allDataObject.frags - dataObject.ratingDataObject.frags;
+                long spotted = dataObject.allDataObject.spotted - dataObject.ratingDataObject.spotted;
+                int survived = dataObject.allDataObject.survived - dataObject.ratingDataObject.survived;
                 builder.setTitle("전적 조회(일반모드)")
                         .addField("전투", String.valueOf(battles), true)
                         .addField("승률", String.valueOf(((double) wins / (double) battles) * 10000 / 100.0), true)
@@ -177,9 +178,9 @@ public class SearchBlitzStatCommand implements ICommand{
             } else if(game_type == RANK) {
                 int battles = dataObject.ratingDataObject.battles;
                 int wins = dataObject.ratingDataObject.wins;
-                double accuracy = dataObject.ratingDataObject.accuracy;
-                int frags = dataObject.ratingDataObject.frags;
-                int spotted = dataObject.ratingDataObject.spotted;
+                double accuracy = ((double) dataObject.ratingDataObject.hits / (double) dataObject.ratingDataObject.shots);
+                long frags = dataObject.ratingDataObject.frags;
+                long spotted = dataObject.ratingDataObject.spotted;
                 int survived = dataObject.ratingDataObject.survived;
                 int rating = dataObject.ratingDataObject.rating;
                 int season = dataObject.ratingDataObject.current_season;
@@ -198,7 +199,7 @@ public class SearchBlitzStatCommand implements ICommand{
                         .addField("랭크 전투 시즌", String.valueOf(season), true)
                         .addField("랭크 MMR", String.valueOf(rating), true)
                         .setFooter(args.get(0));
-                if(reCal) {
+                if(!reCal) {
                     builder.addField("검증 전투 완료까지 남은 횟수", String.valueOf(reCalBattleLeft), false)
                             .addField("검증 전투 최초 시작 시간", sdf.format(date), false);
                 }
@@ -206,6 +207,8 @@ public class SearchBlitzStatCommand implements ICommand{
                 event.getChannel().sendMessage("").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
                 return;
             }
+        } else if(option == MONTH1) {
+            return;
         } else {
             return;
         }
