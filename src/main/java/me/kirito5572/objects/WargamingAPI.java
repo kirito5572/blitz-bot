@@ -110,30 +110,25 @@ public class WargamingAPI {
         }
         if(resultSet != null) {
             try {
+                Calendar calendar = new GregorianCalendar();
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
                 if(resultSet.next()) {
                     //조회를 하려고 하는 날(date)에 데이터가 있을 경우
                     dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
-                    Calendar calendar = new GregorianCalendar();
-                    calendar.set(Calendar.HOUR_OF_DAY, 0);
-                    calendar.set(Calendar.MINUTE, 0);
-                    calendar.set(Calendar.SECOND, 0);
-                    calendar.set(Calendar.MILLISECOND, 0);
                     if(date.getTime() == calendar.getTime().getTime()) {
                         //조회를 하려고 하는 날(date)이 오늘 인 경우
                         dataObject = getUserPersonalData(id);
                         String json  = new Gson().toJson(dataObject);
-                        wargamingConnector.Insert_Query_Wargaming("UPDATE `" + id + "` SET json = ? WHERE input_time = ?",
+                        wargamingConnector.Insert_Query_Wargaming("UPDATE `" + id + "` SET data = ? WHERE input_time = ?",
                                 new int[]{ wargamingConnector.STRING, wargamingConnector.STRING},
                                 new String[]{json, String.valueOf(date.getTime())});
                     }
                 } else {
                     //조회를 하려고 하는 날(date)에 데이터가 없을 경우 pass
                     //그런데 그 날이 오늘 인 경우
-                    Calendar calendar = new GregorianCalendar();
-                    calendar.set(Calendar.HOUR_OF_DAY, 0);
-                    calendar.set(Calendar.MINUTE, 0);
-                    calendar.set(Calendar.SECOND, 0);
-                    calendar.set(Calendar.MILLISECOND, 0);
                     if(date.getTime() == calendar.getTime().getTime()) {
                         dataObject = getUserPersonalData(id);
                         String json = new Gson().toJson(dataObject);
