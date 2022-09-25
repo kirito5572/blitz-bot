@@ -55,7 +55,13 @@ public class CommandManager {
         addCommand(new UserInfoCommand());
         addCommand(new BanCommand());
         addCommand(new UnBanCommand());
-        
+
+        addCommand(new SQLiteQueryCommand(wargamingConnector){
+            @Override
+            public String[] getInvoke() {
+                return new String[] {"sqlite_war"};
+            }
+        });
         addCommand(new SearchBlitzStatCommand(wargamingConnector, wargamingAPI));
 
         //music commands

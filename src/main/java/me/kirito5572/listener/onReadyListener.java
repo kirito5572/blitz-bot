@@ -73,10 +73,9 @@ public class onReadyListener extends ListenerAdapter {
                 public void run() {
                     wargamingUserDataListenerModule(date.getTime());
                     date.add(Calendar.DAY_OF_MONTH, 1);
-                    timer.schedule(this, date.getTime());
                 }
             };
-            timer.schedule(timertask, date.getTime());
+            timer.scheduleAtFixedRate(timertask, date.getTime(), 86400000L);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
