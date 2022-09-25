@@ -87,7 +87,7 @@ public class WargamingAPI {
             } else {
                 wargamingConnector.Insert_Query_Wargaming("INSERT INTO wargamingUserId (nickname, userId) VALUES (?, ?)",
                         new int[]{wargamingConnector.STRING, wargamingConnector.STRING}, new String[]{nickname, id});
-                wargamingConnector.Insert_Query_Wargaming("create table " + id + " \n" +
+                wargamingConnector.Insert_Query_Wargaming("create table `" + id + "` \n" +
                                 "(\n" +
                                 "\tinput_time text,\n" +
                                 "\tdata text \n"+
@@ -102,7 +102,7 @@ public class WargamingAPI {
         DataObject dataObject = new DataObject();
         ResultSet resultSet = null;
         try {
-            resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM " + id + " WHERE input_time = ?",
+            resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM `" + id + "` WHERE input_time = ?",
                     new int[]{wargamingConnector.STRING},
                     new String[]{ String.valueOf(date.getTime())});
         } catch (SQLException sqlException) {
@@ -122,7 +122,7 @@ public class WargamingAPI {
                         //조회를 하려고 하는 날(date)이 오늘 인 경우
                         dataObject = getUserPersonalData(id);
                         String json  = new Gson().toJson(dataObject);
-                        wargamingConnector.Insert_Query_Wargaming("UPDATE " + id + " SET json = ? WHERE input_time = ?",
+                        wargamingConnector.Insert_Query_Wargaming("UPDATE `" + id + "` SET json = ? WHERE input_time = ?",
                                 new int[]{ wargamingConnector.STRING, wargamingConnector.STRING},
                                 new String[]{json, String.valueOf(date.getTime())});
                     }
@@ -137,7 +137,7 @@ public class WargamingAPI {
                     if(date.getTime() == calendar.getTime().getTime()) {
                         dataObject = getUserPersonalData(id);
                         String json = new Gson().toJson(dataObject);
-                        wargamingConnector.Insert_Query_Wargaming("INSERT INTO " + id + " (input_time, data) VALUES (?, ?)",
+                        wargamingConnector.Insert_Query_Wargaming("INSERT INTO `" + id + "` (input_time, data) VALUES (?, ?)",
                                 new int[]{wargamingConnector.STRING, wargamingConnector.STRING},
                                 new String[]{String.valueOf(date.getTime()), json});
                     }
