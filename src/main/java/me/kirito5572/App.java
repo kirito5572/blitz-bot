@@ -142,8 +142,8 @@ public class App {
         WebUtils.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) JDA/4.4.0_352");
         logger.info("Connecting to SQL Server/File");
         MySQLConnector mySqlConnector = new MySQLConnector();
-        SQLITEConnector sqliteConnector = new SQLITEConnector("sqlite.db",mySqlConnector);
         SQLITEConnector wargamingConnector = new SQLITEConnector("wargaming.db",mySqlConnector);
+        SQLITEConnector sqliteConnector = new SQLITEConnector("sqlite.db",mySqlConnector);
 
         logger.info("Connect Success with SQL Server/File \n Starting Objects link to main");
         

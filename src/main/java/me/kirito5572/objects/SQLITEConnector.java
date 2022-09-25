@@ -33,7 +33,7 @@ public class SQLITEConnector {
                 dbUrl = FilePath + dbName;
             }
         } catch (StringIndexOutOfBoundsException e) {
-            dbUrl = "C:\\Users\\CKIRUser\\IdeaProjects\\blitz-bot\\build\\libs\\sqlite.db";
+            dbUrl = "C:\\Users\\CKIRUser\\IdeaProjects\\blitz-bot\\build\\libs\\" + dbName;
         }
         logger.info(dbUrl);
         connection = DriverManager.getConnection("jdbc:sqlite:" + dbUrl);
