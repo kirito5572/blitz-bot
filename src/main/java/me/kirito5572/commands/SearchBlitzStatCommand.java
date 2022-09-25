@@ -7,6 +7,8 @@ import me.kirito5572.objects.SQLITEConnector;
 import me.kirito5572.objects.WargamingAPI;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SearchBlitzStatCommand implements ICommand{
+    private final Logger logger = LoggerFactory.getLogger(SearchBlitzStatCommand.class);
     private final SQLITEConnector wargamingConnector;
     private final WargamingAPI wargamingAPI;
 
@@ -116,6 +119,8 @@ public class SearchBlitzStatCommand implements ICommand{
                 }
             }
         }
+
+        logger.info("option :" + option + ", game_type: "+ game_type + ", id:" + id);
 
         //TODO 이제... 대망의 값 가져오기!
         Calendar calendar = new GregorianCalendar();
