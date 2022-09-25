@@ -89,9 +89,9 @@ public class onReadyListener extends ListenerAdapter {
                 WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(userId);
                 Gson gson = new Gson();
                 String json = gson.toJson(dataObject);
-                sqliteConnector.Insert_Query_Wargaming("INSERT INTO ? (input_time, data) VALUES (?, ?)",
-                        new int[]{sqliteConnector.STRING, sqliteConnector.STRING, sqliteConnector.STRING},
-                        new String[]{userId, String.valueOf(date.getTime()), json});
+                sqliteConnector.Insert_Query_Wargaming("INSERT INTO " + userId + " (input_time, data) VALUES (?, ?)",
+                        new int[]{sqliteConnector.STRING, sqliteConnector.STRING},
+                        new String[]{String.valueOf(date.getTime()), json});
             }
         } catch (SQLException | InterruptedException sqlException) {
             sqlException.printStackTrace();
