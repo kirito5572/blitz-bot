@@ -28,7 +28,7 @@ public class onReadyListener extends ListenerAdapter {
     private final SQLITEConnector wargamingConnector;
     private final WargamingAPI wargamingAPI;
     private int i = 0;
-    private final Logger logger = LoggerFactory.getLogger(MuteListener.class);
+    private final Logger logger = LoggerFactory.getLogger(onReadyListener.class);
 
     public onReadyListener(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector,
                            WargamingAPI wargamingAPI, SQLITEConnector wargamingConnector) {

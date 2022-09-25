@@ -2,6 +2,8 @@ package me.kirito5572.objects;
 
 import me.kirito5572.App;
 import org.intellij.lang.annotations.Language;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -9,6 +11,7 @@ import java.sql.*;
 
 
 public class SQLITEConnector {
+    private final Logger logger = LoggerFactory.getLogger(SQLITEConnector.class);
     private final MySQLConnector mySqlConnector;
     private static Connection connection;
     private static String dbUrl = "";
@@ -32,6 +35,7 @@ public class SQLITEConnector {
         } catch (StringIndexOutOfBoundsException e) {
             dbUrl = "C:\\Users\\CKIRUser\\IdeaProjects\\blitz-bot\\build\\libs\\sqlite.db";
         }
+        logger.info(dbUrl);
         connection = DriverManager.getConnection("jdbc:sqlite:" + dbUrl);
     }
 
