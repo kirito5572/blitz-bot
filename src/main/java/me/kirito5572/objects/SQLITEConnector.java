@@ -15,7 +15,7 @@ public class SQLITEConnector {
 
     public final int STRING = 0;
 
-    public SQLITEConnector(MySQLConnector mySQLConnector) throws ClassNotFoundException, SQLException, URISyntaxException {
+    public SQLITEConnector(String dbName, MySQLConnector mySQLConnector) throws ClassNotFoundException, SQLException, URISyntaxException {
         this.mySqlConnector = mySQLConnector;
         Class.forName("org.sqlite.JDBC");
         String FilePath = new File(getClass().getProtectionDomain().getCodeSource().getLocation()
@@ -23,11 +23,11 @@ public class SQLITEConnector {
         try {
             FilePath = FilePath.substring(0, FilePath.lastIndexOf("blitz_bot"));
             if(App.OS == App.WINDOWS) {
-                dbUrl = FilePath + "sqlite.db";
+                dbUrl = FilePath + dbName;
             } else if(App.OS == App.UNIX) {
-                dbUrl = FilePath + "sqlite.db";
+                dbUrl = FilePath + dbName;
             } else if(App.OS == App.MAC) {
-                dbUrl = FilePath + "sqlite.db";
+                dbUrl = FilePath + dbName;
             }
         } catch (StringIndexOutOfBoundsException e) {
             dbUrl = "C:\\Users\\CKIRUser\\IdeaProjects\\blitz-bot\\build\\libs\\sqlite.db";

@@ -1,9 +1,6 @@
 package me.kirito5572.objects;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,17 +13,20 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class WargamingAPI {
     private final static Logger logger = LoggerFactory.getLogger(WargamingAPI.class);
     private final String token;
-    private final SQLITEConnector sqliteConnector;
+    private final SQLITEConnector wargamingConnector;
     private HashMap<String, AchievementData> achievementMap = new HashMap<>();
 
-    public WargamingAPI(SQLITEConnector sqliteConnector) {
+    public WargamingAPI(SQLITEConnector wargamingConnector) {
         token = "54634622f8be6ecf13cf721dfe133f32";     //App.openFileData("wargaming");
-        this.sqliteConnector = sqliteConnector;
+        this.wargamingConnector = wargamingConnector;
 
         JsonElement element = JsonParser.parseString(achievementJsonData);
         JsonObject data = element.getAsJsonObject().get("data").getAsJsonObject();
@@ -46,17 +46,21 @@ public class WargamingAPI {
         SQLITEConnector sqliteConnector = null;
         try {
             mySQLConnector = new MySQLConnector();
-            sqliteConnector = new SQLITEConnector(mySQLConnector);
+            sqliteConnector = new SQLITEConnector("wargaming.db", mySQLConnector);
         } catch (ClassNotFoundException | SQLException | URISyntaxException e) {
             e.printStackTrace();
         }
         WargamingAPI wargamingAPI = new WargamingAPI(sqliteConnector);
+        DataObject dataObject = wargamingAPI.getUserPersonalData("2011403181");
+        Gson gson = new Gson();
+        String json = gson.toJson(dataObject);
+        DataObject dataObject1 = gson.fromJson(json, DataObject.class);
     }
 
     public String getWargamingPlayer(String nickname) throws SQLException {
         String id;
-        ResultSet resultSet = sqliteConnector.Select_Query("SELECT * FROM wargamingUserId WHERE nickname = ?",
-                new int[]{sqliteConnector.STRING}, new String[]{nickname});
+        ResultSet resultSet = wargamingConnector.Select_Query("SELECT * FROM wargamingUserId WHERE nickname = ?",
+                new int[]{wargamingConnector.STRING}, new String[]{nickname});
         if (resultSet.next()) {
             id = resultSet.getString("userId");
         } else {
@@ -75,17 +79,78 @@ public class WargamingAPI {
                 e.printStackTrace();
                 return null;
             }
-            ResultSet resultSet1 = sqliteConnector.Select_Query("SELECT * FROM wargamingUserId WHERE userId = ?",
-                    new int[]{sqliteConnector.STRING}, new String[]{id});
+            ResultSet resultSet1 = wargamingConnector.Select_Query("SELECT * FROM wargamingUserId WHERE userId = ?",
+                    new int[]{wargamingConnector.STRING}, new String[]{id});
             if (resultSet1.next()) {
-                sqliteConnector.Insert_Query("UPDATE wargamingUserId SET nickname = ? WHERE userId = ?",
-                        new int[]{sqliteConnector.STRING, sqliteConnector.STRING}, new String[]{nickname, id});
+                wargamingConnector.Insert_Query("UPDATE wargamingUserId SET nickname = ? WHERE userId = ?",
+                        new int[]{wargamingConnector.STRING, wargamingConnector.STRING}, new String[]{nickname, id});
             } else {
-                sqliteConnector.Insert_Query("INSERT INTO wargamingUserId (nickname, userId) VALUES (?, ?)",
-                        new int[]{sqliteConnector.STRING, sqliteConnector.STRING}, new String[]{nickname, id});
+                wargamingConnector.Insert_Query("INSERT INTO wargamingUserId (nickname, userId) VALUES (?, ?)",
+                        new int[]{wargamingConnector.STRING, wargamingConnector.STRING}, new String[]{nickname, id});
+                wargamingConnector.Insert_Query("""
+                                create table ?
+                                (
+                                \tinput_time text,
+                                \tdata text
+                                );""",
+                        new int[]{wargamingConnector.STRING}, new String[]{id});
             }
         }
         return id;
+    }
+
+    public DataObject getUserPersonalData(String id, Date date) {
+        DataObject dataObject = new DataObject();
+        ResultSet resultSet = null;
+        try {
+            resultSet = wargamingConnector.Select_Query("SELECT * FROM ? WHERE input_time = ?",
+                    new int[]{wargamingConnector.STRING, wargamingConnector.STRING},
+                    new String[]{id, String.valueOf(date.getTime())});
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+        if(resultSet != null) {
+            try {
+                if(resultSet.next()) {
+                    //조회를 하려고 하는 날(date)에 데이터가 있을 경우
+                    dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
+                    Calendar calendar = new GregorianCalendar();
+                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                    if(date.getTime() == calendar.getTime().getTime()) {
+                        //조회를 하려고 하는 날(date)이 오늘 인 경우
+                        dataObject = getUserPersonalData(id);
+                        String json  = new Gson().toJson(dataObject);
+                        wargamingConnector.Insert_Query("UPDATE ? SET json = ? WHERE input_time = ?",
+                                new int[]{wargamingConnector.STRING, wargamingConnector.STRING, wargamingConnector.STRING},
+                                new String[]{id, json, String.valueOf(date.getTime())});
+                    }
+                } else {
+                    //조회를 하려고 하는 날(date)에 데이터가 없을 경우 pass
+                    //그런데 그 날이 오늘 인 경우
+                    Calendar calendar = new GregorianCalendar();
+                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                    if(date.getTime() == calendar.getTime().getTime()) {
+                        dataObject = getUserPersonalData(id);
+                        String json = new Gson().toJson(dataObject);
+                        wargamingConnector.Insert_Query("INSERT INTO ? (input_time, data) VALUES (?, ?)",
+                                new int[]{wargamingConnector.STRING, wargamingConnector.STRING, wargamingConnector.STRING},
+                                new String[]{id, String.valueOf(date.getTime()), json});
+                    }
+                }
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
+            }
+        } else {
+            //테이블이 아예 존재하지 않을 경우
+            return null;
+        }
+        return dataObject;
     }
 
     public DataObject getUserPersonalData(String id) {
@@ -356,7 +421,7 @@ public class WargamingAPI {
         public int survived;                //생존
         public int frags;                   //격파
         public int spotted;                 //스팟
-        public float accuracy;              //정확도(hits / shots)
+        public double accuracy;              //정확도(hits / shots)
     }
 
     public static class Achievement {

@@ -22,7 +22,7 @@ public class BanCommand implements ICommand {
             event.getChannel().sendMessage("유저명이 입력되지 않았습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
-        List<Member> foundMember = FinderUtil.findMembers(String.join(" ", args), event.getGuild());
+        List<Member> foundMember = FinderUtil.findMembers(String.join(" ", args.get(0)), event.getGuild());
         if (foundMember.isEmpty()) {
             event.getChannel().sendMessage("해당 유저를 봇이 찾을수 없거나, 인수가 잘못 입력되었습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;

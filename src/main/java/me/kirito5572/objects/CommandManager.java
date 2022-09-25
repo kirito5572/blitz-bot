@@ -4,6 +4,7 @@ import me.kirito5572.App;
 import me.kirito5572.commands.BotInfoCommand;
 import me.kirito5572.commands.HelpCommand;
 import me.kirito5572.commands.PingCommand;
+import me.kirito5572.commands.SearchBlitzStatCommand;
 import me.kirito5572.commands.admin.EvalCommand;
 import me.kirito5572.commands.admin.SQLiteQueryCommand;
 import me.kirito5572.commands.moderator.*;
@@ -35,7 +36,7 @@ public class CommandManager {
 
     private final Map<String, ICommand> commands = new HashMap<>();
 
-    public CommandManager(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector, FilterSystem filterSystem) {
+    public CommandManager(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector, FilterSystem filterSystem, WargamingAPI wargamingAPI, SQLITEConnector wargamingConnector) {
         addCommand(new HelpCommand(this));
         addCommand(new PingCommand(mySqlConnector, sqliteConnector));
         addCommand(new FilterWordAddCommand(filterSystem));
@@ -54,6 +55,8 @@ public class CommandManager {
         addCommand(new UserInfoCommand());
         addCommand(new BanCommand());
         addCommand(new UnBanCommand());
+        
+        addCommand(new SearchBlitzStatCommand(wargamingConnector, wargamingAPI));
 
         //music commands
         addCommand(new JoinCommand());

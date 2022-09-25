@@ -1,10 +1,12 @@
 package me.kirito5572.listener;
 
+import com.google.gson.Gson;
 import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.App;
 import me.kirito5572.objects.MySQLConnector;
 import me.kirito5572.objects.OptionData;
 import me.kirito5572.objects.SQLITEConnector;
+import me.kirito5572.objects.WargamingAPI;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -23,12 +25,17 @@ import java.util.*;
 public class onReadyListener extends ListenerAdapter {
     private final MySQLConnector mySqlConnector;
     private final SQLITEConnector sqliteConnector;
+    private final SQLITEConnector wargamingConnector;
+    private final WargamingAPI wargamingAPI;
     private int i = 0;
     private final Logger logger = LoggerFactory.getLogger(MuteListener.class);
 
-    public onReadyListener(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector) {
+    public onReadyListener(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector,
+                           WargamingAPI wargamingAPI, SQLITEConnector wargamingConnector) {
         this.mySqlConnector = mySqlConnector;
         this.sqliteConnector = sqliteConnector;
+        this.wargamingAPI = wargamingAPI;
+        this.wargamingConnector = wargamingConnector;
     }
 
     @Override
@@ -56,8 +63,41 @@ public class onReadyListener extends ListenerAdapter {
                 }
             };
             timer.scheduleAtFixedRate(task, 0, 1000);
+            Calendar date = new GregorianCalendar();
+            date.set(Calendar.HOUR_OF_DAY, 0);
+            date.set(Calendar.MINUTE, 0);
+            date.set(Calendar.SECOND, 0);
+            date.set(Calendar.MILLISECOND, 0);
+            TimerTask timertask = new TimerTask() {
+                @Override
+                public void run() {
+                    wargamingUserDataListenerModule(date.getTime());
+                    date.add(Calendar.DAY_OF_MONTH, 1);
+                    timer.schedule(this, date.getTime());
+                }
+            };
+            timer.schedule(timertask, date.getTime());
         } catch (Exception e) {
             logger.error(e.getMessage());
+        }
+    }
+
+    public void wargamingUserDataListenerModule(@NotNull Date date) {
+        ResultSet resultSet;
+        try {
+            resultSet = wargamingConnector.Select_Query("SELECT * FROM wargamingUserId", new int[]{}, new String[]{});
+            while(resultSet.next()) {
+                Thread.sleep(200);
+                String userId = resultSet.getString("userId");
+                WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(userId);
+                Gson gson = new Gson();
+                String json = gson.toJson(dataObject);
+                wargamingConnector.Insert_Query("INSERT INTO ? (input_time, data) VALUES (?, ?)",
+                        new int[]{wargamingConnector.STRING, wargamingConnector.STRING, wargamingConnector.STRING},
+                        new String[]{userId, String.valueOf(date.getTime()), json});
+            }
+        } catch (SQLException | InterruptedException sqlException) {
+            sqlException.printStackTrace();
         }
     }
 

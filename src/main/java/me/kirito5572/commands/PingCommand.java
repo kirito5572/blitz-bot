@@ -90,7 +90,7 @@ public class PingCommand implements ICommand {
     @NotNull
     @Override
     public String getSmallHelp() {
-        return "other";
+        return "BlitzBot의 핑을 조회합니다.";
     }
 
     @Override
