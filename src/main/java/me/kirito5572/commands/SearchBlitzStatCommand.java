@@ -68,6 +68,12 @@ public class SearchBlitzStatCommand implements ICommand{
                 }
             }
             if(args.size() >= 2) {
+                try {
+                    id = wargamingAPI.getWargamingPlayer(args.get(0));
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
+                    event.getChannel().sendMessage("유저 검색중 에러가 발생했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+                }
                 game_type = ALL;
                 switch (args.get(1)) {
                     case "전체" -> option = ALL;
@@ -80,6 +86,12 @@ public class SearchBlitzStatCommand implements ICommand{
                 }
             }
             if(args.size() >= 3) {
+                try {
+                    id = wargamingAPI.getWargamingPlayer(args.get(0));
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
+                    event.getChannel().sendMessage("유저 검색중 에러가 발생했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+                }
                 switch (args.get(1)) {
                     case "전체" -> option = ALL;
                     case "30일" -> option = MONTH1;
@@ -143,9 +155,9 @@ public class SearchBlitzStatCommand implements ICommand{
                         .addField("전투", String.valueOf(battles), true)
                         .addField("승률", String.valueOf(((double) wins / (double) battles) * 10000 / 100.0), true)
                         .addField("생존률", String.valueOf(((double) survived / (double) battles) * 10000 / 100.0), true)
-                        .addField("명중률", String.valueOf(accuracy * 10000 / 100.0), true)
-                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 10000 / 100.0), true)
-                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 10000 / 100.0), true)
+                        .addField("명중률", String.valueOf(accuracy * 100 / 100.0), true)
+                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 100 / 100.0), true)
+                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 100 / 100.0), true)
                         .setFooter(args.get(0));
             } else if(game_type == AVG) {
                 int battles = dataObject.allDataObject.battles;
@@ -158,9 +170,9 @@ public class SearchBlitzStatCommand implements ICommand{
                         .addField("전투", String.valueOf(battles), true)
                         .addField("승률", String.valueOf(((double) wins / (double) battles) * 10000 / 100.0), true)
                         .addField("생존률", String.valueOf(((double) survived / (double) battles) * 10000 / 100.0), true)
-                        .addField("명중률", String.valueOf(accuracy * 10000 / 100.0), true)
-                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 10000 / 100.0), true)
-                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 10000 / 100.0), true)
+                        .addField("명중률", String.valueOf(accuracy * 100 / 100.0), true)
+                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 100 / 100.0), true)
+                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 100 / 100.0), true)
                         .setFooter(args.get(0));
             } else if(game_type == RANK) {
                 int battles = dataObject.ratingDataObject.battles;
@@ -180,9 +192,9 @@ public class SearchBlitzStatCommand implements ICommand{
                         .addField("전투", String.valueOf(battles), true)
                         .addField("승률", String.valueOf(((double) wins / (double) battles) * 10000 / 100.0), true)
                         .addField("생존률", String.valueOf(((double) survived / (double) battles) * 10000 / 100.0), true)
-                        .addField("명중률", String.valueOf(accuracy * 10000 / 100.0), true)
-                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 10000 / 100.0), true)
-                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 10000 / 100.0), true)
+                        .addField("명중률", String.valueOf(accuracy * 100 / 100.0), true)
+                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 100 / 100.0), true)
+                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 100 / 100.0), true)
                         .addField("랭크 전투 시즌", String.valueOf(season), true)
                         .addField("랭크 MMR", String.valueOf(rating), true)
                         .setFooter(args.get(0));
