@@ -13,12 +13,13 @@ import java.sql.*;
 public class SQLITEConnector {
     private final Logger logger = LoggerFactory.getLogger(SQLITEConnector.class);
     private final MySQLConnector mySqlConnector;
-    private static Connection connection;
+    private static Connection sqliteConnection;
+    private static Connection wargamingConnection;
     private static String dbUrl = "";
 
     public final int STRING = 0;
 
-    public SQLITEConnector(String dbName, MySQLConnector mySQLConnector) throws ClassNotFoundException, SQLException, URISyntaxException {
+    public SQLITEConnector(MySQLConnector mySQLConnector) throws ClassNotFoundException, SQLException, URISyntaxException {
         this.mySqlConnector = mySQLConnector;
         Class.forName("org.sqlite.JDBC");
         String FilePath = new File(getClass().getProtectionDomain().getCodeSource().getLocation()
@@ -26,17 +27,18 @@ public class SQLITEConnector {
         try {
             FilePath = FilePath.substring(0, FilePath.lastIndexOf("blitz_bot"));
             if(App.OS == App.WINDOWS) {
-                dbUrl = FilePath + dbName;
+                dbUrl = FilePath;
             } else if(App.OS == App.UNIX) {
-                dbUrl = FilePath + dbName;
+                dbUrl = FilePath;
             } else if(App.OS == App.MAC) {
-                dbUrl = FilePath + dbName;
+                dbUrl = FilePath;
             }
         } catch (StringIndexOutOfBoundsException e) {
-            dbUrl = "C:\\Users\\CKIRUser\\IdeaProjects\\blitz-bot\\build\\libs\\" + dbName;
+            dbUrl = "C:\\Users\\CKIRUser\\IdeaProjects\\blitz-bot\\build\\libs\\";
         }
         logger.info(dbUrl);
-        connection = DriverManager.getConnection("jdbc:sqlite:" + dbUrl);
+        sqliteConnection = DriverManager.getConnection("jdbc:sqlite:" + dbUrl + "sqlite.db");
+        wargamingConnection = DriverManager.getConnection("jdbc:sqlite:" + dbUrl + "wargaming.db");
     }
 
     /**
@@ -45,19 +47,30 @@ public class SQLITEConnector {
      *      is closed; {@code false} if it is still open
      * @throws SQLException if a database access error occurs
      */
-    public boolean isConnectionClosed() throws SQLException {
-        return connection.isClosed();
+    public boolean isConnectionClosedSqlite() throws SQLException {
+        return sqliteConnection.isClosed();
+    }
+
+    public boolean isConnectionClosedWargaming() throws SQLException {
+        return wargamingConnection.isClosed();
     }
 
     /**
      * reconnecting with sql server
      * @throws SQLException - if a database access error occurs
      */
-    public void reConnection() throws SQLException {
-        if (!connection.isClosed()) {
-            connection.close();
+    public void reConnectionSqlite() throws SQLException {
+        if (!sqliteConnection.isClosed()) {
+            sqliteConnection.close();
         }
-        connection = DriverManager.getConnection("jdbc:sqlite:" + dbUrl);
+        sqliteConnection = DriverManager.getConnection("jdbc:sqlite:" + dbUrl + "sqlite.db");
+    }
+
+    public void reConnectionWargaming() throws SQLException {
+        if (!wargamingConnection.isClosed()) {
+            wargamingConnection.close();
+        }
+        wargamingConnection = DriverManager.getConnection("jdbc:sqlite:" + dbUrl + "wargaming.db");
     }
 
     /**
@@ -68,8 +81,14 @@ public class SQLITEConnector {
      * @throws SQLException if query execution fail or database access error occurs
      * @return {@link java.sql.ResultSet}
      */
-    public ResultSet Select_Query(@Language("SQLite") String Query, int[] dataType, String[] data) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement(Query);
+    public ResultSet Select_Query_Sqlite(@Language("SQLite") String Query, int[] dataType, String[] data) throws SQLException {
+        PreparedStatement statement = sqliteConnection.prepareStatement(Query);
+        mySqlConnector.Query(statement, dataType, data);
+        return statement.executeQuery();
+    }
+
+    public ResultSet Select_Query_Wargaming(@Language("SQLite") String Query, int[] dataType, String[] data) throws SQLException {
+        PreparedStatement statement = wargamingConnection.prepareStatement(Query);
         mySqlConnector.Query(statement, dataType, data);
         return statement.executeQuery();
     }
@@ -82,8 +101,14 @@ public class SQLITEConnector {
      * @return true = success, false = failed
      * @throws SQLException if query execution fail or database access error occurs
      */
-    public boolean Insert_Query(@Language("SQLite") String Query, int[] dataType, String[] data) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement(Query);
+    public boolean Insert_Query_Sqlite(@Language("SQLite") String Query, int[] dataType, String[] data) throws SQLException {
+        PreparedStatement statement = sqliteConnection.prepareStatement(Query);
+        mySqlConnector.Query(statement, dataType, data);
+        return statement.execute();
+    }
+
+    public boolean Insert_Query_Wargaming(@Language("SQLite") String Query, int[] dataType, String[] data) throws SQLException {
+        PreparedStatement statement = wargamingConnection.prepareStatement(Query);
         mySqlConnector.Query(statement, dataType, data);
         return statement.execute();
     }

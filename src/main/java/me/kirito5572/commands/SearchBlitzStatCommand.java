@@ -41,7 +41,7 @@ public class SearchBlitzStatCommand implements ICommand{
         final int RANK = 2;
         if(args.isEmpty()) {
             try {
-                ResultSet resultSet = wargamingConnector.Select_Query("SELECT * FROM wargamingUserId WHERE discordId = ?",
+                ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE discordId = ?",
                         new int[]{wargamingConnector.STRING}, new String[]{event.getAuthor().getId()});
                 if(resultSet.next()) {
                     id = resultSet.getString("userId");

@@ -25,7 +25,7 @@ public class MessagePinListener extends ListenerAdapter {
         if(event.getAuthor().getId().equals(event.getGuild().getSelfMember().getId())) {
             return;
         }
-        try (ResultSet resultSet = sqliteConnector.Select_Query("SELECT * FROM Pin WHERE channelId=?;", new int[]{sqliteConnector.STRING}, new String[]{event.getChannel().getId()})) {
+        try (ResultSet resultSet = sqliteConnector.Select_Query_Sqlite("SELECT * FROM Pin WHERE channelId=?;", new int[]{sqliteConnector.STRING}, new String[]{event.getChannel().getId()})) {
             if(resultSet.next()) {
                 try {
                     event.getChannel().retrieveMessageById(resultSet.getString("messageId")).queue(message -> {
@@ -33,7 +33,7 @@ public class MessagePinListener extends ListenerAdapter {
                         message.delete().queue();
                         event.getChannel().sendMessageEmbeds(embed).queue(message1 -> {
                             try {
-                                sqliteConnector.Insert_Query("UPDATE Pin SET messageId =? WHERE channelId = ?;",
+                                sqliteConnector.Insert_Query_Sqlite("UPDATE Pin SET messageId =? WHERE channelId = ?;",
                                         new int[]{sqliteConnector.STRING, sqliteConnector.STRING},
                                         new String[]{message1.getId(), event.getChannel().getId()});
                             } catch (SQLException sqlException) {
@@ -43,13 +43,13 @@ public class MessagePinListener extends ListenerAdapter {
                         });
                     });
                 } catch (ErrorResponseException e) {
-                    sqliteConnector.Insert_Query("DELETE FROM Pin WHERE channelId=?", new int[]{sqliteConnector.STRING}, new String[]{event.getChannel().getId()});
+                    sqliteConnector.Insert_Query_Sqlite("DELETE FROM Pin WHERE channelId=?", new int[]{sqliteConnector.STRING}, new String[]{event.getChannel().getId()});
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                sqliteConnector.reConnection();
+                sqliteConnector.reConnectionSqlite();
             } catch (SQLException sqlException) {
                 logger.error(sqlException.getMessage());
             }

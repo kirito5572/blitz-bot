@@ -42,7 +42,7 @@ public class PingCommand implements ICommand {
         } catch (SQLException e){
             e.printStackTrace();
         }
-        try (ResultSet ignored = sqliteConnector.Select_Query("SELECT * FROM Pin", new int[]{}, new String[]{})) {
+        try (ResultSet ignored = sqliteConnector.Select_Query_Sqlite("SELECT * FROM Pin", new int[]{}, new String[]{})) {
             sqliteEnd = System.currentTimeMillis();
         } catch (SQLException e){
             e.printStackTrace();

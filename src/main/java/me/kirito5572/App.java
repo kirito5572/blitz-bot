@@ -142,8 +142,7 @@ public class App {
         WebUtils.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) JDA/4.4.0_352");
         logger.info("Connecting to SQL Server/File");
         MySQLConnector mySqlConnector = new MySQLConnector();
-        SQLITEConnector wargamingConnector = new SQLITEConnector("wargaming.db",mySqlConnector);
-        SQLITEConnector sqliteConnector = new SQLITEConnector("sqlite.db",mySqlConnector);
+        SQLITEConnector sqliteConnector = new SQLITEConnector(mySqlConnector);
 
         logger.info("Connect Success with SQL Server/File \n Starting Objects link to main");
         
@@ -152,12 +151,12 @@ public class App {
         
         logger.info("Objects linked!, Loading Listeners");
         
-        CommandManager commandManager = new CommandManager(mySqlConnector, sqliteConnector, filterSystem, wargamingAPI, wargamingConnector);
+        CommandManager commandManager = new CommandManager(mySqlConnector, sqliteConnector, filterSystem, wargamingAPI);
         Listener listener = new Listener(commandManager);
         filterListener filterListener = new filterListener(filterSystem);
         LogListener logListener = new LogListener(mySqlConnector);
         MuteListener muteListener = new MuteListener(mySqlConnector);
-        onReadyListener onReadyListener = new onReadyListener(mySqlConnector, sqliteConnector, wargamingAPI, wargamingConnector);
+        onReadyListener onReadyListener = new onReadyListener(mySqlConnector, sqliteConnector, wargamingAPI);
         DirectMessageListener directMessageListener = new DirectMessageListener(mySqlConnector);
 
         EventListener eventListener = new EventListener(mySqlConnector);

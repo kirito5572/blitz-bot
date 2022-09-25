@@ -46,7 +46,7 @@ public class WargamingAPI {
         SQLITEConnector sqliteConnector = null;
         try {
             mySQLConnector = new MySQLConnector();
-            sqliteConnector = new SQLITEConnector("wargaming.db", mySQLConnector);
+            sqliteConnector = new SQLITEConnector(mySQLConnector);
         } catch (ClassNotFoundException | SQLException | URISyntaxException e) {
             e.printStackTrace();
         }
@@ -59,7 +59,7 @@ public class WargamingAPI {
 
     public String getWargamingPlayer(String nickname) throws SQLException {
         String id;
-        ResultSet resultSet = wargamingConnector.Select_Query("SELECT * FROM wargamingUserId WHERE nickname = ?",
+        ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE nickname = ?",
                 new int[]{wargamingConnector.STRING}, new String[]{nickname});
         if (resultSet.next()) {
             id = resultSet.getString("userId");
@@ -79,15 +79,15 @@ public class WargamingAPI {
                 e.printStackTrace();
                 return null;
             }
-            ResultSet resultSet1 = wargamingConnector.Select_Query("SELECT * FROM wargamingUserId WHERE userId = ?",
+            ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE userId = ?",
                     new int[]{wargamingConnector.STRING}, new String[]{id});
             if (resultSet1.next()) {
-                wargamingConnector.Insert_Query("UPDATE wargamingUserId SET nickname = ? WHERE userId = ?",
+                wargamingConnector.Insert_Query_Wargaming("UPDATE wargamingUserId SET nickname = ? WHERE userId = ?",
                         new int[]{wargamingConnector.STRING, wargamingConnector.STRING}, new String[]{nickname, id});
             } else {
-                wargamingConnector.Insert_Query("INSERT INTO wargamingUserId (nickname, userId) VALUES (?, ?)",
+                wargamingConnector.Insert_Query_Wargaming("INSERT INTO wargamingUserId (nickname, userId) VALUES (?, ?)",
                         new int[]{wargamingConnector.STRING, wargamingConnector.STRING}, new String[]{nickname, id});
-                wargamingConnector.Insert_Query("""
+                wargamingConnector.Insert_Query_Wargaming("""
                                 create table ?
                                 (
                                 \tinput_time text,
@@ -103,7 +103,7 @@ public class WargamingAPI {
         DataObject dataObject = new DataObject();
         ResultSet resultSet = null;
         try {
-            resultSet = wargamingConnector.Select_Query("SELECT * FROM ? WHERE input_time = ?",
+            resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM ? WHERE input_time = ?",
                     new int[]{wargamingConnector.STRING, wargamingConnector.STRING},
                     new String[]{id, String.valueOf(date.getTime())});
         } catch (SQLException sqlException) {
@@ -123,7 +123,7 @@ public class WargamingAPI {
                         //조회를 하려고 하는 날(date)이 오늘 인 경우
                         dataObject = getUserPersonalData(id);
                         String json  = new Gson().toJson(dataObject);
-                        wargamingConnector.Insert_Query("UPDATE ? SET json = ? WHERE input_time = ?",
+                        wargamingConnector.Insert_Query_Wargaming("UPDATE ? SET json = ? WHERE input_time = ?",
                                 new int[]{wargamingConnector.STRING, wargamingConnector.STRING, wargamingConnector.STRING},
                                 new String[]{id, json, String.valueOf(date.getTime())});
                     }
@@ -138,7 +138,7 @@ public class WargamingAPI {
                     if(date.getTime() == calendar.getTime().getTime()) {
                         dataObject = getUserPersonalData(id);
                         String json = new Gson().toJson(dataObject);
-                        wargamingConnector.Insert_Query("INSERT INTO ? (input_time, data) VALUES (?, ?)",
+                        wargamingConnector.Insert_Query_Wargaming("INSERT INTO ? (input_time, data) VALUES (?, ?)",
                                 new int[]{wargamingConnector.STRING, wargamingConnector.STRING, wargamingConnector.STRING},
                                 new String[]{id, String.valueOf(date.getTime()), json});
                     }

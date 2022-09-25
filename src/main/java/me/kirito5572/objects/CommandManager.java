@@ -36,7 +36,7 @@ public class CommandManager {
 
     private final Map<String, ICommand> commands = new HashMap<>();
 
-    public CommandManager(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector, FilterSystem filterSystem, WargamingAPI wargamingAPI, SQLITEConnector wargamingConnector) {
+    public CommandManager(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector, FilterSystem filterSystem, WargamingAPI wargamingAPI) {
         addCommand(new HelpCommand(this));
         addCommand(new PingCommand(mySqlConnector, sqliteConnector));
         addCommand(new FilterWordAddCommand(filterSystem));
@@ -56,13 +56,7 @@ public class CommandManager {
         addCommand(new BanCommand());
         addCommand(new UnBanCommand());
 
-        addCommand(new SQLiteQueryCommand(wargamingConnector){
-            @Override
-            public String[] getInvoke() {
-                return new String[] {"sqlite_war"};
-            }
-        });
-        addCommand(new SearchBlitzStatCommand(wargamingConnector, wargamingAPI));
+        addCommand(new SearchBlitzStatCommand(sqliteConnector, wargamingAPI));
 
         //music commands
         addCommand(new JoinCommand());

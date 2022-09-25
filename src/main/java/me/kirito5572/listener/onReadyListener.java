@@ -25,17 +25,15 @@ import java.util.*;
 public class onReadyListener extends ListenerAdapter {
     private final MySQLConnector mySqlConnector;
     private final SQLITEConnector sqliteConnector;
-    private final SQLITEConnector wargamingConnector;
     private final WargamingAPI wargamingAPI;
     private int i = 0;
     private final Logger logger = LoggerFactory.getLogger(onReadyListener.class);
 
     public onReadyListener(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector,
-                           WargamingAPI wargamingAPI, SQLITEConnector wargamingConnector) {
+                           WargamingAPI wargamingAPI) {
         this.mySqlConnector = mySqlConnector;
         this.sqliteConnector = sqliteConnector;
         this.wargamingAPI = wargamingAPI;
-        this.wargamingConnector = wargamingConnector;
     }
 
     @Override
@@ -84,15 +82,15 @@ public class onReadyListener extends ListenerAdapter {
     public void wargamingUserDataListenerModule(@NotNull Date date) {
         ResultSet resultSet;
         try {
-            resultSet = wargamingConnector.Select_Query("SELECT * FROM wargamingUserId", new int[]{}, new String[]{});
+            resultSet = sqliteConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId", new int[]{}, new String[]{});
             while(resultSet.next()) {
                 Thread.sleep(200);
                 String userId = resultSet.getString("userId");
                 WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(userId);
                 Gson gson = new Gson();
                 String json = gson.toJson(dataObject);
-                wargamingConnector.Insert_Query("INSERT INTO ? (input_time, data) VALUES (?, ?)",
-                        new int[]{wargamingConnector.STRING, wargamingConnector.STRING, wargamingConnector.STRING},
+                sqliteConnector.Insert_Query_Wargaming("INSERT INTO ? (input_time, data) VALUES (?, ?)",
+                        new int[]{sqliteConnector.STRING, sqliteConnector.STRING, sqliteConnector.STRING},
                         new String[]{userId, String.valueOf(date.getTime()), json});
             }
         } catch (SQLException | InterruptedException sqlException) {
@@ -159,11 +157,11 @@ public class onReadyListener extends ListenerAdapter {
 
     public void giveRoleListenerModule() {
         long time = System.currentTimeMillis() / 1000;
-        try (ResultSet resultSet = sqliteConnector.Select_Query(
+        try (ResultSet resultSet = sqliteConnector.Select_Query_Sqlite(
                 "SELECT * FROM GiveRoleBanTable WHERE endTime < ?;",
                 new int[]{sqliteConnector.STRING}, new String[]{String.valueOf(time)})) {
             while (resultSet.next()) {
-                sqliteConnector.Insert_Query(
+                sqliteConnector.Insert_Query_Sqlite(
                         "DELETE FROM GiveRoleBanTable WHERE userId = ?;",
                         new int[] {sqliteConnector.STRING}, new String[]{resultSet.getString("userId")});
             }
@@ -171,7 +169,7 @@ public class onReadyListener extends ListenerAdapter {
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             try {
-                sqliteConnector.reConnection();
+                sqliteConnector.reConnectionSqlite();
             } catch (SQLException throwable) {
                 logger.error(sqlException.getMessage());
                 throwable.printStackTrace();

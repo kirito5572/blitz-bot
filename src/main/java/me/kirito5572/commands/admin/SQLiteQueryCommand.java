@@ -55,14 +55,14 @@ public class SQLiteQueryCommand implements ICommand {
             case "SELECT":
             case "select":
                 try {
-                    ResultSet resultSet = sqliteConnector.Select_Query(SQLQuery, new int[0], new String[0]);
+                    ResultSet resultSet = sqliteConnector.Select_Query_Sqlite(SQLQuery, new int[0], new String[0]);
                     if(resultSet == null) {
                         event.getChannel().sendMessage("NO DATA in TABLE").queue();
                         return;
                     }
                     @Language("SQLite") String countQuery = SQLQuery.replaceFirst("\\*", "").replaceFirst("SELECT", "SELECT COUNT(*) ");
                     System.out.println(countQuery);
-                    ResultSet countSet = sqliteConnector.Select_Query(countQuery, new int[0], new String[0]);
+                    ResultSet countSet = sqliteConnector.Select_Query_Sqlite(countQuery, new int[0], new String[0]);
                     countSet.next();
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
@@ -143,7 +143,7 @@ public class SQLiteQueryCommand implements ICommand {
 
     public void insertDeleteUpdateQuery(@Language("SQLite") String sqlQuery, EventPackage event) {
         try {
-            sqliteConnector.Insert_Query(sqlQuery, new int[0], new String[0]);
+            sqliteConnector.Insert_Query_Sqlite(sqlQuery, new int[0], new String[0]);
 
         } catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());

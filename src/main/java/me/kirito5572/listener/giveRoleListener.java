@@ -62,7 +62,7 @@ public class giveRoleListener extends ListenerAdapter {
                 guild.addRoleToMember(member, role).submit();
                 boolean result = true;
                 try {
-                    result = sqliteConnector.Insert_Query("INSERT INTO JoinDataTable (userId, approveTime, rejectTime) VALUES(?, ? ,?);",
+                    result = sqliteConnector.Insert_Query_Sqlite("INSERT INTO JoinDataTable (userId, approveTime, rejectTime) VALUES(?, ? ,?);",
                             new int[] {sqliteConnector.STRING, sqliteConnector.STRING, sqliteConnector.STRING},
                             new String[] {member.getId(), String.valueOf(System.currentTimeMillis() / 1000), "0"});
                 } catch (SQLException sqlException) {
@@ -87,7 +87,7 @@ public class giveRoleListener extends ListenerAdapter {
                 guild.removeRoleFromMember(member, role).submit();
                 boolean result = true;
                 try {
-                    result = sqliteConnector.Insert_Query("UPDATE JoinDataTable SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
+                    result = sqliteConnector.Insert_Query_Sqlite("UPDATE JoinDataTable SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
                             new int[] {sqliteConnector.STRING, sqliteConnector.STRING, sqliteConnector.STRING},
                             new String[] {String.valueOf(System.currentTimeMillis() / 1000), member.getId(), "0"});
                 } catch (SQLException sqlException) {
@@ -108,7 +108,7 @@ public class giveRoleListener extends ListenerAdapter {
             assert member != null;
             boolean result = true;
             try {
-                result = sqliteConnector.Insert_Query("UPDATE JoinDataTable SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
+                result = sqliteConnector.Insert_Query_Sqlite("UPDATE JoinDataTable SET rejectTime =? WHERE userId = ? AND rejectTime = ?",
                         new int[]{sqliteConnector.STRING, sqliteConnector.STRING, sqliteConnector.STRING},
                         new String[] {String.valueOf(System.currentTimeMillis() / 1000),  member.getId(), "1"});
             } catch (SQLException sqlException) {
@@ -142,7 +142,7 @@ public class giveRoleListener extends ListenerAdapter {
             check_time[1][2] = 6*hour;
             check_time[2][2] = 7*day;
             for(int i = 0; i < 4; i++) {
-                ResultSet resultSet = sqliteConnector.Select_Query("SELECT COUNT(*) FROM JoinDataTable where approveTime > ? AND approveTime < ? AND userId = ?;;",
+                ResultSet resultSet = sqliteConnector.Select_Query_Sqlite("SELECT COUNT(*) FROM JoinDataTable where approveTime > ? AND approveTime < ? AND userId = ?;;",
                         new int[]{sqliteConnector.STRING, sqliteConnector.STRING, sqliteConnector.STRING},
                         new String[]{String.valueOf(time - check_time[i][0]), String.valueOf(time), member.getId()});
                 resultSet.next();
@@ -151,7 +151,7 @@ public class giveRoleListener extends ListenerAdapter {
                         return "ban";
                     }
                     long end_time = (System.currentTimeMillis() / 1000) + check_time[i][2];
-                    sqliteConnector.Insert_Query("INSERT INTO GiveRoleBanTable (userId, endTime) VALUES(?,?);",
+                    sqliteConnector.Insert_Query_Sqlite("INSERT INTO GiveRoleBanTable (userId, endTime) VALUES(?,?);",
                             new int[]{sqliteConnector.STRING, sqliteConnector.STRING},
                             new String[]{member.getId(), String.valueOf(end_time)});
                     return "true/" + check_time[i][0] + "#" + resultSet.getRow();
@@ -176,7 +176,7 @@ public class giveRoleListener extends ListenerAdapter {
 
     private long isBan(@NotNull Member member) {
         try {
-            ResultSet resultSet = sqliteConnector.Select_Query("SELECT * FROM GiveRoleBanTable where userId = ?;",
+            ResultSet resultSet = sqliteConnector.Select_Query_Sqlite("SELECT * FROM GiveRoleBanTable where userId = ?;",
                     new int[]{sqliteConnector.STRING},
                     new String[]{member.getId()});
 
