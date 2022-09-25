@@ -33,10 +33,10 @@ public class PingCommand implements ICommand {
             return;
         }
         long b = event.getJDA().getGatewayPing();
-        long mysqlStart = System.currentTimeMillis();
+        long Start = System.currentTimeMillis();
         long mysqlEnd = System.currentTimeMillis();
-        long sqliteStart = System.currentTimeMillis();
         long sqliteEnd = System.currentTimeMillis();
+        long wargamingEnd = System.currentTimeMillis();
         try (ResultSet ignored = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainBan", new int[]{}, new String[]{})) {
             mysqlEnd = System.currentTimeMillis();
         } catch (SQLException e){
@@ -47,10 +47,17 @@ public class PingCommand implements ICommand {
         } catch (SQLException e){
             e.printStackTrace();
         }
+        try (ResultSet ignored = sqliteConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE discordId = 5", new int[]{}, new String[]{})) {
+            wargamingEnd = System.currentTimeMillis();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
         String mysqlTimeString;
         String sqliteTimeString;
-        long mysqlTime = (mysqlEnd - mysqlStart);
-        long sqliteTime = (sqliteEnd - sqliteStart);
+        String wargamingTimeString;
+        long mysqlTime = (mysqlEnd - Start);
+        long sqliteTime = (sqliteEnd - Start);
+        long wargamingTime = (wargamingEnd - Start);
         if(mysqlTime < 0) {
             mysqlTimeString = "접속 에러";
         } else if(mysqlTime == 1 || mysqlTime == 0) {
@@ -65,10 +72,18 @@ public class PingCommand implements ICommand {
         } else {
             sqliteTimeString = String.valueOf(sqliteTime);
         }
+        if(wargamingTime < 0) {
+            wargamingTimeString = "접속 에러";
+        } else if(wargamingTime == 1 || wargamingTime == 0) {
+            wargamingTimeString = "<1";
+        } else {
+            wargamingTimeString = String.valueOf(wargamingTime);
+        }
         EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed()
                 .setTitle("ping-pong!")
                 .addField("API 응답 시간 (UDP/TCP)", b + "ms / " + a + "ms", false)
-                .addField("SQL 명령어 처리 시간  (MySQL / SQLite)", mysqlTimeString + "ms / " + sqliteTimeString + "ms", false)
+                .addField("SQL 명령어 처리 시간  (MySQL / sqlite.db / wargaming.db)", mysqlTimeString +
+                        "ms / " + sqliteTimeString + "ms / " + wargamingTimeString + "ms", false)
                 .setFooter("1분후 삭제됩니다.");
 
         event.getTextChannel().sendMessageEmbeds(embedBuilder.build()).queue(message -> message.delete().queueAfter(1, TimeUnit.MINUTES));
