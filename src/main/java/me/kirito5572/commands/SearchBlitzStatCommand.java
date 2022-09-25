@@ -192,9 +192,12 @@ public class SearchBlitzStatCommand implements ICommand{
                 }
             } else {
                 event.getChannel().sendMessage("").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+                return;
             }
+        } else {
+            return;
         }
-
+        event.getChannel().sendMessageEmbeds(builder.build()).queue();
     }
 
     @Override
