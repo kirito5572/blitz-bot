@@ -1,10 +1,7 @@
 package me.kirito5572.commands;
 
 import me.duncte123.botcommons.messaging.EmbedUtils;
-import me.kirito5572.objects.EventPackage;
-import me.kirito5572.objects.ICommand;
-import me.kirito5572.objects.SQLITEConnector;
-import me.kirito5572.objects.WargamingAPI;
+import me.kirito5572.objects.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -23,6 +20,13 @@ public class SearchBlitzStatCommand implements ICommand{
     private final Logger logger = LoggerFactory.getLogger(SearchBlitzStatCommand.class);
     private final SQLITEConnector wargamingConnector;
     private final WargamingAPI wargamingAPI;
+    private final int ALL = 0;
+    private final int MONTH1 = 1;
+    private final int MONTH2 = 2;
+    private final int MONTH3 = 3;
+    private final int IMAGE = 4;
+    private final int AVG = 1;
+    private final int RANK = 2;
 
     public SearchBlitzStatCommand(SQLITEConnector wargamingConnector, WargamingAPI wargamingAPI) {
         this.wargamingConnector = wargamingConnector;
@@ -33,15 +37,8 @@ public class SearchBlitzStatCommand implements ICommand{
     public void handle(List<String> args, @NotNull EventPackage event) {
         String id = null;
         int option = 5;
-        final int ALL = 0;
-        final int MONTH1 = 1;
-        final int MONTH2 = 2;
-        final int MONTH3 = 3;
-        final int IMAGE = 4;
 
         int game_type = 3;
-        final int AVG = 1;
-        final int RANK = 2;
         if(args.isEmpty()) {
             try {
                 ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE discordId = ?",
@@ -151,13 +148,17 @@ public class SearchBlitzStatCommand implements ICommand{
                 long frags = dataObject.allDataObject.frags;
                 long spotted = dataObject.allDataObject.spotted;
                 int survived = dataObject.allDataObject.survived;
+                long damageAvg = dataObject.allDataObject.damage_dealt / dataObject.allDataObject.battles;
+                double damageRadio = ((double) dataObject.allDataObject.damage_dealt / (double) dataObject.allDataObject.damage_received);
                 builder.setTitle("전적 조회(전체 전투)")
                         .addField("전투", String.valueOf(battles), true)
-                        .addField("승률", String.valueOf(((double) wins / (double) battles) * 10000 / 100.0), true)
-                        .addField("생존률", String.valueOf(((double) survived / (double) battles) * 10000 / 100.0), true)
-                        .addField("명중률", String.valueOf(accuracy * 100 / 100.0), true)
-                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 100 / 100.0), true)
-                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 100 / 100.0), true)
+                        .addField("승률", String.format("%.2f", ((double) wins / (double) battles) * 10000 / 100.0), true)
+                        .addField("생존률", String.format("%.2f", ((double) survived / (double) battles) * 10000 / 100.0), true)
+                        .addField("명중률", String.format("%.2f", accuracy * 100 / 100.0), true)
+                        .addField("전투당 스팟율", String.format("%.2f", ((double) spotted / (double) battles) * 100 / 100.0), true)
+                        .addField("전투당 격파율", String.format("%.2f", ((double) frags / (double) battles) * 100 / 100.0), true)
+                        .addField("평균 대미지", String.valueOf(damageAvg), true)
+                        .addField("피해 비율", String.format("%.2f", damageRadio * 100 / 100.0), true)
                         .setFooter(args.get(0));
             } else if(game_type == AVG) {
                 int battles = dataObject.allDataObject.battles - dataObject.ratingDataObject.battles;
@@ -167,13 +168,19 @@ public class SearchBlitzStatCommand implements ICommand{
                 long frags = dataObject.allDataObject.frags - dataObject.ratingDataObject.frags;
                 long spotted = dataObject.allDataObject.spotted - dataObject.ratingDataObject.spotted;
                 int survived = dataObject.allDataObject.survived - dataObject.ratingDataObject.survived;
+                long damageAvg = (dataObject.allDataObject.damage_dealt - dataObject.ratingDataObject.damage_dealt ) /
+                        (dataObject.allDataObject.battles - dataObject.ratingDataObject.battles);
+                double damageRadio = ((double) (dataObject.allDataObject.damage_dealt - dataObject.ratingDataObject.damage_dealt) /
+                        (double) (dataObject.allDataObject.damage_received - dataObject.ratingDataObject.damage_received));
                 builder.setTitle("전적 조회(일반모드)")
                         .addField("전투", String.valueOf(battles), true)
-                        .addField("승률", String.valueOf(((double) wins / (double) battles) * 10000 / 100.0), true)
-                        .addField("생존률", String.valueOf(((double) survived / (double) battles) * 10000 / 100.0), true)
-                        .addField("명중률", String.valueOf(accuracy * 100 / 100.0), true)
-                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 100 / 100.0), true)
-                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 100 / 100.0), true)
+                        .addField("승률", String.format("%.2f", ((double) wins / (double) battles) * 10000 / 100.0), true)
+                        .addField("생존률", String.format("%.2f", ((double) survived / (double) battles) * 10000 / 100.0), true)
+                        .addField("명중률", String.format("%.2f", accuracy * 100 / 100.0), true)
+                        .addField("전투당 스팟율", String.format("%.2f", ((double) spotted / (double) battles) * 100 / 100.0), true)
+                        .addField("전투당 격파율", String.format("%.2f", ((double) frags / (double) battles) * 100 / 100.0), true)
+                        .addField("평균 대미지", String.valueOf(damageAvg), true)
+                        .addField("피해 비율", String.format("%.2f", damageRadio * 100 / 100.0), true)
                         .setFooter(args.get(0));
             } else if(game_type == RANK) {
                 int battles = dataObject.ratingDataObject.battles;
@@ -187,17 +194,21 @@ public class SearchBlitzStatCommand implements ICommand{
                 boolean reCal= dataObject.ratingDataObject.reCalibration;
                 long reCalStartTime = dataObject.ratingDataObject.reCalibrationTime;
                 int reCalBattleLeft = dataObject.ratingDataObject.reCalibrationBattleLeft;
+                long damageAvg = dataObject.ratingDataObject.damage_dealt / dataObject.ratingDataObject.battles;
+                double damageRadio = ((double) dataObject.ratingDataObject.damage_dealt / (double) dataObject.ratingDataObject.damage_received);
                 Date date = new Date(reCalStartTime);
                 SimpleDateFormat sdf = new SimpleDateFormat("");
                 builder.setTitle("전적 조회(랭크모드)")
                         .addField("전투", String.valueOf(battles), true)
-                        .addField("승률", String.valueOf(((double) wins / (double) battles) * 10000 / 100.0), true)
-                        .addField("생존률", String.valueOf(((double) survived / (double) battles) * 10000 / 100.0), true)
-                        .addField("명중률", String.valueOf(accuracy * 100 / 100.0), true)
-                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 100 / 100.0), true)
-                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 100 / 100.0), true)
+                        .addField("승률", String.format("%.2f", ((double) wins / (double) battles) * 10000 / 100.0), true)
+                        .addField("생존률", String.format("%.2f", ((double) survived / (double) battles) * 10000 / 100.0), true)
+                        .addField("명중률", String.format("%.2f", accuracy * 100 / 100.0), true)
+                        .addField("전투당 스팟율", String.format("%.2f", ((double) spotted / (double) battles) * 100 / 100.0), true)
+                        .addField("전투당 격파율", String.format("%.2f", ((double) frags / (double) battles) * 100 / 100.0), true)
                         .addField("랭크 전투 시즌", String.valueOf(season), true)
                         .addField("랭크 MMR", String.valueOf(rating), true)
+                        .addField("평균 대미지", String.valueOf(damageAvg), true)
+                        .addField("피해 비율", String.format("%.2f", damageRadio * 100 / 100.0), true)
                         .setFooter(args.get(0));
                 if(!reCal) {
                     builder.addField("검증 전투 완료까지 남은 횟수", String.valueOf(reCalBattleLeft), false)
@@ -210,86 +221,148 @@ public class SearchBlitzStatCommand implements ICommand{
         } else if(option == MONTH1) {
             calendar.add(Calendar.DAY_OF_MONTH, -30);
             Date month = calendar.getTime();
-            WargamingAPI.DataObject today_data = wargamingAPI.getUserPersonalData(id, today);
-            WargamingAPI.DataObject month_data = wargamingAPI.getUserPersonalData(id, month);
-            if(month_data == null) {
-                //30일 이전 데이터가 없을 경우
-                month_data = wargamingAPI.getUserPersonalData(id, month);
-            }
-            //30일 이전 데이터가 있을 경우
-            if(game_type == ALL) {
-                int battles = today_data.allDataObject.battles - month_data.allDataObject.battles;
-                int wins = today_data.allDataObject.wins - month_data.allDataObject.wins;
-                double accuracy = ((double) (today_data.allDataObject.hits - month_data.allDataObject.hits) /
-                        (double) (today_data.allDataObject.shots - month_data.allDataObject.shots));
-                long frags = today_data.allDataObject.frags - month_data.allDataObject.frags;
-                long spotted = today_data.allDataObject.spotted - month_data.allDataObject.spotted;
-                int survived = today_data.allDataObject.survived - month_data.allDataObject.survived;
-                builder.setTitle("전적 조회(30일 / 전체 전투)")
-                        .addField("전투", String.valueOf(battles), true)
-                        .addField("승률", String.valueOf(((double) wins / (double) battles) * 10000 / 100.0), true)
-                        .addField("생존률", String.valueOf(((double) survived / (double) battles) * 10000 / 100.0), true)
-                        .addField("명중률", String.valueOf(accuracy * 100 / 100.0), true)
-                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 100 / 100.0), true)
-                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 100 / 100.0), true)
-                        .setFooter(args.get(0));
-            } else if(game_type == AVG) {
-                int today_battles = today_data.allDataObject.battles - today_data.ratingDataObject.battles;
-                int month_battles = month_data.allDataObject.battles - today_data.ratingDataObject.battles;
-                int battles = today_battles - month_battles;
-                int today_wins = today_data.allDataObject.wins - today_data.ratingDataObject.wins;
-                int month_wins = month_data.allDataObject.wins - month_data.ratingDataObject.wins;
-                int wins = today_wins - month_wins;
-                long today_hits = today_data.allDataObject.hits - today_data.ratingDataObject.hits;
-                long month_hits = month_data.allDataObject.hits - month_data.ratingDataObject.hits;
-                long today_shots = today_data.allDataObject.shots - today_data.ratingDataObject.shots;
-                long month_shots = month_data.allDataObject.shots - month_data.ratingDataObject.shots;
-                double accuracy = ((double) (today_hits - month_hits) /
-                        (double) (today_shots - month_shots));
-                long today_frags = today_data.allDataObject.frags - today_data.ratingDataObject.frags;
-                long month_frags = month_data.allDataObject.frags - month_data.ratingDataObject.frags;
-                long frags = today_frags - month_frags;
-                long today_spotted = today_data.allDataObject.spotted - today_data.ratingDataObject.spotted;
-                long month_spotted = month_data.allDataObject.spotted - month_data.ratingDataObject.spotted;
-                long spotted = today_spotted - month_spotted;
-                int today_survived = today_data.allDataObject.survived - today_data.ratingDataObject.survived;
-                int month_survived = month_data.allDataObject.survived - month_data.ratingDataObject.survived;
-                int survived = today_survived - month_survived;
-                builder.setTitle("전적 조회 (30일 / 일반모드)")
-                        .addField("전투", String.valueOf(battles), true)
-                        .addField("승률", String.valueOf(((double) wins / (double) battles) * 10000 / 100.0), true)
-                        .addField("생존률", String.valueOf(((double) survived / (double) battles) * 10000 / 100.0), true)
-                        .addField("명중률", String.valueOf(accuracy * 100 / 100.0), true)
-                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 100 / 100.0), true)
-                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 100 / 100.0), true)
-                        .setFooter(args.get(0));
-            } else if(game_type == RANK) {
-                int battles = today_data.ratingDataObject.battles - month_data.ratingDataObject.battles;
-                int wins = today_data.ratingDataObject.wins - month_data.ratingDataObject.wins;
-                double accuracy = ((double) (today_data.ratingDataObject.hits - month_data.ratingDataObject.hits) /
-                        (double) (today_data.ratingDataObject.shots - month_data.ratingDataObject.shots));
-                long frags = today_data.ratingDataObject.frags - month_data.ratingDataObject.frags;
-                long spotted = today_data.ratingDataObject.spotted - month_data.ratingDataObject.spotted;
-                int survived = today_data.ratingDataObject.survived - month_data.ratingDataObject.survived;
-                int rating = today_data.ratingDataObject.rating - month_data.ratingDataObject.rating;
-                builder.setTitle("전적 조회(랭크모드)")
-                        .addField("전투", String.valueOf(battles), true)
-                        .addField("승률", String.valueOf(((double) wins / (double) battles) * 10000 / 100.0), true)
-                        .addField("생존률", String.valueOf(((double) survived / (double) battles) * 10000 / 100.0), true)
-                        .addField("명중률", String.valueOf(accuracy * 100 / 100.0), true)
-                        .addField("전투당 스팟율", String.valueOf(((double) spotted / (double) battles) * 100 / 100.0), true)
-                        .addField("전투당 격파율", String.valueOf(((double) frags / (double) battles) * 100 / 100.0), true)
-                        .addField("랭크 MMR", String.valueOf(rating), true)
-                        .setFooter(args.get(0));
-            } else {
+            builder = monthBuilder(game_type, id, today, month, builder, args, "30일");
+            if(builder == null) {
                 event.getChannel().sendMessage("게임 모드가 정확히 선택되지 않았습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
                 return;
             }
-            return;
+        } else if(option == MONTH2) {
+            calendar.add(Calendar.DAY_OF_MONTH, -60);
+            Date month = calendar.getTime();
+            builder = monthBuilder(game_type, id, today, month, builder, args, "60일");
+            if(builder == null) {
+                event.getChannel().sendMessage("게임 모드가 정확히 선택되지 않았습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+                return;
+            }
+        } else if(option == MONTH3) {
+            calendar.add(Calendar.DAY_OF_MONTH, -90);
+            Date month = calendar.getTime();
+            builder = monthBuilder(game_type, id, today, month, builder, args, "90일");
+            if(builder == null) {
+                event.getChannel().sendMessage("게임 모드가 정확히 선택되지 않았습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+                return;
+            }
+        } else if(option == IMAGE) {
+            try {
+                ImageCreator imageCreator = new ImageCreator();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, -30);
+            Date month1 = calendar.getTime();
+            calendar.add(Calendar.DAY_OF_MONTH, -30);
+            Date month2 = calendar.getTime();
+            calendar.add(Calendar.DAY_OF_MONTH, -30);
+            Date month3 = calendar.getTime();
+            WargamingAPI.DataObject data = wargamingAPI.getUserPersonalData(id);
+            WargamingAPI.DataObject today_data = wargamingAPI.getUserPersonalData(id, today);
+            WargamingAPI.DataObject month1_data = wargamingAPI.getUserPersonalData(id, month1);
+            WargamingAPI.DataObject month2_data = wargamingAPI.getUserPersonalData(id, month2);
+            WargamingAPI.DataObject month3_data = wargamingAPI.getUserPersonalData(id, month3);
+            //TODO imageCreator Link 하기
         } else {
             return;
         }
         event.getChannel().sendMessageEmbeds(builder.build()).queue();
+    }
+
+    private EmbedBuilder monthBuilder(int game_type, String id, Date today, Date month, EmbedBuilder builder, List<String> args, String title) {
+        WargamingAPI.DataObject today_data = wargamingAPI.getUserPersonalData(id, today);
+        WargamingAPI.DataObject month_data = wargamingAPI.getUserPersonalData(id, month);
+        if(month_data == null) {
+            //X일 이전 데이터가 없을 경우
+            month_data = wargamingAPI.getUserPersonalData(id, month);
+        }
+        //X일 이전 데이터가 있을 경우
+        if(game_type == ALL) {
+            int battles = today_data.allDataObject.battles - month_data.allDataObject.battles;
+            int wins = today_data.allDataObject.wins - month_data.allDataObject.wins;
+            double accuracy = ((double) (today_data.allDataObject.hits - month_data.allDataObject.hits) /
+                    (double) (today_data.allDataObject.shots - month_data.allDataObject.shots));
+            long frags = today_data.allDataObject.frags - month_data.allDataObject.frags;
+            long spotted = today_data.allDataObject.spotted - month_data.allDataObject.spotted;
+            int survived = today_data.allDataObject.survived - month_data.allDataObject.survived;
+            long damageAvg = (today_data.allDataObject.damage_dealt - month_data.allDataObject.damage_dealt) /
+                    (today_data.allDataObject.battles - month_data.allDataObject.battles);
+            double damageRadio = ((double) (today_data.allDataObject.damage_dealt - month_data.allDataObject.damage_dealt) /
+                    (double) (today_data.allDataObject.damage_received - month_data.allDataObject.damage_received));
+            builder.setTitle("전적 조회(전체 전투)")
+                    .addField("전투", String.valueOf(battles), true)
+                    .addField("승률", String.format("%.2f", ((double) wins / (double) battles) * 10000 / 100.0), true)
+                    .addField("생존률", String.format("%.2f", ((double) survived / (double) battles) * 10000 / 100.0), true)
+                    .addField("명중률", String.format("%.2f", accuracy * 100 / 100.0), true)
+                    .addField("전투당 스팟율", String.format("%.2f", ((double) spotted / (double) battles) * 100 / 100.0), true)
+                    .addField("전투당 격파율", String.format("%.2f", ((double) frags / (double) battles) * 100 / 100.0), true)
+                    .addField("평균 대미지", String.valueOf(damageAvg), true)
+                    .addField("피해 비율", String.format("%.2f", damageRadio * 100 / 100.0), true)
+                    .setFooter(args.get(0));
+        } else if(game_type == AVG) {
+            int today_battles = today_data.allDataObject.battles - today_data.ratingDataObject.battles;
+            int month_battles = month_data.allDataObject.battles - today_data.ratingDataObject.battles;
+            int battles = today_battles - month_battles;
+            int today_wins = today_data.allDataObject.wins - today_data.ratingDataObject.wins;
+            int month_wins = month_data.allDataObject.wins - month_data.ratingDataObject.wins;
+            int wins = today_wins - month_wins;
+            long today_hits = today_data.allDataObject.hits - today_data.ratingDataObject.hits;
+            long month_hits = month_data.allDataObject.hits - month_data.ratingDataObject.hits;
+            long today_shots = today_data.allDataObject.shots - today_data.ratingDataObject.shots;
+            long month_shots = month_data.allDataObject.shots - month_data.ratingDataObject.shots;
+            double accuracy = ((double) (today_hits - month_hits) /
+                    (double) (today_shots - month_shots));
+            long today_frags = today_data.allDataObject.frags - today_data.ratingDataObject.frags;
+            long month_frags = month_data.allDataObject.frags - month_data.ratingDataObject.frags;
+            long frags = today_frags - month_frags;
+            long today_spotted = today_data.allDataObject.spotted - today_data.ratingDataObject.spotted;
+            long month_spotted = month_data.allDataObject.spotted - month_data.ratingDataObject.spotted;
+            long spotted = today_spotted - month_spotted;
+            int today_survived = today_data.allDataObject.survived - today_data.ratingDataObject.survived;
+            int month_survived = month_data.allDataObject.survived - month_data.ratingDataObject.survived;
+            int survived = today_survived - month_survived;
+            long today_damage_dealt = today_data.allDataObject.damage_dealt - today_data.ratingDataObject.damage_dealt;
+            long month_damage_dealt = month_data.allDataObject.damage_dealt - month_data.ratingDataObject.damage_dealt;
+            long damageAvg = ((today_damage_dealt - month_damage_dealt) / battles);
+            long today_damage_received = today_data.allDataObject.damage_received - today_data.ratingDataObject.damage_received;
+            long month_damage_received = month_data.allDataObject.damage_received - month_data.ratingDataObject.damage_received;
+            double damageRadio = ((double) (today_damage_dealt - month_damage_dealt) /
+                    (double) (today_damage_received - month_damage_received));
+            builder.setTitle("전적 조회 (" + title + " / 일반모드)")
+                    .addField("전투", String.valueOf(battles), true)
+                    .addField("승률", String.format("%.2f", ((double) wins / (double) battles) * 10000 / 100.0), true)
+                    .addField("생존률", String.format("%.2f", ((double) survived / (double) battles) * 10000 / 100.0), true)
+                    .addField("명중률", String.format("%.2f", accuracy * 100 / 100.0), true)
+                    .addField("전투당 스팟율", String.format("%.2f", ((double) spotted / (double) battles) * 100 / 100.0), true)
+                    .addField("전투당 격파율", String.format("%.2f", ((double) frags / (double) battles) * 100 / 100.0), true)
+                    .addField("평균 대미지", String.valueOf(damageAvg), true)
+                    .addField("피해 비율", String.format("%.2f", damageRadio * 100 / 100.0), true)
+                    .setFooter(args.get(0));
+        } else if(game_type == RANK) {
+            int battles = today_data.ratingDataObject.battles - month_data.ratingDataObject.battles;
+            int wins = today_data.ratingDataObject.wins - month_data.ratingDataObject.wins;
+            double accuracy = ((double) (today_data.ratingDataObject.hits - month_data.ratingDataObject.hits) /
+                    (double) (today_data.ratingDataObject.shots - month_data.ratingDataObject.shots));
+            long frags = today_data.ratingDataObject.frags - month_data.ratingDataObject.frags;
+            long spotted = today_data.ratingDataObject.spotted - month_data.ratingDataObject.spotted;
+            int survived = today_data.ratingDataObject.survived - month_data.ratingDataObject.survived;
+            int rating = today_data.ratingDataObject.rating - month_data.ratingDataObject.rating;
+            long damageAvg = (today_data.ratingDataObject.damage_dealt - month_data.ratingDataObject.damage_dealt) /
+                    (today_data.ratingDataObject.battles - month_data.ratingDataObject.battles);
+            double damageRadio = ((double) (today_data.ratingDataObject.damage_dealt - month_data.ratingDataObject.damage_dealt) /
+                    (double) (today_data.ratingDataObject.damage_received - month_data.ratingDataObject.damage_received));
+            builder.setTitle("전적 조회(" + title + " / 랭크모드)")
+                    .addField("전투", String.valueOf(battles), true)
+                    .addField("승률", String.format("%.2f", ((double) wins / (double) battles) * 10000 / 100.0), true)
+                    .addField("생존률", String.format("%.2f", ((double) survived / (double) battles) * 10000 / 100.0), true)
+                    .addField("명중률", String.format("%.2f", accuracy * 100 / 100.0), true)
+                    .addField("전투당 스팟율", String.format("%.2f", ((double) spotted / (double) battles) * 100 / 100.0), true)
+                    .addField("전투당 격파율", String.format("%.2f", ((double) frags / (double) battles) * 100 / 100.0), true)
+                    .addField("평균 대미지", String.valueOf(damageAvg), true)
+                    .addField("피해 비율", String.format("%.2f", damageRadio * 100 / 100.0), true)
+                    .addField("랭크 MMR", String.valueOf(rating), true)
+                    .setFooter(args.get(0));
+        } else {
+            return null;
+        }
+        return builder;
     }
 
     @Override

@@ -18,11 +18,11 @@ import java.nio.charset.StandardCharsets;
 
 import static me.kirito5572.App.openFileData;
 
-public class getYoutubeSearch {
-    private static final Logger logger = LoggerFactory.getLogger(getYoutubeSearch.class);
+public class GetYoutubeSearch {
+    private static final Logger logger = LoggerFactory.getLogger(GetYoutubeSearch.class);
     private static final String youtubeKey = openFileData("YOUTUBE_DATA_API_KEY");
     /** @noinspection unused*/
-    public getYoutubeSearch() {
+    public GetYoutubeSearch() {
     }
     @Nullable
     public static String[][] Search(@NotNull String name) {

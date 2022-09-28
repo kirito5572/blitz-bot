@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 //https://wonsama.tistory.com/456의 코드를 편집하여 사용하였습니다. 감사합니다.
@@ -21,7 +22,7 @@ public class ImageCreator {
     private final String[] backGroundImageUrl = new String[] {
             "https://sg-wotp.wgcdn.co/dcont/fb/image/mwp2209_1920x1080px_logo.jpg",
             "https://sg-wotp.wgcdn.co/dcont/fb/image/mwp_2208_1920x1080px_logo.png",
-            "https://sg-wotp.wgcdn.co/dcont/fb/image/wallpaper_4_1680x1050.jpg,",                                       //숙삼 파이크 위장
+            //"https://sg-wotp.wgcdn.co/dcont/fb/image/wallpaper_4_1680x1050.jpg,",                                     //숙삼 파이크 위장(오류남)
             "https://sg-wotp.wgcdn.co/dcont/fb/image/wallpaper_3_1680x1050.jpg",                                        //오공비 코뿔소 위장 & 프로게토46 사파리 위장
             "https://sg-wotp.wgcdn.co/dcont/fb/image/wallpaper_2_1680x1050.jpg",                                        //오공비 코뿔소 위장
             "https://sg-wotp.wgcdn.co/dcont/fb/image/wallpaper_1_1680x1050.jpg",                                        //프로게토46 사파리 위장
@@ -73,10 +74,22 @@ public class ImageCreator {
      */
     public static void main(String[] args) {
         try {
-            new ImageCreator();
+            new ImageCreator().ImageTester();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
 
+    public void ImageTester() {
+        int i = 0;
+        for(String url : backGroundImageUrl) {
+            try {
+                ImageIO.write(ImageIO.read(new URL(url)),
+                        "png", new File("C:\\Users\\CKIRUser\\Desktop\\text" + i + ".png"));
+            } catch (IOException ignored) {
+                System.out.println(url);
+            }
+            i++;
         }
     }
 
@@ -85,11 +98,9 @@ public class ImageCreator {
      *
      * @since 2017.03.24
      */
-    ImageCreator() throws Exception {
-
+    public ImageCreator() throws Exception {
         img = resizeImage(ImageIO.read(new URL(backGroundImageUrl[(int)(Math.random()*10000)%backGroundImageUrl.length])),1200,735);
         g = img.getGraphics();
-        drawTextWithImage((int)(Math.random()*10000)%2500, (int)(Math.random()*10000)%3000);
     }
 
     /**
@@ -98,7 +109,11 @@ public class ImageCreator {
      * @throws Exception 오류
      * @since 2017.03.27
      */
-    public void drawTextWithImage(int WN7, int WN8) throws Exception {
+    public void drawTextWithImage(WargamingAPI.DataObject month1, WargamingAPI.DataObject month2,
+                                  WargamingAPI.DataObject month3, WargamingAPI.DataObject all, String nickname) throws Exception {
+        int WN7, WN8;
+        WN7 = 1753;
+        WN8 = 2200;
         Graphics2D g2D = getG2D(img);
         Color color = new Color(255, 255, 255, 79);
         g2D.setPaint(color);
@@ -107,52 +122,85 @@ public class ImageCreator {
         g2D.fillRoundRect(500, 130, 600, 540, 20, 20);
         g2D.dispose();
 
-        inputWord("XPERT_kirito[XPERT]", 30, 20, 40, Color.WHITE);
+        double winRate = (((double) (all.allDataObject.wins - month1.allDataObject.wins) /
+                (double) (all.allDataObject.battles - month1.allDataObject.battles)) * 10000 / 100.0);
+        int battle = all.allDataObject.battles - month1.allDataObject.battles;
+        double surviveRate = ((double) (all.allDataObject.survived - month1.allDataObject.survived) /
+                (double) (all.allDataObject.survived - month1.allDataObject.battles)) * 10000 / 100.0;
+        double avgDamage = ((double) (all.allDataObject.damage_dealt - month1.allDataObject.damage_dealt) /
+                (double) battle);
+        int month1_WN7 = WN7;
+        int month1_WN8 = WN8;
+        inputWord(nickname, 30, 20, 40, Color.WHITE);
         inputWord("30일 전적",60, 150, 50, Color.WHITE);
-        inputWord("승률: 55.55%", 75, 250, 30, Color.WHITE);
-        inputWord("전투: 55", 75, 295, 30, Color.WHITE);
-        inputWord("평균 데미지: 555.5", 75, 340, 30, Color.WHITE);
-        inputWord("평균 티어: 5.5", 75, 385, 30, Color.WHITE);
-        inputWord("생존율: 33.3%", 75, 430, 30, Color.WHITE);
+        inputWord(String.format("승률: %.2f", winRate) + "%", 75, 250, 30, Color.WHITE);
+        inputWord(String.format("전투: %d", battle), 75, 295, 30, Color.WHITE);
+        inputWord(String.format("평균 데미지: %.1f", avgDamage), 75, 340, 30, Color.WHITE);
+        //inputWord("평균 티어: 5.5", 75, 385, 30, Color.WHITE);
+        inputWord(String.format("생존율: %.2f", surviveRate) + "%", 75, 430, 30, Color.WHITE);
         inputWord("WN7", 75, 500, 40, Color.WHITE);
-        inputWord(String.valueOf(WN7), 195, 475, 60, WN7Cal(WN7));
+        inputWord(String.valueOf(month1_WN7), 195, 475, 60, WN7Cal(month1_WN7));
         inputWord("WN8", 75, 600, 40, Color.WHITE);
-        inputWord(String.valueOf(WN8), 195, 575, 60, WN7Cal(WN8));
+        inputWord(String.valueOf(month1_WN8), 195, 575, 60, WN7Cal(month1_WN8));
 
         inputWord("그외 전적",880, 150, 50, Color.WHITE);
         inputWord("60일", 515, 220, 25, Color.WHITE);
         inputWord("90일", 705, 220, 25, Color.WHITE);
         inputWord("전체", 895, 220, 25, Color.WHITE);
         //60일
-        inputWord("승률: 55.66%", 515, 280, 20, Color.WHITE);
-        inputWord("전투: 66", 515, 325, 20, Color.WHITE);
-        inputWord("평균 데미지: 666.6", 515, 370, 20, Color.WHITE);
-        inputWord("평균 티어: 6.6", 515, 415, 20, Color.WHITE);
-        inputWord("생존율: 33.4%", 515, 470, 20, Color.WHITE);
+        winRate = (((double) (all.allDataObject.wins - month2.allDataObject.wins) /
+                (double) (all.allDataObject.battles - month2.allDataObject.battles)) * 10000 / 100.0);
+        battle = all.allDataObject.battles - month2.allDataObject.battles;
+        surviveRate = ((double) (all.allDataObject.survived - month2.allDataObject.survived) /
+                (double) (all.allDataObject.survived - month2.allDataObject.battles)) * 10000 / 100.0;
+        avgDamage = ((double) (all.allDataObject.damage_dealt - month2.allDataObject.damage_dealt) /
+                (double) battle);
+        int month2_WN7 = WN7;
+        int month2_WN8 = WN8;
+        inputWord(String.format("승률: %.2f", winRate) + "%", 515, 280, 20, Color.WHITE);
+        inputWord(String.format("전투: %d", battle), 515, 325, 20, Color.WHITE);
+        inputWord(String.format("평균 데미지: %.1f", avgDamage), 515, 370, 20, Color.WHITE);
+        //inputWord("평균 티어: 6.6", 515, 415, 20, Color.WHITE);
+        inputWord(String.format("생존율: %.2f", surviveRate) + "%", 515, 470, 20, Color.WHITE);
         inputWord("WN7", 515, 530, 20, Color.WHITE);
-        inputWord(String.valueOf(WN7), 570, 505, 40, WN7Cal(WN7));
+        inputWord(String.valueOf(month2_WN7), 570, 505, 40, WN7Cal(month2_WN7));
         inputWord("WN8", 515, 620, 20, Color.WHITE);
-        inputWord(String.valueOf(WN8), 570, 605, 40, WN7Cal(WN8));
+        inputWord(String.valueOf(month2_WN8), 570, 605, 40, WN7Cal(month2_WN8));
         //90일
-        inputWord("승률: 55.77%", 705, 280, 20, Color.WHITE);
-        inputWord("전투: 77", 705, 325, 20, Color.WHITE);
-        inputWord("평균 데미지: 777.7", 705, 370, 20, Color.WHITE);
-        inputWord("평균 티어: 7.7", 705, 415, 20, Color.WHITE);
-        inputWord("생존율: 33.5%", 705, 470, 20, Color.WHITE);
+        winRate = (((double) (all.allDataObject.wins - month3.allDataObject.wins) /
+                (double) (all.allDataObject.battles - month3.allDataObject.battles)) * 10000 / 100.0);
+        battle = all.allDataObject.battles - month3.allDataObject.battles;
+        surviveRate = ((double) (all.allDataObject.survived - month3.allDataObject.survived) /
+                (double) (all.allDataObject.survived - month3.allDataObject.battles)) * 10000 / 100.0;
+        avgDamage = ((double) (all.allDataObject.damage_dealt - month3.allDataObject.damage_dealt) /
+                (double) battle);
+        int month3_WN7 = WN7;
+        int month3_WN8 = WN8;
+        inputWord(String.format("승률: %.2f", winRate) + "%", 705, 280, 20, Color.WHITE);
+        inputWord(String.format("전투: %d", battle), 705, 325, 20, Color.WHITE);
+        inputWord(String.format("평균 데미지: %.1f", avgDamage), 705, 370, 20, Color.WHITE);
+        //inputWord("평균 티어: 7.7", 705, 415, 20, Color.WHITE);
+        inputWord(String.format("생존율: %.2f", surviveRate) + "%", 705, 470, 20, Color.WHITE);
         inputWord("WN7", 705, 530, 20, Color.WHITE);
-        inputWord(String.valueOf(WN7), 760, 505, 40, WN7Cal(WN7));
+        inputWord(String.valueOf(month3_WN7), 760, 505, 40, WN7Cal(month3_WN7));
         inputWord("WN8", 705, 620, 20, Color.WHITE);
-        inputWord(String.valueOf(WN8), 760, 605, 40, WN7Cal(WN8));
+        inputWord(String.valueOf(month3_WN8), 760, 605, 40, WN7Cal(month3_WN8));
         //전체
-        inputWord("승률: 55.88%", 895, 280, 20, Color.WHITE);
-        inputWord("전투: 88", 895, 325, 20, Color.WHITE);
-        inputWord("평균 데미지: 888.8", 895, 370, 20, Color.WHITE);
-        inputWord("평균 티어: 8.8", 895, 415, 20, Color.WHITE);
-        inputWord("생존율: 33.6%", 895, 470, 20, Color.WHITE);
+        winRate = (((double) all.allDataObject.wins / (double) all.allDataObject.battles) * 10000 / 100.0);
+        battle = all.allDataObject.battles;
+        surviveRate = ((double) all.allDataObject.survived / (double) all.allDataObject.battles) * 10000 / 100.0;
+        avgDamage = ((double) all.allDataObject.damage_dealt / (double) all.allDataObject.battles);
+        int all_WN7 = WN7;
+        int all_WN8 = WN8;
+        inputWord(String.format("승률: %.2f", winRate) + "%", 895, 280, 20, Color.WHITE);
+        inputWord(String.format("전투: %d", battle), 895, 325, 20, Color.WHITE);
+        inputWord(String.format("평균 데미지: %.1f", avgDamage), 895, 370, 20, Color.WHITE);
+        //inputWord("평균 티어: 8.8", 895, 415, 20, Color.WHITE);
+        inputWord(String.format("생존율: %.2f", surviveRate) + "%", 895, 470, 20, Color.WHITE);
         inputWord("WN7", 895, 530, 20, Color.WHITE);
-        inputWord(String.valueOf(WN7), 920, 505, 40, WN7Cal(WN7));
+        inputWord(String.valueOf(all_WN7), 920, 505, 40, WN7Cal(all_WN7));
         inputWord("WN8", 895, 620, 20, Color.WHITE);
-        inputWord(String.valueOf(WN8), 920, 605, 40, WN7Cal(WN8));
+        inputWord(String.valueOf(all_WN8), 920, 605, 40, WN7Cal(all_WN8));
 
         // 이미지 파일을 생성한다
         ImageIO.write(img, "png", new File("C:\\Users\\CKIRUser\\Desktop\\text.png"));

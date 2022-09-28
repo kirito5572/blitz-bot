@@ -4,8 +4,8 @@ import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
 import me.kirito5572.objects.EventPackage;
+import me.kirito5572.objects.GetYoutubeSearch;
 import me.kirito5572.objects.ICommand;
-import me.kirito5572.objects.getYoutubeSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -47,7 +47,7 @@ public class SearchCommand implements ICommand {
                 return;
             }
             String name = String.join("+", args);
-            String[][] data = getYoutubeSearch.Search(name);
+            String[][] data = GetYoutubeSearch.Search(name);
             if(data == null) {
                 event.getChannel().sendMessage("youtube 검색에 문제가 발생했습니다").queue();
                 return;
