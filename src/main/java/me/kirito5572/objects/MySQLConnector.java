@@ -1,6 +1,7 @@
 package me.kirito5572.objects;
 
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
 
@@ -56,7 +57,7 @@ public class MySQLConnector {
      * @throws SQLException if query execution fail or database access error occurs
      * @return {@link java.sql.ResultSet}
      */
-    public ResultSet Select_Query(@Language("SQL") String Query, int[] dataType,  String[] data) throws SQLException {
+    public ResultSet Select_Query(@Language("SQL") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(Query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         Query(statement, dataType, data);
         return statement.executeQuery();
@@ -69,7 +70,7 @@ public class MySQLConnector {
      * @param data the data that input
      * @throws SQLException - if query execution fail or database access error occurs
      */
-    public void Query(PreparedStatement statement, int[] dataType, String[] data) throws SQLException {
+    public void Query(@NotNull PreparedStatement statement, int @NotNull [] dataType, String[] data) throws SQLException {
         if(statement.getConnection().isClosed()) {
             reConnection();
         }
@@ -94,7 +95,7 @@ public class MySQLConnector {
      * @return 1 = success, 0 = failed
      * @throws SQLException if query execution fail or database access error occurs
      */
-    public int Insert_Query(@Language("SQL") String Query, int[] dataType, String[] data) throws SQLException {
+    public int Insert_Query(@Language("SQL") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(Query);
         Query(statement, dataType, data);
         return statement.execute() ? 1 : 0;

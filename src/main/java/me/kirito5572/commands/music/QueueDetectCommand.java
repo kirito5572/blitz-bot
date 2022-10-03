@@ -65,7 +65,7 @@ public class QueueDetectCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"재생목록삭제", "queuedelete", "qd"};
     }
 

@@ -344,7 +344,7 @@ public class LogListener extends ListenerAdapter {
      * @return download {@link java.io.File} or null(If the file does not exist)
      */
 
-    private File S3DownloadObject(@NotNull String messageId) throws SdkClientException, IOException{
+    private @NotNull File S3DownloadObject(@NotNull String messageId) throws SdkClientException, IOException{
         Regions clientRegion = Regions.AP_NORTHEAST_2;
         String bucketName = "blitzbot-logger";
 

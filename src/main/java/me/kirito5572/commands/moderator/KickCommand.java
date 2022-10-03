@@ -51,7 +51,7 @@ public class KickCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"추방", "kick", "k"};
     }
 

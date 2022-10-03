@@ -75,7 +75,7 @@ public class SkipCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"스킵","skip","s"};
     }
 

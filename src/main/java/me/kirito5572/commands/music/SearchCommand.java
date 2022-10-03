@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 /** @noinspection unused*/
@@ -62,56 +64,48 @@ public class SearchCommand implements ICommand {
 
             Message message = channel.sendMessageEmbeds(builder1.build()).complete();
             for (int i = 0; i < 11; i++) {
+                Message message1 = event.getChannel().retrieveMessageById(event.getChannel().getLatestMessageId()).complete();
+                int a = 0;
+                boolean pass;
                 try {
-                    Message message1 = event.getChannel().retrieveMessageById(event.getChannel().getLatestMessageId()).complete();
-                    int a = 0;
-                    boolean pass;
-                    try {
-                        a = Integer.parseInt(message1.getContentRaw());
-                        pass = false;
-                    } catch (NumberFormatException e) {
-                        pass = true;
-                    }
-                    if(!pass) {
-                        if (!audioManager.isConnected()) {
-                            audioManager.openAudioConnection(voiceChannel);
-                            Thread thread = new Thread(() -> {
-                                AudioManager audioManager1 = event.getGuild().getAudioManager();
-                                PlayerManager playerManager = PlayerManager.getInstance();
-                                GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
-                                while (true) {
-                                    try {
-                                        Thread.sleep(1000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    if (!audioManager1.isConnected()) {
-                                        break;
-                                    }
-                                    if (!musicManager.player.isPaused()) {
-                                        assert voiceChannel != null;
-                                        JoinCommand.autoPaused(event, audioManager, voiceChannel, musicManager);
-                                    }
+                    a = Integer.parseInt(message1.getContentRaw());
+                    pass = false;
+                } catch (NumberFormatException e) {
+                    pass = true;
+                }
+                if (!pass) {
+                    if (!audioManager.isConnected()) {
+                        audioManager.openAudioConnection(voiceChannel);
+                        AudioManager audioManager1 = event.getGuild().getAudioManager();
+                        PlayerManager playerManager = PlayerManager.getInstance();
+                        GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
+                        Timer timer = new Timer();
+                        TimerTask task = new TimerTask() {
+                            @Override
+                            public void run() {
+                                if (!musicManager.player.isPaused()) {
+                                    assert voiceChannel != null;
+                                    JoinCommand.autoPaused(event, audioManager, voiceChannel, musicManager);
+                                    timer.cancel();
                                 }
-                            });
-                            thread.start();
-                        }
+                            }
+                        };
+                        timer.scheduleAtFixedRate(task, 0, 1000);
                         PlayerManager manager = PlayerManager.getInstance();
                         message.delete().queue();
                         channel.sendMessage("노래가 추가되었습니다.").queue(message2 -> message2.delete().queueAfter(5, TimeUnit.SECONDS));
                         manager.loadAndPlay(channel, "https://youtu.be/" + data[a - 1][1]);
                         return;
                     }
-                } catch (Exception ignored) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                message.delete().queue();
+                channel.sendMessage("대기 시간이 초과되어 삭제되었습니다.").queue(message2 -> message2.delete().queueAfter(5, TimeUnit.SECONDS));
             }
-            message.delete().queue();
-            channel.sendMessage("대기 시간이 초과되어 삭제되었습니다.").queue(message1 -> message1.delete().queueAfter(5,TimeUnit.SECONDS));
         }).start();
     }
 
@@ -124,7 +118,7 @@ public class SearchCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"검색", "search"};
     }
 

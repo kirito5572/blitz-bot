@@ -67,17 +67,17 @@ public class MessagePinCommand implements ICommand {
     }
 
     @Override
-    public String getHelp() {
+    public @NotNull String getHelp() {
         return "메세지를 고정합니다.";
     }
 
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[]{"핀", "pin"};
     }
 
     @Override
-    public String getSmallHelp() {
+    public @NotNull String getSmallHelp() {
         return "(관리자 전용)메세지를 고정합니다.";
     }
 

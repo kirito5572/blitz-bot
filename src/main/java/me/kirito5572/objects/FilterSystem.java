@@ -104,17 +104,11 @@ public class FilterSystem {
         }
     }
 
-    public boolean commandAuthorityCheck(List<String> args, @NotNull EventPackage event, boolean isWhiteList) {
+    public boolean commandAuthorityCheck(@NotNull List<String> args, @NotNull EventPackage event, boolean isWhiteList) {
         Member member = event.getMember();
         assert member != null;
         Guild guild = event.getGuild();
-        if (guild == null) {
-            return false;
-        }
         Role role = guild.getRoleById("827009999145926657");
-        if (role == null) {
-            return false;
-        }
         if (!member.getRoles().contains(role)) {
             boolean passRole = member.getRoles().contains(event.getGuild().getRoleById("827010848442548254")) ||    //R:모더레이터
                     member.getRoles().contains(event.getGuild().getRoleById("827009999145926657")) ||               //R:Administrator
@@ -135,11 +129,11 @@ public class FilterSystem {
         return true;
     }
 
-    public List<String> getFilterList() {
+    public @NotNull List<String> getFilterList() {
         return filterList;
     }
 
-    public List<String[]> getWhiteFilterList() {
+    public @NotNull List<String[]> getWhiteFilterList() {
         return whiteFilterList;
     }
 

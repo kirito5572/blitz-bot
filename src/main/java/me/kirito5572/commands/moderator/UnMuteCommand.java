@@ -21,7 +21,7 @@ public class UnMuteCommand implements ICommand {
     }
 
     @Override
-    public void handle(List<String> args, @NotNull EventPackage event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         Member member = event.getMember();
         assert member != null;
         if (!member.getRoles().contains(Objects.requireNonNull(event.getGuild()).getRoleById("827009999145926657"))) {
@@ -56,17 +56,17 @@ public class UnMuteCommand implements ICommand {
     }
 
     @Override
-    public String getHelp() {
+    public @NotNull String getHelp() {
         return "제재";
     }
 
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[]{"제재해제", "unmute", "um"};
     }
 
     @Override
-    public String getSmallHelp() {
+    public @NotNull String getSmallHelp() {
         return "(관리자 전용) 서버에서 제재한 사용자에 대한 제재를 해제합니다.";
     }
 

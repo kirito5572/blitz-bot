@@ -2,6 +2,7 @@ package me.kirito5572.objects;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import org.jetbrains.annotations.NotNull;
 
 public class EventPackage {
     final TextChannel textChannel;
@@ -26,7 +27,7 @@ public class EventPackage {
         return this.message;
     }
 
-    public JDA getJDA() {
+    public @NotNull JDA getJDA() {
         return this.textChannel.getJDA();
     }
 
@@ -34,11 +35,11 @@ public class EventPackage {
         return this.textChannel;
     }
 
-    public User getAuthor() {
+    public @NotNull User getAuthor() {
         return this.member.getUser();
     }
 
-    public Guild getGuild() {
+    public @NotNull Guild getGuild() {
         return this.textChannel.getGuild();
     }
 

@@ -26,7 +26,6 @@ public class filterListener extends ListenerAdapter {
         this.filterSystem = filterSystem;
     }
 
-    /** @noinspection StatementWithEmptyBody*/
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         boolean isFilter = filterSystem.filterRefresh();

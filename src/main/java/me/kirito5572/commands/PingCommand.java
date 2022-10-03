@@ -28,7 +28,7 @@ public class PingCommand implements ICommand {
         long a;
         try {
             a = event.getJDA().getRestPing().submit().get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (@NotNull InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return;
         }
@@ -98,7 +98,7 @@ public class PingCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[]{"핑", "ping"};
     }
 

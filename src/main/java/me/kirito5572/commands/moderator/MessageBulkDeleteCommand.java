@@ -19,7 +19,7 @@ public class MessageBulkDeleteCommand implements ICommand {
     //https://github.com/DV8FromTheWorld/JDA/wiki/10)-FAQ#what-is-the-best-way-to-delete-messages-from-history
 
     @Override
-    public void handle(List<String> args, @NotNull EventPackage event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         TextChannel channel = event.getTextChannel();
         Member selfMember = Objects.requireNonNull(event.getGuild()).getSelfMember();
         Member member = event.getMember();
@@ -110,17 +110,17 @@ public class MessageBulkDeleteCommand implements ICommand {
     }
 
     @Override
-    public String getHelp() {
+    public @NotNull String getHelp() {
         return "null";
     }
 
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[]{"청소", "delete", "d"};
     }
 
     @Override
-    public String getSmallHelp() {
+    public @NotNull String getSmallHelp() {
         return "(관리자 전용) 메세지를 입력한 숫자만큼 대량 삭제 합니다.";
     }
 

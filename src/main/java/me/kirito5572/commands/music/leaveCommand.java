@@ -54,7 +54,7 @@ public class leaveCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"퇴장","leave", "l"};
     }
 

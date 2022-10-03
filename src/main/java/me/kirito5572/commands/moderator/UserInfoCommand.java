@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class UserInfoCommand implements ICommand {
     @Override
-    public void handle(List<String> args, @NotNull EventPackage event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         User user;
         Member member;
         Guild guild = event.getGuild();
@@ -67,7 +67,7 @@ public class UserInfoCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[]{"유저정보", "userinfo", "ui"};
     }
 

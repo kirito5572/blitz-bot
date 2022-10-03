@@ -55,7 +55,7 @@ public class BanCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[]{"밴", "ban", "b"};
     }
 

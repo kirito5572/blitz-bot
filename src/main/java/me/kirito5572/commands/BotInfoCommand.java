@@ -63,17 +63,17 @@ public class BotInfoCommand implements ICommand {
     }
 
     @Override
-    public String getHelp() {
+    public @NotNull String getHelp() {
         return "봇에 대한 정보를 출력합니다. 단축명령어: bi";
     }
 
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"봇정보", "botinfo", "bi"};
     }
 
     @Override
-    public String getSmallHelp() {
+    public @NotNull String getSmallHelp() {
         return "봇에 대한 정보를 표시합니다.";
     }
 

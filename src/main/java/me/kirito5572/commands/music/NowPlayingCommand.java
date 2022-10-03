@@ -59,7 +59,7 @@ public class NowPlayingCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"재생중","nowplaying", "np"};
     }
 

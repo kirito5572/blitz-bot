@@ -90,18 +90,36 @@ public class onReadyListener extends ListenerAdapter {
         ResultSet resultSet;
         try {
             resultSet = sqliteConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId", new int[]{}, new String[]{});
-            while(resultSet.next()) {
-                Thread.sleep(200);
-                String userId = resultSet.getString("userId");
-                WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(userId);
-                Gson gson = new Gson();
-                String json = gson.toJson(dataObject);
-                sqliteConnector.Insert_Query_Wargaming("INSERT INTO `" + userId + "` (input_time, data) VALUES (?, ?)",
-                        new int[]{sqliteConnector.STRING, sqliteConnector.STRING},
-                        new String[]{String.valueOf(date.getTime()), json});
-            }
-        } catch (SQLException | InterruptedException sqlException) {
+            Timer timer = new Timer();
+            TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        if (resultSet.next()) {
+                            String userId = resultSet.getString("userId");
+                            WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(userId);
+                            Gson gson = new Gson();
+                            String json = gson.toJson(dataObject);
+                            sqliteConnector.Insert_Query_Wargaming("INSERT INTO `" + userId + "` (input_time, data) VALUES (?, ?)",
+                                    new int[]{sqliteConnector.STRING, sqliteConnector.STRING},
+                                    new String[]{String.valueOf(date.getTime()), json});
+                        } else {
+                            timer.cancel();
+                        }
+                    } catch (@NotNull SQLException exception) {
+                        exception.printStackTrace();
+                    }
+                }
+            };
+            timer.scheduleAtFixedRate(timerTask, 0, 100);
+        } catch (@NotNull SQLException sqlException) {
             sqlException.printStackTrace();
+            try {
+                sqliteConnector.reConnectionWargaming();
+            } catch (SQLException throwable) {
+                logger.error(sqlException.getMessage());
+                throwable.printStackTrace();
+            }
         }
     }
 

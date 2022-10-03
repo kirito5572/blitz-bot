@@ -18,6 +18,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -85,49 +87,46 @@ public class PlayCommand implements ICommand {
         PlayerManager manager = PlayerManager.getInstance();
         if(!audioManager.isConnected()) {
             audioManager.openAudioConnection(voiceChannel);
-            Thread thread = new Thread(() -> {
-                AudioManager audioManager1 = event.getGuild().getAudioManager();
-                PlayerManager playerManager1 = PlayerManager.getInstance();
-                GuildMusicManager musicManager1 = playerManager1.getGuildMusicManager(event.getGuild());
-                while(true) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    if(!audioManager1.isConnected()) {
-                        break;
-                    }
+            AudioManager audioManager1 = event.getGuild().getAudioManager();
+            PlayerManager playerManager1 = PlayerManager.getInstance();
+            GuildMusicManager musicManager1 = playerManager1.getGuildMusicManager(event.getGuild());
+            Timer timer = new Timer();
+            TimerTask task = new TimerTask() {
+            boolean isThreadStart = false;
+                @Override
+                public void run() {
                     if(!musicManager1.player.isPaused()) {
                         assert voiceChannel != null;
                         if (voiceChannel.getMembers().size() < 2) {
+                            Timer timer1 = new Timer();
                             event.getChannel().sendMessage("사람이 아무도 없어, 노래가 일시 정지 되었습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
                             musicManager1.player.setPaused(true);
-                            new Thread(() -> {
-                                int i = 0;
-                                while (true) {
-                                    try {
-                                        this.wait(750);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
+                            final int[] i = {0};
+                            TimerTask timerTask = new TimerTask() {
+                                @Override
+                                public void run() {
                                     if (voiceChannel.getMembers().size() < 2) {
-                                        i++;
+                                        i[0]++;
                                     } else {
-                                        break;
+                                        i[0] = 0;
                                     }
-                                    if(i > 120) {
+                                    if(i[0] > 120) {
                                         event.getChannel().sendMessage("오랫동안 사람이 아무도 없어, 노래 재생이 정지 되었습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
                                         audioManager.closeAudioConnection();
-                                        break;
+                                        timer1.cancel();
                                     }
                                 }
-                            }).start();
+                            };
+                            if(!isThreadStart) {
+                                timer1.scheduleAtFixedRate(timerTask, 0, 750);
+                                isThreadStart = true;
+                            }
                         }
+                        timer.cancel();
                     }
                 }
-            });
-            thread.start();
+            };
+            timer.scheduleAtFixedRate(task, 0, 1000);
         }
         manager.loadAndPlay(event.getTextChannel(), input);
 
@@ -158,7 +157,7 @@ public class PlayCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"재생","play","p"};
     }
 

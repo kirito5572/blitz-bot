@@ -1,8 +1,9 @@
 package me.kirito5572.objects;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +15,8 @@ import java.net.URL;
 
 /**
  * 입력 텍스트를 이미지로 만들어 준다
- * @author parkwon
- * @since 2017.03.24
+ * @author created by parkwon, modify by kirito5572
+ * @since created 2017.03.24, modified 2022.10.01
  */
 public class ImageCreator {
     //https://worldoftanks.asia/en/news/media/ 의 사항을 참조합니다.
@@ -63,14 +64,14 @@ public class ImageCreator {
     };
 
     //1200x735 이미지
-    private final BufferedImage img;
+    private final @NotNull BufferedImage img;
     private final Graphics g;
 
     /**
      * 테스트용 진입점
      *
      * @param args 파라미터
-     * @since 2017.03.24
+     * @since created 2017.03.24, modified 2022.10.01
      */
     public static void main(String[] args) {
         try {
@@ -80,6 +81,11 @@ public class ImageCreator {
         }
     }
 
+    /**
+     * 이미지 생성 테스트용
+     * @author kirito5572
+     * @since created 2017.03.24, modified 2022.10.01
+     */
     public void ImageTester() {
         int i = 0;
         for(String url : backGroundImageUrl) {
@@ -95,22 +101,26 @@ public class ImageCreator {
 
     /**
      * 생성자
-     *
-     * @since 2017.03.24
+     * @author created by parkwon, modify by kirito5572
+     * @since created 2017.03.24, modified 2020.10.01
      */
     public ImageCreator() throws Exception {
-        img = resizeImage(ImageIO.read(new URL(backGroundImageUrl[(int)(Math.random()*10000)%backGroundImageUrl.length])),1200,735);
+        img = resizeImage(ImageIO.read(new URL(backGroundImageUrl[(int)(Math.random()*10000)%backGroundImageUrl.length])));
         g = img.getGraphics();
     }
 
     /**
      * 웹 이미지 내부에 텍스트를 포함하여 이미지로 만들어준다
-     *
+     * @param month1 30일 전적 데이터
+     * @param month2 60일 전적 데이터
+     * @param month3 90일 전적 데이터
+     * @param all 전체 전적 데이터
+     * @param nickname 유저 닉네임
      * @throws Exception 오류
-     * @since 2017.03.27
+     * @since created 2017.03.24, modified 2022.10.01
      */
-    public void drawTextWithImage(WargamingAPI.DataObject month1, WargamingAPI.DataObject month2,
-                                  WargamingAPI.DataObject month3, WargamingAPI.DataObject all, String nickname) throws Exception {
+    public File drawTextWithImage(WargamingAPI.@NotNull DataObject month1, WargamingAPI.@NotNull DataObject month2,
+                                  WargamingAPI.@NotNull DataObject month3, WargamingAPI.@NotNull DataObject all, String nickname) throws Exception {
         int WN7, WN8;
         WN7 = 1753;
         WN8 = 2200;
@@ -139,9 +149,9 @@ public class ImageCreator {
         //inputWord("평균 티어: 5.5", 75, 385, 30, Color.WHITE);
         inputWord(String.format("생존율: %.2f", surviveRate) + "%", 75, 430, 30, Color.WHITE);
         inputWord("WN7", 75, 500, 40, Color.WHITE);
-        inputWord(String.valueOf(month1_WN7), 195, 475, 60, WN7Cal(month1_WN7));
+        inputWord(String.valueOf(month1_WN7), 195, 475, 60, WN7Color(month1_WN7));
         inputWord("WN8", 75, 600, 40, Color.WHITE);
-        inputWord(String.valueOf(month1_WN8), 195, 575, 60, WN7Cal(month1_WN8));
+        inputWord(String.valueOf(month1_WN8), 195, 575, 60, WN8Color(month1_WN8));
 
         inputWord("그외 전적",880, 150, 50, Color.WHITE);
         inputWord("60일", 515, 220, 25, Color.WHITE);
@@ -163,9 +173,9 @@ public class ImageCreator {
         //inputWord("평균 티어: 6.6", 515, 415, 20, Color.WHITE);
         inputWord(String.format("생존율: %.2f", surviveRate) + "%", 515, 470, 20, Color.WHITE);
         inputWord("WN7", 515, 530, 20, Color.WHITE);
-        inputWord(String.valueOf(month2_WN7), 570, 505, 40, WN7Cal(month2_WN7));
+        inputWord(String.valueOf(month2_WN7), 570, 505, 40, WN7Color(month2_WN7));
         inputWord("WN8", 515, 620, 20, Color.WHITE);
-        inputWord(String.valueOf(month2_WN8), 570, 605, 40, WN7Cal(month2_WN8));
+        inputWord(String.valueOf(month2_WN8), 570, 605, 40, WN8Color(month2_WN8));
         //90일
         winRate = (((double) (all.allDataObject.wins - month3.allDataObject.wins) /
                 (double) (all.allDataObject.battles - month3.allDataObject.battles)) * 10000 / 100.0);
@@ -182,9 +192,9 @@ public class ImageCreator {
         //inputWord("평균 티어: 7.7", 705, 415, 20, Color.WHITE);
         inputWord(String.format("생존율: %.2f", surviveRate) + "%", 705, 470, 20, Color.WHITE);
         inputWord("WN7", 705, 530, 20, Color.WHITE);
-        inputWord(String.valueOf(month3_WN7), 760, 505, 40, WN7Cal(month3_WN7));
+        inputWord(String.valueOf(month3_WN7), 760, 505, 40, WN7Color(month3_WN7));
         inputWord("WN8", 705, 620, 20, Color.WHITE);
-        inputWord(String.valueOf(month3_WN8), 760, 605, 40, WN7Cal(month3_WN8));
+        inputWord(String.valueOf(month3_WN8), 760, 605, 40, WN8Color(month3_WN8));
         //전체
         winRate = (((double) all.allDataObject.wins / (double) all.allDataObject.battles) * 10000 / 100.0);
         battle = all.allDataObject.battles;
@@ -198,13 +208,24 @@ public class ImageCreator {
         //inputWord("평균 티어: 8.8", 895, 415, 20, Color.WHITE);
         inputWord(String.format("생존율: %.2f", surviveRate) + "%", 895, 470, 20, Color.WHITE);
         inputWord("WN7", 895, 530, 20, Color.WHITE);
-        inputWord(String.valueOf(all_WN7), 920, 505, 40, WN7Cal(all_WN7));
+        inputWord(String.valueOf(all_WN7), 920, 505, 40, WN7Color(all_WN7));
         inputWord("WN8", 895, 620, 20, Color.WHITE);
-        inputWord(String.valueOf(all_WN8), 920, 605, 40, WN7Cal(all_WN8));
+        inputWord(String.valueOf(all_WN8), 920, 605, 40, WN8Color(all_WN8));
 
         // 이미지 파일을 생성한다
-        ImageIO.write(img, "png", new File("C:\\Users\\CKIRUser\\Desktop\\text.png"));
+        ImageIO.write(img, "png", new File("test.png"));
+        return new File("test.png");
     }
+
+    /**
+     * 이미지에 글자를 삽입시켜준다
+     * @param text 삽입할 텍스트
+     * @param x 삽입할 위치(우측 상단 기준)
+     * @param y 삽입할 위치(우측 상단 기준)
+     * @param font_size 텍스트 폰트 사이즈
+     * @param font_color 텍스트 색상
+     * @since created 2022.10.01
+     */
 
     public void inputWord(String text, int x, int y, int font_size, Color font_color) {
         Font font = new Font("나눔고딕", Font.PLAIN, font_size);
@@ -223,42 +244,32 @@ public class ImageCreator {
      * @param text 문자열
      * @param x    X좌표
      * @param y    Y좌표
-     * @since 2017.03.27
+     * @since created 2017.03.24, modified 2022.10.01
      */
-    private void drawStringDropshadow(Graphics2D g2d, String text, int x, int y, Color font_color) {
-        g2d.setColor(new Color(20, 20, 20));
-        g2d.drawString(text, ShiftEast(x, 2), ShiftSouth(y, 2));
+
+    private void drawStringDropshadow(@NotNull Graphics2D g2d, String text, int x, int y, Color font_color) {
+        if((font_color.getRed() > 60 && font_color.getBlue() > 60) ||
+                (font_color.getRed() > 60 && font_color.getGreen() > 60) ||
+                (font_color.getBlue() > 60 && font_color.getGreen() > 60)) {
+            g2d.setColor(new Color(220, 220, 220));
+        } else {
+            g2d.setColor(new Color(20, 20, 20));
+        }
+        g2d.drawString(text, ShiftEast(x), ShiftSouth(y));
         g2d.setColor(font_color);
         g2d.drawString(text, x, y);
-    }
-
-    /**
-     * 폰트를 회전 처리한다
-     *
-     * @param font  폰트
-     * @param angle 회전각 0~360 / -를 넣으면 반시계 방향으로 계산
-     * @return 회전처리 된 폰트
-     * @since 2017.03.24
-     */
-    private Font rotatedFont(Font font, double angle) {
-        // 폰트 회전처리
-        AffineTransform form = new AffineTransform();
-        form.rotate(Math.toRadians(angle), 0, 0);
-        return font.deriveFont(form);
     }
 
     /**
      * 이미지 리사이징
      *
      * @param img  이미지
-     * @param newW 새로운 넓이
-     * @param newH 새로운 높이
      * @return 신규 이미지
-     * @since 2017.03.24
+     * @since created 2017.03.24, modified 2022.10.01
      */
-    private BufferedImage resizeImage(BufferedImage img, int newW, int newH) {
-        Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
-        BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+    private @NotNull BufferedImage resizeImage(@NotNull BufferedImage img) {
+        Image tmp = img.getScaledInstance(1200, 735, Image.SCALE_SMOOTH);
+        BufferedImage dimg = new BufferedImage(1200, 735, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g2d = dimg.createGraphics();
         g2d.drawImage(tmp, 0, 0, null);
@@ -272,9 +283,9 @@ public class ImageCreator {
      *
      * @param img 이미지버퍼
      * @return 2D 그래픽스
-     * @since 2017.03.24
+     * @since created 2017.03.24, modified 2022.10.01
      */
-    private Graphics2D getG2D(BufferedImage img) {
+    private Graphics2D getG2D(@NotNull BufferedImage img) {
         Graphics2D g2d = img.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -292,27 +303,31 @@ public class ImageCreator {
      * 좌표 이동처리 - 아래쪽 / 남
      *
      * @param p        현 좌표
-     * @param distance 이동거리
      * @return 변경된 좌표
-     * @since 2017.03.27
+     * @since created 2017.03.24, modified 2022.10.01
      */
-    int ShiftSouth(int p, int distance) {
-        return (p + distance);
+    int ShiftSouth(int p) {
+        return (p + 2);
     }
 
     /**
      * 좌표 이동처리 - 오른쪽 / 동
      *
      * @param p        현 좌표
-     * @param distance 이동거리
      * @return 변경된 좌표
-     * @since 2017.03.27
+     * @since created 2017.03.24, modified 2022.10.01
      */
-    int ShiftEast(int p, int distance) {
-        return (p + distance);
+    int ShiftEast(int p) {
+        return (p + 2);
     }
 
-    Color WN7Cal(int WN7) {
+    /**
+     * WN7 색상 반환기
+     * @param WN7 색상을 판단할 WN7값
+     * @return Color 값을 반환
+     */
+
+    Color WN7Color(int WN7) {
         Color WN7Color = Color.WHITE;
         if(WN7 < 454) {
             WN7Color = Color.RED;
@@ -329,20 +344,25 @@ public class ImageCreator {
         }
         return WN7Color;
     }
+    /**
+     * WN8 색상 반환기
+     * @param WN8 색상을 판단할 WN8값
+     * @return Color 값을 반환
+     */
 
-    Color WN8Cal(int WN7) {
+    Color WN8Color(int WN8) {
         Color WN7Color = Color.WHITE;
-        if(WN7 < 314) {
+        if(WN8 < 314) {
             WN7Color = Color.RED;
-        } else if(314 < WN7 && WN7 < 754) {
+        } else if(314 < WN8 && WN8 < 754) {
             WN7Color = Color.ORANGE;
-        } else if(755 < WN7 && WN7 < 1314) {
+        } else if(755 < WN8 && WN8 < 1314) {
             WN7Color = Color.YELLOW;
-        } else if(1315 < WN7 && WN7 < 1964) {
+        } else if(1315 < WN8 && WN8 < 1964) {
             WN7Color = Color.GREEN;
-        } else if(1965 < WN7 && WN7 < 2524) {
+        } else if(1965 < WN8 && WN8 < 2524) {
             WN7Color = new Color(0, 160, 160);
-        } else if(2525 < WN7 && WN7 < 9999) {
+        } else if(2525 < WN8 && WN8 < 9999) {
             WN7Color = new Color(85, 10, 138);
         }
         return WN7Color;

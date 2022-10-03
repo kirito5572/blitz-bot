@@ -94,17 +94,17 @@ public class ComplainEndCommand implements ICommand {
     }
 
     @Override
-    public String getHelp() {
+    public @NotNull String getHelp() {
         return "null";
     }
 
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"종료", "exit"};
     }
 
     @Override
-    public String getSmallHelp() {
+    public @NotNull String getSmallHelp() {
         return "(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅을 종료하는 명령어입니다.";
     }
 

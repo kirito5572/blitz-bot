@@ -15,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,28 +53,23 @@ public class JoinCommand implements ICommand {
 
         audioManager.openAudioConnection(voiceChannel);
         channel.sendMessage("보이스채널에 들어왔습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
-        Thread thread = new Thread(() -> {
-            AudioManager audioManager1 = event.getGuild().getAudioManager();
-            PlayerManager playerManager = PlayerManager.getInstance();
-            GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
-            while(true) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if(!audioManager1.isConnected()) {
-                    break;
-                }
+        AudioManager audioManager1 = event.getGuild().getAudioManager();
+        PlayerManager playerManager = PlayerManager.getInstance();
+        GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
                 if(!musicManager.player.isPaused()) {
                     autoPaused(event, audioManager, voiceChannel, musicManager);
+                    timer.cancel();
                 }
             }
-        });
-        thread.start();
+        };
+        timer.scheduleAtFixedRate(task, 0, 1000);
     }
 
-    static void autoPaused(@NotNull EventPackage event, AudioManager audioManager, VoiceChannel voiceChannel, GuildMusicManager musicManager) {
+    static void autoPaused(@NotNull EventPackage event, @NotNull AudioManager audioManager, @NotNull VoiceChannel voiceChannel, @NotNull GuildMusicManager musicManager) {
         if (voiceChannel.getMembers().size() < 2) {
             musicManager.player.isPaused();
             event.getChannel().sendMessage("사람이 아무도 없어, 노래가 일시 정지 되었습니다.\n" +
@@ -108,7 +105,7 @@ public class JoinCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"입장", "join", "j"};
     }
 

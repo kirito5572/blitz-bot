@@ -24,7 +24,7 @@ public class ComplainMessageLogCommand implements ICommand {
     }
 
     @Override
-    public void handle(List<String> args, @NotNull EventPackage event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         StringBuilder messageBuilder = new StringBuilder();
         int ComplainInt;
         int dataPage = 0;
@@ -110,17 +110,17 @@ public class ComplainMessageLogCommand implements ICommand {
     }
 
     @Override
-    public String getHelp() {
+    public @NotNull String getHelp() {
         return "null";
     }
 
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"로그", "log"};
     }
 
     @Override
-    public String getSmallHelp() {
+    public @NotNull String getSmallHelp() {
         return "(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅 로그를 조회하는 명령어입니다.";
     }
 

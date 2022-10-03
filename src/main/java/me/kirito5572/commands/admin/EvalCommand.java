@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class EvalCommand implements ICommand {
-    private final GroovyShell engine;
-    private final String imports;
+    private final @NotNull GroovyShell engine;
+    private final @NotNull String imports;
 
     public EvalCommand() {
         this.engine = new GroovyShell();
@@ -77,7 +77,7 @@ public class EvalCommand implements ICommand {
                 """;
     }
     @Override
-    public void handle(List<String> args, @NotNull EventPackage event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         if(!Objects.requireNonNull(event.getMember()).getId().equals("284508374924787713")) {
             return;
         }
@@ -110,17 +110,17 @@ public class EvalCommand implements ICommand {
     }
 
     @Override
-    public String getHelp() {
+    public @NotNull String getHelp() {
         return "null";
     }
 
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"eval"};
     }
 
     @Override
-    public String getSmallHelp() {
+    public @NotNull String getSmallHelp() {
         return "(개발자 전용) 살충제! 살충제!";
     }
 

@@ -24,7 +24,7 @@ public class SQLiteQueryCommand implements ICommand {
     }
 
     @Override
-    public void handle(List<String> args, @NotNull EventPackage event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         if(!Objects.requireNonNull(event.getMember()).getId().equals("284508374924787713")) {
             return;
         }
@@ -112,17 +112,17 @@ public class SQLiteQueryCommand implements ICommand {
     }
 
     @Override
-    public String getHelp() {
+    public @NotNull String getHelp() {
         return "null";
     }
 
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"sqlite"};
     }
 
     @Override
-    public String getSmallHelp() {
+    public @NotNull String getSmallHelp() {
         return "(개발자 전용) SQL SQL";
     }
 
@@ -141,7 +141,7 @@ public class SQLiteQueryCommand implements ICommand {
         return false;
     }
 
-    public void insertDeleteUpdateQuery(@Language("SQLite") String sqlQuery, EventPackage event) {
+    public void insertDeleteUpdateQuery(@Language("SQLite") String sqlQuery, @NotNull EventPackage event) {
         try {
             sqliteConnector.Insert_Query_Sqlite(sqlQuery, new int[0], new String[0]);
 

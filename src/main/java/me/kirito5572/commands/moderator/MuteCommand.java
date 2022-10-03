@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ public class MuteCommand implements ICommand {
     }
 
     @Override
-    public void handle(List<String> args, @NotNull EventPackage event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         Member member = event.getMember();
         assert member != null;
         if (!member.getRoles().contains(Objects.requireNonNull(event.getGuild()).getRoleById("827009999145926657"))) {
@@ -101,17 +102,17 @@ public class MuteCommand implements ICommand {
     }
 
     @Override
-    public String getHelp() {
+    public @NotNull String getHelp() {
         return "제재";
     }
 
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[]{"제재", "mute", "m"};
     }
 
     @Override
-    public String getSmallHelp() {
+    public @NotNull String getSmallHelp() {
         return "(관리자 전용) 서버에서 사용자를 제재합니다.";
     }
 
@@ -130,7 +131,7 @@ public class MuteCommand implements ICommand {
         return false;
     }
 
-    public Calendar time_convert(String time) {
+    public @Nullable Calendar time_convert(@NotNull String time) {
         Date date = new Date();
         int temp_time;
         Calendar cal = Calendar.getInstance();

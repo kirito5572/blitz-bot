@@ -50,7 +50,7 @@ public class StopClearCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"초기화","stopclear","sc"};
     }
 

@@ -6,6 +6,7 @@ import me.kirito5572.objects.*;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public class App {
     public  final static int APP_ALPHA = 2;
     private final static int APP_UNKNOWN = 3;
 
-    private final static String OSStringData = System.getProperty("os.name").toLowerCase();
+    private final static @NotNull String OSStringData = System.getProperty("os.name").toLowerCase();
     public static int appMode = 3;
     public static int OS = 3;
     public final static int WINDOWS = 0;
@@ -36,10 +37,10 @@ public class App {
     public final static int UNIX = 2;
     public final static int UNSUPPORTED = 3;
 
-    private static String version = null;
-    private static String build_time = null;
-    private static String build_os = null;
-    private static String build_jdk = null;
+    private static @NotNull String version = "";
+    private static @NotNull String build_time = "";
+    private static @NotNull String build_os = "";
+    private static @NotNull String build_jdk = "";
     private static Date date;
 
 
@@ -65,7 +66,7 @@ public class App {
      * @param Data the name of open .txt file name
      * @return the string data that inside it
      */
-    public static String openFileData(String Data) {
+    public static @NotNull String openFileData(@NotNull String Data) {
         StringBuilder reader = new StringBuilder();
         try {
             String sep = File.separator;
@@ -112,7 +113,7 @@ public class App {
             build_os = attribute.getValue("BuildOS");
             build_jdk = attribute.getValue("BuildJDK");
 
-        } catch (URISyntaxException | IOException e){
+        } catch (@NotNull URISyntaxException | IOException e){
             logger.error(e.getMessage());
             e.printStackTrace();
             System.exit(-1);
@@ -175,7 +176,7 @@ public class App {
             logger.info("Connect success with discord.com");
 
             logger.info("Boot Complete");
-        } catch (LoginException | InterruptedException e) {
+        } catch (@NotNull LoginException | InterruptedException e) {
             logger.error("의도치 않은 예외 발생" + e);
         }
     }
@@ -199,7 +200,7 @@ public class App {
      * @return the version of discord bot
      */
 
-    public static String getVersion() {
+    public static @NotNull String getVersion() {
         return version;
     }
 
@@ -208,7 +209,7 @@ public class App {
      * @return the build time of discord bot
      */
 
-    public static String getBuild_time() {
+    public static @NotNull String getBuild_time() {
         return build_time;
     }
 
@@ -217,7 +218,7 @@ public class App {
      * @return the build os of discord bot
      */
 
-    public static String getBuild_os() {
+    public static @NotNull String getBuild_os() {
         return build_os;
     }
 
@@ -226,7 +227,7 @@ public class App {
      * @return the build jdk of discord bot
      */
 
-    public static String getBuild_jdk() {
+    public static @NotNull String getBuild_jdk() {
         return build_jdk;
     }
 
@@ -244,7 +245,7 @@ public class App {
      * @return the string array that moderator discord id
      */
 
-    public static String[] getModerator() {
+    public static String @NotNull [] getModerator() {
         return moderator;
     }
 

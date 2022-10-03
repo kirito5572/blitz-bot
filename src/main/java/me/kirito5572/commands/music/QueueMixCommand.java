@@ -38,7 +38,7 @@ public class QueueMixCommand implements ICommand {
     /** @noinspection unused*/
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"셔플", "queuemix", "qm"};
     }
 

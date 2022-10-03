@@ -50,7 +50,7 @@ public class StopCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"정지","stop"};
     }
 

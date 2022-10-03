@@ -2,6 +2,7 @@ package me.kirito5572.objects;
 
 import me.kirito5572.App;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,11 +12,12 @@ import java.sql.*;
 
 
 public class SQLITEConnector {
+    /** @noinspection FieldCanBeLocal*/
     private final Logger logger = LoggerFactory.getLogger(SQLITEConnector.class);
     private final MySQLConnector mySqlConnector;
     private static Connection sqliteConnection;
     private static Connection wargamingConnection;
-    private static String dbUrl = "";
+    private static @NotNull String dbUrl = "";
 
     public final int STRING = 0;
 
@@ -81,13 +83,13 @@ public class SQLITEConnector {
      * @throws SQLException if query execution fail or database access error occurs
      * @return {@link java.sql.ResultSet}
      */
-    public ResultSet Select_Query_Sqlite(@Language("SQLite") String Query, int[] dataType, String[] data) throws SQLException {
+    public ResultSet Select_Query_Sqlite(@Language("SQLite") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
         PreparedStatement statement = sqliteConnection.prepareStatement(Query);
         mySqlConnector.Query(statement, dataType, data);
         return statement.executeQuery();
     }
 
-    public ResultSet Select_Query_Wargaming(@Language("SQLite") String Query, int[] dataType, String[] data) throws SQLException {
+    public ResultSet Select_Query_Wargaming(@Language("SQLite") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
         PreparedStatement statement = wargamingConnection.prepareStatement(Query);
         mySqlConnector.Query(statement, dataType, data);
         return statement.executeQuery();
@@ -101,15 +103,14 @@ public class SQLITEConnector {
      * @return true = success, false = failed
      * @throws SQLException if query execution fail or database access error occurs
      */
-    public boolean Insert_Query_Sqlite(@Language("SQLite") String Query, int[] dataType, String[] data) throws SQLException {
+    public boolean Insert_Query_Sqlite(@Language("SQLite") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
         PreparedStatement statement = sqliteConnection.prepareStatement(Query);
         mySqlConnector.Query(statement, dataType, data);
         return statement.execute();
     }
 
-    public boolean Insert_Query_Wargaming(@Language("SQLite") String Query, int[] dataType, String[] data) throws SQLException {
+    public void Insert_Query_Wargaming(@Language("SQLite") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
         PreparedStatement statement = wargamingConnection.prepareStatement(Query);
         mySqlConnector.Query(statement, dataType, data);
-        return statement.execute();
     }
 }

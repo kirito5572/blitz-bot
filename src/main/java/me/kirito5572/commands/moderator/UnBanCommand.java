@@ -68,7 +68,7 @@ public class UnBanCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"언밴", "unban", "ub"};
     }
 

@@ -25,7 +25,7 @@ public class GetYoutubeSearch {
     public GetYoutubeSearch() {
     }
     @Nullable
-    public static String[][] Search(@NotNull String name) {
+    public static String[] @Nullable[] Search(@NotNull String name) {
         try {
             String[][] returns = new String[10][2];
             String apiURL = "https://www.googleapis.com/youtube/v3/search";
@@ -53,11 +53,15 @@ public class GetYoutubeSearch {
                     returns[i][1] = items.get(i).getAsJsonObject().get("id").getAsJsonObject().get("videoId").getAsString();
                 }
             } catch (Exception e) {
+                logger.error("youtube api error");
+                logger.info(e.getMessage());
                 e.printStackTrace();
             }
             return returns;
 
         } catch (IOException e) {
+            logger.error("youtube api error");
+            logger.info(e.getMessage());
             e.printStackTrace();
         }
         return null;

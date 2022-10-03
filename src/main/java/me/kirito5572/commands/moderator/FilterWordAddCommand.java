@@ -20,7 +20,7 @@ public class FilterWordAddCommand implements ICommand {
         this.filterSystem = filterSystem;
     }
     @Override
-    public void handle(List<String> args, @NotNull EventPackage event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         if (Objects.requireNonNull(event.getGuild()).getId().equals("826704284003205160")) {
             boolean isSuccess = filterSystem.commandAuthorityCheck(args, event, false);
             if(isSuccess) {
@@ -37,17 +37,17 @@ public class FilterWordAddCommand implements ICommand {
     }
 
     @Override
-    public String getHelp() {
+    public @NotNull String getHelp() {
         return "null";
     }
 
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"단어추가", "filteradd", "fa"};
     }
 
     @Override
-    public String getSmallHelp() {
+    public @NotNull String getSmallHelp() {
         return "(관리자 전용) 필터링 단어 목록에서 단어를 추가합니다.\"";
     }
 

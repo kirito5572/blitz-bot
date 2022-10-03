@@ -23,7 +23,7 @@ public class ComplainUnBanCommand implements ICommand {
     }
 
     @Override
-    public void handle(List<String> args, @NotNull EventPackage event) {
+    public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         if(args.size() == 0) {
             event.getChannel().sendMessage("""
                     차단 해제할 유저를 입력해주세요.
@@ -62,17 +62,17 @@ public class ComplainUnBanCommand implements ICommand {
     }
 
     @Override
-    public String getHelp() {
+    public @NotNull String getHelp() {
         return "null";
     }
 
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"신고해제", "complainpardon", "cp"};
     }
 
     @Override
-    public String getSmallHelp() {
+    public @NotNull String getSmallHelp() {
         return "(관리자 전용) 신고/건의사항/이의제기등의 상담 채팅을 다시 할수 있도록 차단을 해제하는 명령어입니다";
     }
 

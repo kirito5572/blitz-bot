@@ -82,7 +82,7 @@ public class PlayerManager {
         });
     }
 
-    private void play(@NotNull GuildMusicManager musicManager, AudioTrack track) {
+    private void play(@NotNull GuildMusicManager musicManager, @NotNull AudioTrack track) {
         musicManager.scheduler.queue(track);
     }
 

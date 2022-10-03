@@ -39,7 +39,7 @@ public class PauseCommand implements ICommand {
 
     @NotNull
     @Override
-    public String[] getInvoke() {
+    public String @NotNull [] getInvoke() {
         return new String[] {"일시정지", "pause"};
     }
 
