@@ -40,7 +40,7 @@ public class SearchClanInfoCommand implements ICommand {
         for(int i = 0; i < 5; i++) {
             WargamingAPI.ClanSearchData searchData = data[i];
             if(searchData != null) {
-                builder.addField(String.format("%d. [%s]%s", i, searchData.tag, searchData.name),
+                builder.addField(String.format("%d. [%s]%s", i + 1, searchData.tag, searchData.name),
                         String.format("유저 수: %d", searchData.members_count), false);
             }
         }
@@ -52,7 +52,7 @@ public class SearchClanInfoCommand implements ICommand {
                 @Override
                 public void run() {
                     i[0]++;
-                    if(i[0] == 20) {
+                    if(i[0] == 10) {
                         message.delete().queue();
                         message.getChannel().sendMessage("대기시간을 초과하여 동작이 취소되었습니다")
                                 .queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
@@ -63,18 +63,21 @@ public class SearchClanInfoCommand implements ICommand {
                         boolean pass;
                         try {
                             selectInt.set((Integer.parseInt(message1.getContentRaw()) - 1));
-                            pass = true;
+                            pass = !((selectInt.get() > data.length - 1) || (0 > selectInt.get()));
                         } catch (NumberFormatException e) {
                             pass = false;
                         }
                         if (pass) {
-                            ClanInfoBuilder(message, data[selectInt.get()].clan_id);
-                            timer.cancel();
+                            try {
+                                ClanInfoBuilder(message, data[selectInt.get()].clan_id);
+                                timer.cancel();
+                            } catch (ArrayIndexOutOfBoundsException ignored) {
+                            }
                         }
                     });
                 }
             };
-            timer.scheduleAtFixedRate(timerTask, 0, 500);
+            timer.scheduleAtFixedRate(timerTask, 0, 1000);
         });
     }
 
@@ -90,18 +93,18 @@ public class SearchClanInfoCommand implements ICommand {
         String policy;
         SimpleDateFormat format = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
         if(clanData.recruiting_policy.equals("restricted")) {
-            policy = "가입 제한";
+            policy = "가입 제한 있음";
         } else {
             policy = "공개";
         }
         builder.addField("클랜 사령관", String.format("%s", clanData.leader_name), true)
                 .addField("유저수", String.format("%d", clanData.members_count), true)
-                .addField("가입 제한", policy, true)
+                .addField("가입 제한 여부", policy, true)
                 .addField("클랜 생성일", format.format(new Date(clanData.created_at * 1000)), false)
                 .addField("클랜 모토", String.format("%s", clanData.motto), false)
                 .addField("클랜 설명",String.format("%s", clanData.description),false);
         message.getChannel().sendMessageEmbeds(builder.build()).queue();
-        if(policy.equals("가입 제한")) {
+        if(policy.equals("가입 제한 있음")) {
             builder = EmbedUtils.getDefaultEmbed()
                     .setTitle("클랜 가입 제한 조건")
                     .addField("전투수", String.format("%d", clanData.recruiting_options.battles), true)
@@ -112,23 +115,19 @@ public class SearchClanInfoCommand implements ICommand {
             message.getChannel().sendMessageEmbeds(builder.build()).queue();
         }
         Comparator<String> comparator = Comparator.naturalOrder();
-        Map<String, String> memberMap = new TreeMap<>(comparator);
-        for(WargamingAPI.ClanMembers members : clanData.members.values()) {
-            memberMap.put(members.role, members.account_name);
-        }
         AtomicReference<String> Commander = new AtomicReference<>();
         Commander.set("");
         List<String> executive_officer_list = new ArrayList<>();
         List<String> private_list = new ArrayList<>();
-        memberMap.forEach((role, name) -> {
-            switch (role) {
-                case "executive_officer" -> executive_officer_list.add(name);
-                case "private" -> private_list.add(name);
-                case "commander" -> Commander.set(name);
+        for(WargamingAPI.ClanMembers members : clanData.members.values()) {
+            switch (members.role) {
+                case "executive_officer" -> executive_officer_list.add(members.account_name);
+                case "private" -> private_list.add(members.account_name);
+                case "commander" -> Commander.set(members.account_name);
             }
-        });
-        executive_officer_list.sort(Comparator.naturalOrder());
-        private_list.sort(Comparator.naturalOrder());
+        }
+        executive_officer_list.sort(comparator);
+        private_list.sort(comparator);
         StringBuilder stringBuilder = new StringBuilder();
         for(String officer : executive_officer_list) {
             stringBuilder.append(officer).append("\n");
