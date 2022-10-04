@@ -300,6 +300,8 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
             month_data = wargamingAPI.getUserPersonalData(id, month);
         }
         if(today_data == null || month_data == null) {
+            if(today_data == null) logger.error("today_data is null(SearchPlayerOverAllStatCommand:303)");
+            if(month_data == null) logger.error("month_data is null(SearchPlayerOverAllStatCommand:304)");
             return null;
         }
         //X일 이전 데이터가 있을 경우
