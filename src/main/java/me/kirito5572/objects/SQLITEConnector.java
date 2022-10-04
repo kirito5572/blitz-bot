@@ -109,8 +109,9 @@ public class SQLITEConnector {
         return statement.execute();
     }
 
-    public void Insert_Query_Wargaming(@Language("SQLite") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
+    public boolean Insert_Query_Wargaming(@Language("SQLite") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
         PreparedStatement statement = wargamingConnection.prepareStatement(Query);
         mySqlConnector.Query(statement, dataType, data);
+        return statement.execute();
     }
 }
