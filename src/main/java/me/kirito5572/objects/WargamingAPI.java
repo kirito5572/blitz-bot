@@ -289,13 +289,17 @@ public class WargamingAPI {
                                 new String[]{String.valueOf(date.getTime()), json});
                     } else if(date.getTime() < calendar.getTime().getTime()) {
                         //인접한 날짜의 데이터를 가져온다
-                        ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming(
-                                "SELECT input_time, ABS(input_time - `" + date.getTime() + "`) AS Distance " +
-                                        "FROM `" + id + "` ORDER BY Distance LIMIT 1",
-                                new int[]{}, new String[]{});
-                        if(resultSet1.next()) {
-                            //데이터가 존재할 경우
-                            dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
+                        try {
+                            ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming(
+                                    "SELECT input_time, ABS(input_time - " + date.getTime() + ") AS Distance " +
+                                            "FROM `" + id + "` ORDER BY Distance LIMIT 1",
+                                    new int[]{}, new String[]{});
+                            if (resultSet1.next()) {
+                                //데이터가 존재할 경우
+                                dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
+                            }
+                        } catch (SQLException sqlException) {
+                            //TODO 30일 조회했을때 인접 데이터 조회에 실패했음! 원인 파악후 수정해야함
                         }
                         //만약 데이터가 존재하지 않을 경우
                         // = 오늘 최초 조회를 진행 한 경우이므로 위의 if에 빠지게 된다
