@@ -273,10 +273,11 @@ public class WargamingAPI {
                 calendar.set(Calendar.MILLISECOND, 0);
                 if(resultSet.next()) {
                     //조회를 하려고 하는 날(date)에 데이터가 있을 경우
-                    dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
                     if(date.getTime() == calendar.getTime().getTime()) {
                         //조회를 하려고 하는 날(date)이 오늘 인 경우
                         dataObject = getUserPersonalData(id);
+                    } else {
+                        dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
                     }
                 } else {
                     //조회를 하려고 하는 날(date)에 데이터가 없을 경우
@@ -298,7 +299,7 @@ public class WargamingAPI {
                                 //데이터가 존재할 경우
                                 dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
                             }
-                        } catch (SQLException sqlException) {
+                        } catch (SQLException ignored) {
                             //TODO 30일 조회했을때 인접 데이터 조회에 실패했음! 원인 파악후 수정해야함
                         }
                         //만약 데이터가 존재하지 않을 경우
@@ -315,7 +316,6 @@ public class WargamingAPI {
         return dataObject;
     }
 
-    /** @noinspection unused*/
     public @Nullable DataObject getUserPersonalData(String id) {
         DataObject dataObject = new DataObject();
         String apiURL = "https://api.wotblitz.asia/wotb/account/info/";

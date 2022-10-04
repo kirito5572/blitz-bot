@@ -137,7 +137,7 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
 
         logger.info("option :" + option + ", game_type: "+ game_type + ", id:" + id);
 
-        //TODO 이제... 대망의 값 가져오기!
+        //이제... 대망의 값 가져오기!
         Calendar calendar = new GregorianCalendar();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
@@ -146,7 +146,7 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
         Date today = calendar.getTime();
         EmbedBuilder builder = EmbedUtils.getDefaultEmbed();
         if(option == ALL) {
-            WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(id, today);
+            WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(id);
             if(dataObject == null) {
                 event.getChannel().sendMessage("전적을 불러오던중 에러가 발생했습니다.").queue(message ->
                         message.delete().queueAfter(10, TimeUnit.SECONDS));
