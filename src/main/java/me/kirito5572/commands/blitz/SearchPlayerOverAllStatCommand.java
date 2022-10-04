@@ -146,7 +146,7 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
         Date today = calendar.getTime();
         EmbedBuilder builder = EmbedUtils.getDefaultEmbed();
         if(option == ALL) {
-            WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(id);
+            WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(id, today);
             if(dataObject == null) {
                 event.getChannel().sendMessage("전적을 불러오던중 에러가 발생했습니다.").queue(message ->
                         message.delete().queueAfter(10, TimeUnit.SECONDS));
@@ -234,7 +234,7 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
             Date month = calendar.getTime();
             builder = monthBuilder(game_type, id, today, month, builder, args, "30일");
             if(builder == null) {
-                event.getChannel().sendMessage("게임 모드가 정확히 선택되지 않았습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+                event.getChannel().sendMessage("데이터 조회에 실패했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
                 return;
             }
         } else if(option == MONTH2) {
@@ -242,7 +242,7 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
             Date month = calendar.getTime();
             builder = monthBuilder(game_type, id, today, month, builder, args, "60일");
             if(builder == null) {
-                event.getChannel().sendMessage("게임 모드가 정확히 선택되지 않았습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+                event.getChannel().sendMessage("데이터 조회에 실패했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
                 return;
             }
         } else if(option == MONTH3) {
@@ -250,7 +250,7 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
             Date month = calendar.getTime();
             builder = monthBuilder(game_type, id, today, month, builder, args, "90일");
             if(builder == null) {
-                event.getChannel().sendMessage("게임 모드가 정확히 선택되지 않았습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
+                event.getChannel().sendMessage("데이터 조회에 실패했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
                 return;
             }
         } else if(option == IMAGE) {

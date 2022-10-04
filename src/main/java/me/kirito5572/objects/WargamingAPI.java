@@ -262,7 +262,17 @@ public class WargamingAPI {
                     new int[]{wargamingConnector.STRING},
                     new String[]{ String.valueOf(date.getTime())});
         } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
+            //최초 조회 유저!
+            dataObject = getUserPersonalData(id);
+            String json = new Gson().toJson(dataObject);
+            try {
+                wargamingConnector.Insert_Query_Wargaming("INSERT INTO `" + id + "` (input_time, data) VALUES (?, ?)",
+                        new int[]{wargamingConnector.STRING, wargamingConnector.STRING},
+                        new String[]{String.valueOf(date.getTime()), json});
+            } catch (SQLException exception) {
+                exception.printStackTrace();
+                return null;
+            }
         }
         if(resultSet != null) {
             try {
