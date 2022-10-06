@@ -232,6 +232,7 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
         } else if(option == MONTH1) {
             calendar.add(Calendar.DAY_OF_MONTH, -30);
             Date month = calendar.getTime();
+            logger.info("30일 builder 들어감");
             builder = monthBuilder(game_type, id, today, month, builder, args, "30일");
             if(builder == null) {
                 event.getChannel().sendMessage("데이터 조회에 실패했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
@@ -294,7 +295,9 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
 
     private @Nullable EmbedBuilder monthBuilder(int game_type, String id, @NotNull Date today, @NotNull Date month, @NotNull EmbedBuilder builder, @NotNull List<String> args, String title) {
         WargamingAPI.DataObject today_data = wargamingAPI.getUserPersonalData(id, today);
+        logger.info("today_data 불러옴");
         WargamingAPI.DataObject month_data = wargamingAPI.getUserPersonalData(id, month);
+        logger.info("month_data 불러옴");
         if(month_data == null) {
             //X일 이전 데이터가 없을 경우
             month_data = wargamingAPI.getUserPersonalData(id, month);

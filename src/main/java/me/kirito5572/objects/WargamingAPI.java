@@ -275,6 +275,8 @@ public class WargamingAPI {
                 return null;
             }
         }
+
+        //TODO 여기서 버그 걸림, month_data가 자꾸 null임 디코 참고!
         if(resultSet != null) {
             try {
                 Calendar calendar = new GregorianCalendar();
