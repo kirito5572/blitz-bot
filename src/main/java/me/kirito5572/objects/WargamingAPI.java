@@ -314,10 +314,8 @@ public class WargamingAPI {
                                         "SELECT * FROM `" + id + "` WHERE input_time = ?",
                                         new int[]{wargamingConnector.STRING}, new String[]{resultSet1.getString("input_time")});
                                 if(resultSet2.next()) {
-                                    logger.info("resultSet2.next()");
-                                    dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
+                                    dataObject = new Gson().fromJson(resultSet2.getString("data"), DataObject.class);
                                 } else {
-                                    logger.info("resultSet2.next is null");
                                     return null;
                                 }
                             }
