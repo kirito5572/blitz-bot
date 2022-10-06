@@ -310,7 +310,14 @@ public class WargamingAPI {
                                     new int[]{}, new String[]{});
                             if (resultSet1.next()) {
                                 //데이터가 존재할 경우
-                                dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
+                                ResultSet resultSet2 = wargamingConnector.Select_Query_Wargaming(
+                                        "SELECT * FROM `" + id + "` WHERE input_time = ?",
+                                        new int[]{wargamingConnector.STRING}, new String[]{resultSet1.getString("input_time")});
+                                if(resultSet2.next()) {
+                                    dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
+                                } else {
+                                    return null;
+                                }
                             }
                         } catch (SQLException ignored) {
                             //TODO 30일 조회했을때 인접 데이터 조회에 실패했음! 원인 파악후 수정해야함

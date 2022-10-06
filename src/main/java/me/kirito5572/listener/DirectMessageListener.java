@@ -138,7 +138,7 @@ public class DirectMessageListener extends ListenerAdapter {
         List<TextChannel> textChannels = Objects.requireNonNull(event.getGuild().getCategoryById("1005116641509650482")).getTextChannels();
         for(TextChannel textChannel : textChannels) {
             if(textChannel.getId().equals(event.getChannel().getId())) {
-                User user = event.getJDA().getUserById(event.getChannel().getName());
+                User user = event.getJDA().getUserById(event.getChannel().getId());
                 if(user == null) {
                     event.getChannel().sendMessage("""
                                     봇이 이 유저를 더 이상 찾을수 없습니다. 

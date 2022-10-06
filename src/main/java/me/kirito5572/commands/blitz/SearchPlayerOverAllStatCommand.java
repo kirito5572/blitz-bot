@@ -89,12 +89,6 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
                 }
             }
             if(args.size() >= 3) {
-                try {
-                    id = wargamingAPI.getWargamingPlayer(args.get(0));
-                } catch (SQLException sqlException) {
-                    sqlException.printStackTrace();
-                    event.getChannel().sendMessage("유저 검색중 에러가 발생했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
-                }
                 switch (args.get(1)) {
                     case "전체" -> option = ALL;
                     case "30일" -> option = MONTH1;
