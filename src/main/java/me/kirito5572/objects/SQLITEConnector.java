@@ -19,7 +19,8 @@ public class SQLITEConnector {
     private static Connection wargamingConnection;
     private static @NotNull String dbUrl = "";
 
-    public final int STRING = 0;
+    public final int TEXT = 0;
+    public final int INTEGER = 3;   //INT + LONG;
 
     public SQLITEConnector(MySQLConnector mySQLConnector) throws ClassNotFoundException, SQLException, URISyntaxException {
         this.mySqlConnector = mySQLConnector;

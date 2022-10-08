@@ -48,7 +48,7 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
         if(args.isEmpty()) {
             try {
                 ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE discordId = ?",
-                        new int[]{wargamingConnector.STRING}, new String[]{event.getAuthor().getId()});
+                        new int[]{wargamingConnector.TEXT}, new String[]{event.getAuthor().getId()});
                 if(resultSet.next()) {
                     id = resultSet.getString("userId");
                 } else {
@@ -300,6 +300,8 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
             return null;
         }
         //X일 이전 데이터가 있을 경우
+
+        //TODO 값이 0 일때 처리 추가하기!(즉, today_data 와 month_data 간의 차이가 없을때를 말함!)
         if(game_type == ALL) {
             int battles = today_data.allDataObject.battles - month_data.allDataObject.battles;
             int wins = today_data.allDataObject.wins - month_data.allDataObject.wins;
@@ -326,6 +328,12 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
                         (double) (today_data.allDataObject.damage_received - month_data.allDataObject.damage_received));
             } catch(ArithmeticException e) {
                 damageRadio = 0;
+            }
+            double winRate;
+            try {
+                winRate = ((double) wins / (double) battles);
+            } catch(ArithmeticException e) {
+                winRate = 0;
             }
             builder.setTitle("전적 조회(전체 전투)")
                     .addField("전투", String.valueOf(battles), true)

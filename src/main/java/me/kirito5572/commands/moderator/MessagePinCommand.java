@@ -33,10 +33,10 @@ public class MessagePinCommand implements ICommand {
             }
         }
         String channelId = event.getChannel().getId();
-        try (ResultSet resultSet = sqliteConnector.Select_Query_Sqlite("SELECT * FROM Pin WHERE channelId=?;", new int[]{sqliteConnector.STRING}, new String[]{channelId})) {
+        try (ResultSet resultSet = sqliteConnector.Select_Query_Sqlite("SELECT * FROM Pin WHERE channelId=?;", new int[]{sqliteConnector.TEXT}, new String[]{channelId})) {
             if(resultSet.next()) {
                 event.getChannel().deleteMessageById(resultSet.getString("messageId")).queue();
-                sqliteConnector.Insert_Query_Sqlite("DELETE FROM Pin WHERE channelId=?;" , new int[]{sqliteConnector.STRING}, new String[]{channelId});
+                sqliteConnector.Insert_Query_Sqlite("DELETE FROM Pin WHERE channelId=?;" , new int[]{sqliteConnector.TEXT}, new String[]{channelId});
                 event.getChannel().sendMessage("핀이 해제되었습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
             } else {
                 EmbedBuilder builder = EmbedUtils.getDefaultEmbed()
@@ -53,7 +53,7 @@ public class MessagePinCommand implements ICommand {
                         String messageId = message.getId();
                     try {
                         sqliteConnector.Insert_Query_Sqlite("INSERT INTO Pin (channelId, messageId) VALUES (?, ?)",
-                                new int[]{sqliteConnector.STRING, sqliteConnector.STRING},
+                                new int[]{sqliteConnector.TEXT, sqliteConnector.TEXT},
                                 new String[]{channelId, messageId});
                     } catch (SQLException sqlException) {
                         sqlException.printStackTrace();

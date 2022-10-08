@@ -6,6 +6,7 @@ import me.kirito5572.commands.HelpCommand;
 import me.kirito5572.commands.PingCommand;
 import me.kirito5572.commands.admin.EvalCommand;
 import me.kirito5572.commands.admin.SQLiteQueryCommand;
+import me.kirito5572.commands.blitz.AccountLinkCommand;
 import me.kirito5572.commands.blitz.SearchClanInfoCommand;
 import me.kirito5572.commands.blitz.SearchPlayerOverAllStatCommand;
 import me.kirito5572.commands.moderator.*;
@@ -60,6 +61,7 @@ public class CommandManager {
 
         addCommand(new SearchPlayerOverAllStatCommand(sqliteConnector, wargamingAPI));
         addCommand(new SearchClanInfoCommand(wargamingAPI));
+        addCommand(new AccountLinkCommand(wargamingAPI));
 
         //music commands
         addCommand(new JoinCommand());

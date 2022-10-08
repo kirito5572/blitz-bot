@@ -50,6 +50,32 @@ public class WargamingAPI {
 
     }
 
+    public boolean getToken() {
+        Date date = new Date();
+        String time = String.valueOf((date.getTime() + 1123200000));
+        String reNewTime = String.valueOf((date.getTime() + 1036800000));
+        String apiURL = "https://api.worldoftanks.asia/wot/auth/login/";
+        apiURL += "?application_id=" + token;
+        apiURL += "&display=popup&redirect_uri=https://developers.wargaming.net/reference/all/wot/auth/login/&expires_at=" + time;
+        try {
+            JsonObject object = GET(apiURL).getAsJsonObject();
+            boolean isOkay = object.get("status").getAsString().equals("OK");
+            if(isOkay) {
+                long account_id = object.get("account_id").getAsLong();
+                String access_token = object.get("access_token").getAsString();
+                long expires_at = object.get("expires_at").getAsLong();
+                return wargamingConnector.Insert_Query_Wargaming("INSERT INTO accountInfomation (Id, token, end_time, renew_time) VALUES (?, ?, ?, ?)",
+                        new int[]{wargamingConnector.INTEGER, wargamingConnector.TEXT, wargamingConnector.INTEGER, wargamingConnector.INTEGER},
+                        new String[]{String.valueOf(account_id), access_token, String.valueOf(expires_at), reNewTime});
+            } else {
+                return false;
+            }
+        } catch (IOException | SQLException e) {
+                e.printStackTrace();
+                return false;
+        }
+    }
+
     public String @NotNull [] tankIdBuilder() {
         int size = (tankDataMap.size() / 100) + 1;
         String[] return_data = new String[size];
@@ -216,7 +242,7 @@ public class WargamingAPI {
     public @Nullable String getWargamingPlayer(String nickname) throws SQLException {
         String id;
         ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE nickname = ?",
-                new int[]{wargamingConnector.STRING}, new String[]{nickname});
+                new int[]{wargamingConnector.TEXT}, new String[]{nickname});
         if (resultSet.next()) {
             id = resultSet.getString("userId");
         } else {
@@ -236,13 +262,13 @@ public class WargamingAPI {
                 return null;
             }
             ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE userId = ?",
-                    new int[]{wargamingConnector.STRING}, new String[]{id});
+                    new int[]{wargamingConnector.TEXT}, new String[]{id});
             if (resultSet1.next()) {
                 wargamingConnector.Insert_Query_Wargaming("UPDATE wargamingUserId SET nickname = ? WHERE userId = ?",
-                        new int[]{wargamingConnector.STRING, wargamingConnector.STRING}, new String[]{nickname, id});
+                        new int[]{wargamingConnector.TEXT, wargamingConnector.TEXT}, new String[]{nickname, id});
             } else {
                 wargamingConnector.Insert_Query_Wargaming("INSERT INTO wargamingUserId (nickname, userId) VALUES (?, ?)",
-                        new int[]{wargamingConnector.STRING, wargamingConnector.STRING}, new String[]{nickname, id});
+                        new int[]{wargamingConnector.TEXT, wargamingConnector.TEXT}, new String[]{nickname, id});
                 wargamingConnector.Insert_Query_Wargaming("create table `" + id + "` \n" +
                                 "(\n" +
                                 "\tinput_time text,\n" +
@@ -259,7 +285,7 @@ public class WargamingAPI {
         ResultSet resultSet = null;
         try {
             resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM `" + id + "` WHERE input_time = ?",
-                    new int[]{wargamingConnector.STRING},
+                    new int[]{wargamingConnector.TEXT},
                     new String[]{ String.valueOf(date.getTime())});
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
@@ -268,7 +294,7 @@ public class WargamingAPI {
             String json = new Gson().toJson(dataObject);
             try {
                 wargamingConnector.Insert_Query_Wargaming("INSERT INTO `" + id + "` (input_time, data) VALUES (?, ?)",
-                        new int[]{wargamingConnector.STRING, wargamingConnector.STRING},
+                        new int[]{wargamingConnector.TEXT, wargamingConnector.TEXT},
                         new String[]{String.valueOf(date.getTime()), json});
             } catch (SQLException exception) {
                 exception.printStackTrace();
@@ -299,7 +325,7 @@ public class WargamingAPI {
                         dataObject = getUserPersonalData(id);
                         String json = new Gson().toJson(dataObject);
                         wargamingConnector.Insert_Query_Wargaming("INSERT INTO `" + id + "` (input_time, data) VALUES (?, ?)",
-                                new int[]{wargamingConnector.STRING, wargamingConnector.STRING},
+                                new int[]{wargamingConnector.TEXT, wargamingConnector.TEXT},
                                 new String[]{String.valueOf(date.getTime()), json});
                     } else if(date.getTime() < calendar.getTime().getTime()) {
                         //인접한 날짜의 데이터를 가져온다
@@ -312,7 +338,7 @@ public class WargamingAPI {
                                 //데이터가 존재할 경우
                                 ResultSet resultSet2 = wargamingConnector.Select_Query_Wargaming(
                                         "SELECT * FROM `" + id + "` WHERE input_time = ?",
-                                        new int[]{wargamingConnector.STRING}, new String[]{resultSet1.getString("input_time")});
+                                        new int[]{wargamingConnector.TEXT}, new String[]{resultSet1.getString("input_time")});
                                 if(resultSet2.next()) {
                                     dataObject = new Gson().fromJson(resultSet2.getString("data"), DataObject.class);
                                 } else {

@@ -101,7 +101,7 @@ public class onReadyListener extends ListenerAdapter {
                             Gson gson = new Gson();
                             String json = gson.toJson(dataObject);
                             sqliteConnector.Insert_Query_Wargaming("INSERT INTO `" + userId + "` (input_time, data) VALUES (?, ?)",
-                                    new int[]{sqliteConnector.STRING, sqliteConnector.STRING},
+                                    new int[]{sqliteConnector.TEXT, sqliteConnector.TEXT},
                                     new String[]{String.valueOf(date.getTime()), json});
                         } else {
                             timer.cancel();
@@ -184,11 +184,11 @@ public class onReadyListener extends ListenerAdapter {
         long time = System.currentTimeMillis() / 1000;
         try (ResultSet resultSet = sqliteConnector.Select_Query_Sqlite(
                 "SELECT * FROM GiveRoleBanTable WHERE endTime < ?;",
-                new int[]{sqliteConnector.STRING}, new String[]{String.valueOf(time)})) {
+                new int[]{sqliteConnector.TEXT}, new String[]{String.valueOf(time)})) {
             while (resultSet.next()) {
                 sqliteConnector.Insert_Query_Sqlite(
                         "DELETE FROM GiveRoleBanTable WHERE userId = ?;",
-                        new int[] {sqliteConnector.STRING}, new String[]{resultSet.getString("userId")});
+                        new int[] {sqliteConnector.TEXT}, new String[]{resultSet.getString("userId")});
             }
 
         } catch (SQLException sqlException) {
