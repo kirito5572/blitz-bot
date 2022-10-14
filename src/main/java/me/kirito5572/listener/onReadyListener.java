@@ -48,6 +48,18 @@ public class onReadyListener extends ListenerAdapter {
             autoActivityChangeModule(event);
         }
 
+        TimerTask module = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    wargamingAutoTokenListenerModule(new Date(), event);
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
+                }
+            }
+        };
+        new Timer().scheduleAtFixedRate(module, 0, 1000);
+
         final int[] i = {0};
         try {
             Timer timer = new Timer();
@@ -86,7 +98,29 @@ public class onReadyListener extends ListenerAdapter {
         }
     }
 
-    public void wargamingUserDataListenerModule(@NotNull Date date) {
+    private void wargamingAutoTokenListenerModule(@NotNull Date date,@NotNull ReadyEvent event) throws SQLException {
+        long time = date.getTime();
+        ResultSet resultSet = sqliteConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE renew_time < ?",
+                new int[]{sqliteConnector.INTEGER},
+                new String[]{String.valueOf(time)});
+        if(resultSet.next()) {
+            boolean isSuccess = wargamingAPI.reNewToken(resultSet.getString("token"));
+            if(!isSuccess) {
+                logger.error("워게이밍 유저 토큰 갱신에 실패했습니다.");
+            }
+        }
+        resultSet = sqliteConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE end_time < ?",
+                new int[]{sqliteConnector.INTEGER},
+                new String[]{String.valueOf(time)});
+        if(resultSet.next()) {
+            Objects.requireNonNull(event.getJDA().getUserById(resultSet.getString("Id"))).openPrivateChannel().queue(privateChannel -> {
+                privateChannel.sendMessage("등록하신 워게이밍 계정의 토큰키가 자동 갱신에 실패하여 만료되었습니다.\n" +
+                        "부득이한 경우지만 다시한번 갱신을 부탁드리겠습니다.").queue();
+            });
+        }
+    }
+
+    private void wargamingUserDataListenerModule(@NotNull Date date) {
         ResultSet resultSet;
         try {
             resultSet = sqliteConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId", new int[]{}, new String[]{});
@@ -128,7 +162,7 @@ public class onReadyListener extends ListenerAdapter {
      * {@link net.dv8tion.jda.api.events.ReadyEvent} for {@link me.kirito5572.listener.MuteListener}
      */
 
-    public void muteListenerModule(@NotNull ReadyEvent event) {
+    private void muteListenerModule(@NotNull ReadyEvent event) {
         try {
             ResultSet resultSet;
             try {
@@ -180,7 +214,7 @@ public class onReadyListener extends ListenerAdapter {
      * {@link net.dv8tion.jda.api.events.ReadyEvent} for {@link me.kirito5572.listener.giveRoleListener}
      */
 
-    public void giveRoleListenerModule() {
+    private void giveRoleListenerModule() {
         long time = System.currentTimeMillis() / 1000;
         try (ResultSet resultSet = sqliteConnector.Select_Query_Sqlite(
                 "SELECT * FROM GiveRoleBanTable WHERE endTime < ?;",
@@ -208,7 +242,7 @@ public class onReadyListener extends ListenerAdapter {
      * @param event {@link net.dv8tion.jda.api.events.ReadyEvent}
      */
 
-    public void autoActivityChangeModule(@NotNull ReadyEvent event) {
+    private void autoActivityChangeModule(@NotNull ReadyEvent event) {
         JDA jda = event.getJDA();
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -230,7 +264,7 @@ public class onReadyListener extends ListenerAdapter {
         timer.scheduleAtFixedRate(timerTask, 0, 5000);
     }
 
-    public void startUpGetData() {
+    private void startUpGetData() {
         List<String> complainData = new ArrayList<>();
         try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainBan;", new int[]{}, new String[]{})) {
             while (resultSet.next()) {

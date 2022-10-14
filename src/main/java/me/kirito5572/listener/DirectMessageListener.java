@@ -3,6 +3,8 @@ package me.kirito5572.listener;
 import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.objects.MySQLConnector;
 import me.kirito5572.objects.OptionData;
+import me.kirito5572.objects.SQLITEConnector;
+import me.kirito5572.objects.WargamingAPI;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -23,14 +25,52 @@ import java.util.Objects;
 public class DirectMessageListener extends ListenerAdapter {
     private final Logger logger = LoggerFactory.getLogger(DirectMessageListener.class);
     private final MySQLConnector mySqlConnector;
+    private final SQLITEConnector wargamingConnector;
+    private final WargamingAPI wargamingAPI;
 
-    public DirectMessageListener(MySQLConnector mySqlConnector) {
+    public DirectMessageListener(MySQLConnector mySqlConnector, SQLITEConnector wargamingConnector, WargamingAPI wargamingAPI) {
         this.mySqlConnector = mySqlConnector;
+        this.wargamingConnector = wargamingConnector;
+        this.wargamingAPI = wargamingAPI;
     }
 
     @Override
     public void onPrivateMessageReceived(@NotNull PrivateMessageReceivedEvent event) {
         if(event.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
+            return;
+        }
+        if(event.getMessage().getContentRaw().startsWith("copythis:")) {
+            String message = event.getMessage().getContentRaw().replaceFirst("copythis:", "");
+            message =  message.substring(message.indexOf("status:") + 7);
+            boolean status = message.startsWith("ok");
+            if(!status) {
+                String errorCode = message.substring(message.indexOf("code:") + 5);
+                String errorMessage = message.substring(message.indexOf("message:") + 5);
+                event.getChannel().sendMessage("결과를 불러오는데 실패했습니다. 다시 시도해주시기 바랍니다.\n" +
+                        "에러코드: " + errorCode + "\n 에러메세지: " + errorMessage).queue();
+            }
+
+            long account_id = Long.parseLong(message.substring(message.indexOf("account_id:") + 11));
+            String access_token = message.substring(message.indexOf("access_token:") + 13);
+
+            WargamingAPI.TokenData tokenData = wargamingAPI.reNewTokenOnce(access_token);
+            if(tokenData == null) {
+                event.getChannel().sendMessage("토큰 갱신시에 에러가 발생했습니다. 인증 과정을 다시 시도하여 주십시오.").queue();
+                return;
+            }
+            if(account_id != tokenData.id) {
+                event.getChannel().sendMessage("입력한 토큰키의 소유 계정 ID와 신규 발급된 토큰키의 소유 계정 ID가 일치 하지 않습니다.").queue();
+            }
+            try {
+                wargamingConnector.Insert_Query_Wargaming("INSERT INTO accountInfomation (Id, token, end_time, renew_time) VALUES (?, ?, ?, ?)",
+                        new int[]{wargamingConnector.INTEGER, wargamingConnector.TEXT, wargamingConnector.INTEGER, wargamingConnector.INTEGER},
+                        new String[]{String.valueOf(tokenData.id), tokenData.token, String.valueOf(tokenData.endTime), String.valueOf(tokenData.reNewTime)});
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
+                event.getChannel().sendMessage("에러가 발생했습니다.").queue();
+                return;
+            }
+            event.getChannel().sendMessage("유저 등록 처리가 완료되었습니다.").queue();
             return;
         }
         List<String> complainBanUserList = OptionData.getComplainBanUserList();

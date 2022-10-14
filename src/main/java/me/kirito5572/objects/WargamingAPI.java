@@ -1,6 +1,14 @@
 package me.kirito5572.objects;
 
 import com.google.gson.*;
+import me.duncte123.botcommons.messaging.EmbedUtils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -46,34 +54,74 @@ public class WargamingAPI {
             e.printStackTrace();
         }
         WargamingAPI wargamingAPI = new WargamingAPI(sqliteConnector);
-        DataObject dataObject = wargamingAPI.getUserPersonalData("2011403181");
 
     }
-
-    public boolean getToken() {
+    public TokenData reNewTokenOnce(String token) {
+        TokenData tokenData = new TokenData();
         Date date = new Date();
-        String time = String.valueOf((date.getTime() + 1123200000));
-        String reNewTime = String.valueOf((date.getTime() + 1036800000));
+        long reNewTime = (date.getTime() + 1080000000L);    //갱신시간 12일 12시간후
+        long endTime = (date.getTime() + 12060000000L);     //만료시간 13일 23시간후
+        String response = POST("https://api.worldoftanks.asia/wot/auth/prolongate/",
+                new String[]{"application_id", "access_token", "expires_at"},
+                new String[]{this.token, token, String.valueOf(endTime / 1000)});
+        if(response == null) {
+            return null;
+        }
+        System.out.println(response);
+        JsonObject object = JsonParser.parseString(response).getAsJsonObject();
+        if(object.get("status").getAsString().equals("error")) {
+            return null;
+        }
+        String access_token = object.get("data").getAsJsonObject().get("access_token").getAsString();
+        long account_id = object.get("data").getAsJsonObject().get("account_id").getAsLong();
+        long expires_at = object.get("data").getAsJsonObject().get("expires_at").getAsLong();
+        tokenData.token = access_token;
+        tokenData.id = account_id;
+        tokenData.reNewTime = reNewTime;
+        tokenData.endTime = expires_at * 1000;
+        return tokenData;
+    }
+
+    public boolean reNewToken(String token) {
+        Date date = new Date();
+        long reNewTime = (date.getTime() + 1080000000L);    //갱신시간 12일 12시간후
+        long endTime = (date.getTime() + 12060000000L);     //만료시간 13일 23시간후
+        String response = POST("https://api.worldoftanks.asia/wot/auth/prolongate/",
+                new String[]{"application_id", "access_token", "expires_at"},
+                new String[]{this.token, token, String.valueOf(endTime / 1000)});
+        if(response == null) {
+            return true;
+        }
+        System.out.println(response);
+        JsonObject object = JsonParser.parseString(response).getAsJsonObject();
+        if(object.get("status").getAsString().equals("error")) {
+            return true;
+        }
+        String access_token = object.get("data").getAsJsonObject().get("access_token").getAsString();
+        String account_id = object.get("data").getAsJsonObject().get("account_id").getAsString();
+        long expires_at = object.get("data").getAsJsonObject().get("expires_at").getAsLong();
+        try {
+            wargamingConnector.Insert_Query_Wargaming("UPDATE accountInfomation SET token = ?, end_time = ?, renew_time = ? WHERE Id = ?",
+                    new int[]{wargamingConnector.TEXT, wargamingConnector.INTEGER, wargamingConnector.INTEGER, wargamingConnector.INTEGER},
+                    new String[]{access_token, String.valueOf(expires_at * 1000), String.valueOf(reNewTime), String.valueOf(account_id)});
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            return true;
+        }
+        return false;
+    }
+
+    public EmbedBuilder getToken() {
+        Date date = new Date();
+        String time = String.valueOf((date.getTime() + 3000000));
         String apiURL = "https://api.worldoftanks.asia/wot/auth/login/";
         apiURL += "?application_id=" + token;
-        apiURL += "&display=popup&redirect_uri=https://developers.wargaming.net/reference/all/wot/auth/login/&expires_at=" + time;
-        try {
-            JsonObject object = GET(apiURL).getAsJsonObject();
-            boolean isOkay = object.get("status").getAsString().equals("OK");
-            if(isOkay) {
-                long account_id = object.get("account_id").getAsLong();
-                String access_token = object.get("access_token").getAsString();
-                long expires_at = object.get("expires_at").getAsLong();
-                return wargamingConnector.Insert_Query_Wargaming("INSERT INTO accountInfomation (Id, token, end_time, renew_time) VALUES (?, ?, ?, ?)",
-                        new int[]{wargamingConnector.INTEGER, wargamingConnector.TEXT, wargamingConnector.INTEGER, wargamingConnector.INTEGER},
-                        new String[]{String.valueOf(account_id), access_token, String.valueOf(expires_at), reNewTime});
-            } else {
-                return false;
-            }
-        } catch (IOException | SQLException e) {
-                e.printStackTrace();
-                return false;
-        }
+        apiURL += "&display=popup&redirect_uri=copythis:&expires_at=" + time;
+        return EmbedUtils.getDefaultEmbed()
+                .setTitle("아래 URL을 눌러 등록을 진행하여주세요!")
+                .addField("URL", String.format("[URL](%s)", apiURL), true)
+                .setDescription("로그인 완료후 아래 사진처럼 되면 URL을 복사하여 봇의 DM으로 보내주시면 됩니다.")
+                .setFooter("인증은 5분간 유효합니다.");
     }
 
     public String @NotNull [] tankIdBuilder() {
@@ -302,7 +350,6 @@ public class WargamingAPI {
             }
         }
 
-        //TODO 여기서 버그 걸림, month_data가 자꾸 null임 디코 참고!
         if(resultSet != null) {
             try {
                 Calendar calendar = new GregorianCalendar();
@@ -346,7 +393,6 @@ public class WargamingAPI {
                                 }
                             }
                         } catch (SQLException ignored) {
-                            //TODO 30일 조회했을때 인접 데이터 조회에 실패했음! 원인 파악후 수정해야함
                         }
                         //만약 데이터가 존재하지 않을 경우
                         // = 오늘 최초 조회를 진행 한 경우이므로 위의 if에 빠지게 된다
@@ -673,6 +719,29 @@ public class WargamingAPI {
         }
         br.close();
         return JsonParser.parseString(response.toString());
+    }
+
+    private @Nullable String POST(@NotNull String url, String[] name, String[] value) {
+        //코드는 https://www.techiedelight.com/ko/send-http-post-request-java/ 참조함
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()){
+            RequestBuilder builder = RequestBuilder.post()
+                    .setUri(url);
+            for(int i = 0; i < name.length; i++) {
+                try {
+                    String parameterName = name[i];
+                    String parameterValue = value[i];
+                    builder.addParameter(parameterName, parameterValue);
+                } catch (Exception ignored) {
+                }
+            }
+            HttpUriRequest post = builder.build();
+            try (CloseableHttpResponse response = httpclient.execute(post)) {
+                return EntityUtils.toString(response.getEntity());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static class TournamentData {
@@ -1050,6 +1119,13 @@ public class WargamingAPI {
     public static class ClanMembers {
         public String role;
         public String account_name;
+    }
+
+    public static class TokenData {
+        public String token;
+        public long endTime;
+        public long reNewTime;
+        public long id;
     }
 
     public Map<String, AchievementData> getAchievementMap() {

@@ -158,7 +158,7 @@ public class App {
         LogListener logListener = new LogListener(mySqlConnector);
         MuteListener muteListener = new MuteListener(mySqlConnector);
         onReadyListener onReadyListener = new onReadyListener(mySqlConnector, sqliteConnector, wargamingAPI);
-        DirectMessageListener directMessageListener = new DirectMessageListener(mySqlConnector);
+        DirectMessageListener directMessageListener = new DirectMessageListener(mySqlConnector, sqliteConnector, wargamingAPI);
 
         EventListener eventListener = new EventListener(mySqlConnector);
 

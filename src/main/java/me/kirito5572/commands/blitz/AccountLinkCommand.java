@@ -3,6 +3,7 @@ package me.kirito5572.commands.blitz;
 import me.kirito5572.objects.EventPackage;
 import me.kirito5572.objects.ICommand;
 import me.kirito5572.objects.WargamingAPI;
+import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -18,18 +19,9 @@ public class AccountLinkCommand implements ICommand {
     public void handle(List<String> args, @NotNull EventPackage event) {
         event.getChannel().sendMessage("워게이밍넷과 계정 연결을 시도합니다....").queue(
                 message -> {
-                    boolean isSuccess = wargamingAPI.getToken();
-                    if(isSuccess) {
-                        message.editMessage("""
-                                        워게이밍넷과 계정 연결을 시도합니다....
-                                        계정 연결에 성공하였습니다!
-                                """).queue();
-                    } else {
-                        message.editMessage("""
-                                        워게이밍넷과 계정 연결을 시도합니다....
-                                        계정 연결에 실패하였습니다!
-                                """).queue();
-                    }
+                    EmbedBuilder builder = wargamingAPI.getToken();
+                    message.getChannel().sendMessageEmbeds(builder.build()).queue();
+                    message.delete().queue();
                 }
         );
     }
