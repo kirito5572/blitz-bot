@@ -39,9 +39,9 @@ public class DirectMessageListener extends ListenerAdapter {
         if(event.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
             return;
         }
-        if(event.getMessage().getContentRaw().startsWith("copythis:")) {
-            String message = event.getMessage().getContentRaw().replaceFirst("copythis:", "");
-            message =  message.substring(message.indexOf("status:") + 7);
+        if(event.getMessage().getContentRaw().startsWith("https://asia.wotblitz.com/ko/#/")) {
+            String message = event.getMessage().getContentRaw().replaceFirst("https://asia.wotblitz.com/ko/#/", "");
+            message =  message.substring(message.indexOf("status=") + 7);
             boolean status = message.startsWith("ok");
             if(!status) {
                 String errorCode = message.substring(message.indexOf("code:") + 5);
@@ -50,8 +50,8 @@ public class DirectMessageListener extends ListenerAdapter {
                         "에러코드: " + errorCode + "\n 에러메세지: " + errorMessage).queue();
             }
 
-            long account_id = Long.parseLong(message.substring(message.indexOf("account_id:") + 11));
-            String access_token = message.substring(message.indexOf("access_token:") + 13);
+            long account_id = Long.parseLong(message.substring(message.indexOf("account_id=") + 11));
+            String access_token = message.substring(message.indexOf("accesstoken=") + 12);
 
             WargamingAPI.TokenData tokenData = wargamingAPI.reNewTokenOnce(access_token);
             if(tokenData == null) {

@@ -116,7 +116,7 @@ public class WargamingAPI {
         String time = String.valueOf((date.getTime() + 3000000));
         String apiURL = "https://api.worldoftanks.asia/wot/auth/login/";
         apiURL += "?application_id=" + token;
-        apiURL += "&display=popup&redirect_uri=copythis:&expires_at=" + time;
+        apiURL += "&display=popup&redirect_uri=https://asia.wotblitz.com/ko/#/&expires_at=" + time;
         return EmbedUtils.getDefaultEmbed()
                 .setTitle("아래 URL을 눌러 등록을 진행하여주세요!")
                 .addField("URL", String.format("[URL](%s)", apiURL), true)
