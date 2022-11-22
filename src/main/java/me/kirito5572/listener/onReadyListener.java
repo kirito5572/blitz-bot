@@ -3,37 +3,39 @@ package me.kirito5572.listener;
 import com.google.gson.Gson;
 import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.App;
-import me.kirito5572.objects.MySQLConnector;
-import me.kirito5572.objects.OptionData;
-import me.kirito5572.objects.SQLITEConnector;
-import me.kirito5572.objects.WargamingAPI;
+import me.kirito5572.objects.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 public class onReadyListener extends ListenerAdapter {
     private final MySQLConnector mySqlConnector;
     private final SQLITEConnector sqliteConnector;
     private final WargamingAPI wargamingAPI;
+    private final GoogleAPI googleAPI;
     private int i = 0;
     private final Logger logger = LoggerFactory.getLogger(onReadyListener.class);
 
     public onReadyListener(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector,
-                           WargamingAPI wargamingAPI) {
+                           WargamingAPI wargamingAPI, GoogleAPI googleAPI) {
         this.mySqlConnector = mySqlConnector;
         this.sqliteConnector = sqliteConnector;
         this.wargamingAPI = wargamingAPI;
+        this.googleAPI = googleAPI;
     }
 
     @Override
@@ -53,6 +55,7 @@ public class onReadyListener extends ListenerAdapter {
             public void run() {
                 try {
                     wargamingAutoTokenListenerModule(new Date(), event);
+                    autoTranslationDetector(event);
                 } catch (SQLException sqlException) {
                     sqlException.printStackTrace();
                 }
@@ -123,15 +126,21 @@ public class onReadyListener extends ListenerAdapter {
     private void wargamingUserDataListenerModule(@NotNull Date date) {
         ResultSet resultSet;
         try {
-            resultSet = sqliteConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId", new int[]{}, new String[]{});
+            resultSet = sqliteConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation", new int[]{}, new String[]{});
             Timer timer = new Timer();
             TimerTask timerTask = new TimerTask() {
                 @Override
                 public void run() {
                     try {
                         if (resultSet.next()) {
-                            String userId = resultSet.getString("userId");
-                            WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(userId);
+                            String userId = resultSet.getString("Id");
+                            String token = resultSet.getString("token");
+                            WargamingAPI.DataObject dataObject;
+                            if(token == null) {
+                                dataObject = wargamingAPI.getUserPersonalData(userId);
+                            } else {
+                                dataObject = wargamingAPI.getUserPersonalData(userId, token);
+                            }
                             Gson gson = new Gson();
                             String json = gson.toJson(dataObject);
                             sqliteConnector.Insert_Query_Wargaming("INSERT INTO `" + userId + "` (input_time, data) VALUES (?, ?)",
@@ -264,6 +273,78 @@ public class onReadyListener extends ListenerAdapter {
         timer.scheduleAtFixedRate(timerTask, 0, 5000);
     }
 
+    private void autoTranslationDetector(ReadyEvent event) {
+        final String inputGuildId = "665581943382999048";
+        final String outputGuildId = "665581943382999048";  //826704284003205160
+
+        final String[] inputChannels = new String[] {
+                "1039543294306287687", "827542008112480297", "1039543108888711178"
+        };
+        final String[] outputChannelsDebugs = new String[] {
+                "671515746119188492", "671515746119188492", "671515746119188492"
+        };
+
+        final String[] outputChannels = new String[] {
+                "827040899174236171", "827040924722397216", "827040988488925185"
+        };
+
+        //TODO 디텍터 link 시키고 디버깅해보기
+        Guild inputGuild = event.getJDA().getGuildById(inputGuildId);
+        Guild outputGuild = event.getJDA().getGuildById(outputGuildId);
+
+        if(inputGuild == null) {
+            return;
+        }
+        if(outputGuild == null) {
+            return;
+        }
+        TextChannel inputNoticeChannel = inputGuild.getTextChannelById(inputChannels[0]);
+        TextChannel inputGameNewsChannel = inputGuild.getTextChannelById(inputChannels[1]);
+        TextChannel inputWorkOnProgressChannel = inputGuild.getTextChannelById(inputChannels[2]);
+        if(inputNoticeChannel == null || inputGameNewsChannel == null || inputWorkOnProgressChannel == null) {
+            return;
+        }
+
+        TextChannel outputNoticeChannel = outputGuild.getTextChannelById("827040899174236171");
+        TextChannel outputGameNewsChannel = outputGuild.getTextChannelById("827040924722397216");
+        TextChannel outputWorkOnProgressChannel = outputGuild.getTextChannelById("827040988488925185");
+        if(outputNoticeChannel == null || outputGameNewsChannel == null || outputWorkOnProgressChannel == null) {
+            return;
+        }
+
+        try {
+            messageCheckingModule(inputNoticeChannel, outputNoticeChannel);
+            messageCheckingModule(inputGameNewsChannel, outputGameNewsChannel);
+            messageCheckingModule(inputWorkOnProgressChannel, outputWorkOnProgressChannel);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void messageCheckingModule(TextChannel input, TextChannel output) throws ExecutionException, InterruptedException {
+        if(input.hasLatestMessage()) {
+            Message message = input.getIterableHistory()
+                    .takeAsync(1)
+                    .get().get(0);
+            String inputMessage = message.getContentRaw();
+            List<Message.Attachment> file = message.getAttachments();
+            List<File> downloadFile = new ArrayList<>();
+            for(Message.Attachment attachment : file) {
+                if(attachment.isImage()) {
+                    downloadFile.add(attachment.downloadToFile().get());
+                }
+            }
+            String outputMessage = googleAPI.googleTranslateModule(inputMessage);
+            MessageAction messageAction = output.sendMessage(outputMessage);
+            for(File uploadFile : downloadFile) {
+                messageAction = messageAction.addFile(uploadFile);
+            }
+            messageAction.queue();
+            message.delete().queue();
+        }
+    }
+
     private void startUpGetData() {
         List<String> complainData = new ArrayList<>();
         try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainBan;", new int[]{}, new String[]{})) {
@@ -275,4 +356,6 @@ public class onReadyListener extends ListenerAdapter {
         }
         OptionData.setComplainBanUserList(complainData);
     }
+
+
 }

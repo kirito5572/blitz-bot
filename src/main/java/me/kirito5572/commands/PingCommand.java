@@ -47,7 +47,7 @@ public class PingCommand implements ICommand {
         } catch (SQLException e){
             e.printStackTrace();
         }
-        try (ResultSet ignored = sqliteConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE discordId = 5", new int[]{}, new String[]{})) {
+        try (ResultSet ignored = sqliteConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE discordId = 5", new int[]{}, new String[]{})) {
             wargamingEnd = System.currentTimeMillis();
         } catch (SQLException e){
             e.printStackTrace();

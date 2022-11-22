@@ -38,7 +38,7 @@ public class CommandManager {
 
     private final Map<String, ICommand> commands = new HashMap<>();
 
-    public CommandManager(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector, FilterSystem filterSystem, WargamingAPI wargamingAPI) {
+    public CommandManager(MySQLConnector mySqlConnector, SQLITEConnector sqliteConnector, FilterSystem filterSystem, WargamingAPI wargamingAPI, GoogleAPI googleAPI) {
         addCommand(new HelpCommand(this));
         addCommand(new PingCommand(mySqlConnector, sqliteConnector));
         addCommand(new FilterWordAddCommand(filterSystem));
@@ -72,7 +72,7 @@ public class CommandManager {
         addCommand(new QueueCommand());
         addCommand(new QueueDetectCommand());
         addCommand(new QueueMixCommand());
-        addCommand(new SearchCommand());
+        addCommand(new SearchCommand(googleAPI));
         addCommand(new SkipCommand());
         addCommand(new StopClearCommand());
         addCommand(new StopCommand());

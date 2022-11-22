@@ -68,6 +68,10 @@ dependencies {
     //https://search.maven.org/artifact/com.amazonaws/aws-java-sdk-bom
     implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.319') //1.12.301
     implementation 'com.amazonaws:aws-java-sdk-s3'
+    //
+    implementation platform("com.google.cloud:libraries-bom:20.6.0");
+    implementation("com.google.cloud:google-cloud-translate");
+
 }
 
 

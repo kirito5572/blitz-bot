@@ -4,7 +4,7 @@ import me.duncte123.botcommons.messaging.EmbedUtils;
 import me.kirito5572.music.GuildMusicManager;
 import me.kirito5572.music.PlayerManager;
 import me.kirito5572.objects.EventPackage;
-import me.kirito5572.objects.GetYoutubeSearch;
+import me.kirito5572.objects.GoogleAPI;
 import me.kirito5572.objects.ICommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -23,6 +23,11 @@ import java.util.concurrent.TimeUnit;
 /** @noinspection unused*/
 public class SearchCommand implements ICommand {
     private final Logger logger = LoggerFactory.getLogger(SearchCommand.class);
+    private final GoogleAPI googleAPI;
+
+    public SearchCommand(GoogleAPI googleAPI) {
+        this.googleAPI = googleAPI;
+    }
     /** @noinspection unused*/
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
@@ -49,7 +54,7 @@ public class SearchCommand implements ICommand {
                 return;
             }
             String name = String.join("+", args);
-            String[][] data = GetYoutubeSearch.Search(name);
+            String[][] data = googleAPI.Search(name);
             if(data == null) {
                 event.getChannel().sendMessage("youtube 검색에 문제가 발생했습니다").queue();
                 return;

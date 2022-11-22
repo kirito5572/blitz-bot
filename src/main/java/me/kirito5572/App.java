@@ -114,9 +114,10 @@ public class App {
             build_jdk = attribute.getValue("BuildJDK");
 
         } catch (@NotNull URISyntaxException | IOException e){
-            logger.error(e.getMessage());
-            e.printStackTrace();
-            System.exit(-1);
+            version = "alpha version";
+            build_time = "alpha";
+            build_os = "windows 10";
+            build_jdk = "JAVA 17";
         }
         if(getVersion().contains("STABLE") || getVersion().contains("stable")) {
             appMode = APP_STABLE;
@@ -149,15 +150,16 @@ public class App {
         
         FilterSystem filterSystem = new FilterSystem(mySqlConnector);
         WargamingAPI wargamingAPI = new WargamingAPI(sqliteConnector);
+        GoogleAPI googleAPI = new GoogleAPI(openFileData("YOUTUBE_DATA_API_KEY"));
         
         logger.info("Objects linked!, Loading Listeners");
         
-        CommandManager commandManager = new CommandManager(mySqlConnector, sqliteConnector, filterSystem, wargamingAPI);
+        CommandManager commandManager = new CommandManager(mySqlConnector, sqliteConnector, filterSystem, wargamingAPI, googleAPI);
         Listener listener = new Listener(commandManager);
         filterListener filterListener = new filterListener(filterSystem);
         LogListener logListener = new LogListener(mySqlConnector);
         MuteListener muteListener = new MuteListener(mySqlConnector);
-        onReadyListener onReadyListener = new onReadyListener(mySqlConnector, sqliteConnector, wargamingAPI);
+        onReadyListener onReadyListener = new onReadyListener(mySqlConnector, sqliteConnector, wargamingAPI, googleAPI);
         DirectMessageListener directMessageListener = new DirectMessageListener(mySqlConnector, sqliteConnector, wargamingAPI);
 
         EventListener eventListener = new EventListener(mySqlConnector);

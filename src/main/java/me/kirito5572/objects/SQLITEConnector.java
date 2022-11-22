@@ -91,6 +91,12 @@ public class SQLITEConnector {
     }
 
     public ResultSet Select_Query_Wargaming(@Language("SQLite") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
+        PreparedStatement statement = wargamingConnection.prepareStatement(Query);
+        mySqlConnector.Query(statement, dataType, data);
+        return statement.executeQuery();
+    }
+
+    public ResultSet Select_Query_Wargaming_Logger(@Language("SQLite") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
         logger.info(Query);
         PreparedStatement statement = wargamingConnection.prepareStatement(Query);
         mySqlConnector.Query(statement, dataType, data);

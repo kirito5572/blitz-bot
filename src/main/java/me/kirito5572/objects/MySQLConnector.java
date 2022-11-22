@@ -34,6 +34,7 @@ public class MySQLConnector {
      *      is closed; {@code false} if it is still open
      * @throws SQLException if a database access error occurs
      */
+
     public boolean isConnectionClosed() throws SQLException {
         return connection.isClosed();
     }

@@ -54,6 +54,7 @@ public class WargamingAPI {
             e.printStackTrace();
         }
         WargamingAPI wargamingAPI = new WargamingAPI(sqliteConnector);
+        wargamingAPI.getUserPersonalData("2031484010", "8275356252b49c8dc8699bbc4b8b6cd330ef6a66");
 
     }
     public TokenData reNewTokenOnce(String token) {
@@ -61,13 +62,14 @@ public class WargamingAPI {
         Date date = new Date();
         long reNewTime = (date.getTime() + 1080000000L);    //갱신시간 12일 12시간후
         long endTime = (date.getTime() + 12060000000L);     //만료시간 13일 23시간후
-        String response = POST("https://api.worldoftanks.asia/wot/auth/prolongate/",
-                new String[]{"application_id", "access_token", "expires_at"},
-                new String[]{this.token, token, String.valueOf(endTime / 1000)});
+        Map<String, String> requestHeader = new HashMap<>();
+        requestHeader.put("application_id", this.token);
+        requestHeader.put("access_token", token);
+        requestHeader.put("expires_at", String.valueOf(endTime / 1000));
+        String response = POST("https://api.worldoftanks.asia/wot/auth/prolongate/", requestHeader);
         if(response == null) {
             return null;
         }
-        System.out.println(response);
         JsonObject object = JsonParser.parseString(response).getAsJsonObject();
         if(object.get("status").getAsString().equals("error")) {
             return null;
@@ -86,9 +88,11 @@ public class WargamingAPI {
         Date date = new Date();
         long reNewTime = (date.getTime() + 1080000000L);    //갱신시간 12일 12시간후
         long endTime = (date.getTime() + 12060000000L);     //만료시간 13일 23시간후
-        String response = POST("https://api.worldoftanks.asia/wot/auth/prolongate/",
-                new String[]{"application_id", "access_token", "expires_at"},
-                new String[]{this.token, token, String.valueOf(endTime / 1000)});
+        Map<String, String> requestHeader = new HashMap<>();
+        requestHeader.put("application_id", this.token);
+        requestHeader.put("access_token", token);
+        requestHeader.put("expires_at", String.valueOf(endTime / 1000));
+        String response = POST("https://api.worldoftanks.asia/wot/auth/prolongate/", requestHeader);
         if(response == null) {
             return true;
         }
@@ -289,10 +293,10 @@ public class WargamingAPI {
 
     public @Nullable String getWargamingPlayer(String nickname) throws SQLException {
         String id;
-        ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE nickname = ?",
+        ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE nickname = ?",
                 new int[]{wargamingConnector.TEXT}, new String[]{nickname});
         if (resultSet.next()) {
-            id = resultSet.getString("userId");
+            id = resultSet.getString("Id");
         } else {
             String apiURL = "https://api.wotblitz.asia/wotb/account/list/";
             apiURL += "?application_id=" + token;
@@ -309,14 +313,14 @@ public class WargamingAPI {
                 e.printStackTrace();
                 return null;
             }
-            ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE userId = ?",
-                    new int[]{wargamingConnector.TEXT}, new String[]{id});
+            ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ?",
+                    new int[]{wargamingConnector.INTEGER}, new String[]{id});
             if (resultSet1.next()) {
-                wargamingConnector.Insert_Query_Wargaming("UPDATE wargamingUserId SET nickname = ? WHERE userId = ?",
-                        new int[]{wargamingConnector.TEXT, wargamingConnector.TEXT}, new String[]{nickname, id});
+                wargamingConnector.Insert_Query_Wargaming("UPDATE accountInfomation SET nickname = ? WHERE Id = ?",
+                        new int[]{wargamingConnector.TEXT, wargamingConnector.INTEGER}, new String[]{nickname, id});
             } else {
-                wargamingConnector.Insert_Query_Wargaming("INSERT INTO wargamingUserId (nickname, userId) VALUES (?, ?)",
-                        new int[]{wargamingConnector.TEXT, wargamingConnector.TEXT}, new String[]{nickname, id});
+                wargamingConnector.Insert_Query_Wargaming("INSERT INTO accountInfomation (nickname, Id) VALUES (?, ?)",
+                        new int[]{wargamingConnector.TEXT, wargamingConnector.INTEGER}, new String[]{nickname, id});
                 wargamingConnector.Insert_Query_Wargaming("create table `" + id + "` \n" +
                                 "(\n" +
                                 "\tinput_time text,\n" +
@@ -328,7 +332,8 @@ public class WargamingAPI {
         return id;
     }
 
-    public @Nullable DataObject getUserPersonalData(String id, @NotNull Date date) {
+    public @Nullable DataObject getUserPersonalData(String id, @NotNull Date date, @Nullable String token) {
+        //TODO token 으로 조회하기 구현하기, token 값이 null 이면 없는거임
         DataObject dataObject = new DataObject();
         ResultSet resultSet = null;
         try {
@@ -338,7 +343,11 @@ public class WargamingAPI {
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             //최초 조회 유저!
-            dataObject = getUserPersonalData(id);
+            if(token == null) {
+                dataObject = getUserPersonalData(id);
+            } else {
+                dataObject = getUserPersonalData(id, token);
+            }
             String json = new Gson().toJson(dataObject);
             try {
                 wargamingConnector.Insert_Query_Wargaming("INSERT INTO `" + id + "` (input_time, data) VALUES (?, ?)",
@@ -349,7 +358,6 @@ public class WargamingAPI {
                 return null;
             }
         }
-
         if(resultSet != null) {
             try {
                 Calendar calendar = new GregorianCalendar();
@@ -361,7 +369,11 @@ public class WargamingAPI {
                     //조회를 하려고 하는 날(date)에 데이터가 있을 경우
                     if(date.getTime() == calendar.getTime().getTime()) {
                         //조회를 하려고 하는 날(date)이 오늘 인 경우
-                        dataObject = getUserPersonalData(id);
+                        if(token == null) {
+                            dataObject = getUserPersonalData(id);
+                        } else {
+                            dataObject = getUserPersonalData(id, token);
+                        }
                     } else {
                         dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
                     }
@@ -369,7 +381,11 @@ public class WargamingAPI {
                     //조회를 하려고 하는 날(date)에 데이터가 없을 경우
                     //그런데 그 날이 오늘 인 경우
                     if(date.getTime() == calendar.getTime().getTime()) {
-                        dataObject = getUserPersonalData(id);
+                        if(token == null) {
+                            dataObject = getUserPersonalData(id);
+                        } else {
+                            dataObject = getUserPersonalData(id, token);
+                        }
                         String json = new Gson().toJson(dataObject);
                         wargamingConnector.Insert_Query_Wargaming("INSERT INTO `" + id + "` (input_time, data) VALUES (?, ?)",
                                 new int[]{wargamingConnector.TEXT, wargamingConnector.TEXT},
@@ -413,12 +429,16 @@ public class WargamingAPI {
         String apiURL = "https://api.wotblitz.asia/wotb/account/info/";
         apiURL += "?application_id=" + token;
         apiURL += "&account_id=" + id;
-        apiURL += "&extra=statistics.rating&fields=statistics.all, statistics.clan, statistics.rating&language=ko";
+        apiURL += "&extra=statistics.rating&fields=created_at, last_battle_time, nickname,  statistics.all, statistics.clan, statistics.rating&language=ko";
         try {
             JsonElement element = GET(apiURL);
-            JsonObject statistics = element.getAsJsonObject().get("data").getAsJsonObject().get(id).getAsJsonObject().get("statistics").getAsJsonObject();
+            JsonObject object = element.getAsJsonObject().get("data").getAsJsonObject().get(id).getAsJsonObject();
+            JsonObject statistics = object.get("statistics").getAsJsonObject();
             JsonObject clan = statistics.get("clan").getAsJsonObject();
             JsonObject rating = statistics.get("rating").getAsJsonObject();
+            dataObject.created_at = object.get("created_at").getAsLong();
+            dataObject.last_battle_time = object.get("last_battle_time").getAsLong();
+            dataObject.nickName = object.get("nickname").getAsString();
             RatingDataObject ratingDataObject = new RatingDataObject();
             ratingDataObject.battles = rating.get("battles").getAsInt();
             ratingDataObject.wins = rating.get("wins").getAsInt();
@@ -449,6 +469,79 @@ public class WargamingAPI {
             allDataObject.damage_received = rating.get("damage_received").getAsLong();
             allDataObject.damage_dealt = rating.get("damage_dealt").getAsLong();
             dataObject.allDataObject = allDataObject;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return dataObject;
+    }
+
+    public @Nullable DataObject getUserPersonalData(String id, String access_token) {
+        DataObject dataObject = new DataObject();
+        String apiURL = "https://api.wotblitz.asia/wotb/account/info/";
+        apiURL += "?application_id=" + token;
+        apiURL += "&account_id=" + id;
+        apiURL += "&access_token=" + access_token;
+        apiURL += "&extra=statistics.rating&fields=created_at, nickname, last_battle_time, private, statistics.all, statistics.clan, statistics.rating&language=ko";
+        try {
+            JsonElement element = GET(apiURL);
+            JsonObject object = element.getAsJsonObject().get("data").getAsJsonObject().get(id).getAsJsonObject();
+            System.out.println(object);
+            JsonObject statistics = object.get("statistics").getAsJsonObject();
+            JsonObject clan = statistics.get("clan").getAsJsonObject();
+            JsonObject rating = statistics.get("rating").getAsJsonObject();
+            JsonObject privateData = object.get("private").getAsJsonObject();
+            dataObject.created_at = object.get("created_at").getAsLong();
+            dataObject.last_battle_time = object.get("last_battle_time").getAsLong();
+            dataObject.nickName = object.get("nickname").getAsString();
+            RatingDataObject ratingDataObject = new RatingDataObject();
+            ratingDataObject.battles = rating.get("battles").getAsInt();
+            ratingDataObject.wins = rating.get("wins").getAsInt();
+            ratingDataObject.losses = rating.get("losses").getAsInt();
+            ratingDataObject.survived = rating.get("survived_battles").getAsInt();
+            ratingDataObject.frags = rating.get("frags").getAsLong();
+            ratingDataObject.spotted = rating.get("spotted").getAsInt();
+            ratingDataObject.hits = rating.get("hits").getAsLong();
+            ratingDataObject.shots = rating.get("shots").getAsLong();
+            ratingDataObject.current_season = rating.get("current_season").getAsInt();
+            ratingDataObject.reCalibration = rating.get("is_recalibration").getAsBoolean();
+            ratingDataObject.reCalibrationTime = rating.get("recalibration_start_time").getAsLong();
+            ratingDataObject.reCalibrationBattleLeft = rating.get("calibration_battles_left").getAsInt();
+            ratingDataObject.rating = rating.get("mm_rating").getAsInt();
+            ratingDataObject.damage_received = rating.get("damage_received").getAsLong();
+            ratingDataObject.damage_dealt = rating.get("damage_dealt").getAsLong();
+            dataObject.ratingDataObject = ratingDataObject;
+            JsonObject all = statistics.get("all").getAsJsonObject();
+            AllDataObject allDataObject = new AllDataObject();
+            allDataObject.battles = all.get("battles").getAsInt();
+            allDataObject.wins = all.get("wins").getAsInt();
+            allDataObject.losses = all.get("losses").getAsInt();
+            allDataObject.survived = all.get("survived_battles").getAsInt();
+            allDataObject.frags = all.get("frags").getAsInt();
+            allDataObject.spotted = all.get("spotted").getAsInt();
+            allDataObject.hits = all.get("hits").getAsLong();
+            allDataObject.shots = all.get("shots").getAsLong();
+            allDataObject.damage_received = rating.get("damage_received").getAsLong();
+            allDataObject.damage_dealt = rating.get("damage_dealt").getAsLong();
+            dataObject.allDataObject = allDataObject;
+            PrivateDataObject privateDataObject = new PrivateDataObject();
+            privateDataObject.gold = privateData.get("gold").getAsInt();
+            privateDataObject.free_xp = privateData.get("free_xp").getAsInt();
+            if(!privateData.get("ban_time").isJsonNull()) {
+                privateDataObject.ban_time = privateData.get("ban_time").getAsLong();
+            } else {
+                privateDataObject.ban_time = 0;
+            }
+            privateDataObject.is_premium = privateData.get("is_premium").getAsBoolean();
+            privateDataObject.credits = privateData.get("credits").getAsLong();
+            privateDataObject.premium_expires_at = privateData.get("premium_expires_at").getAsLong();
+            privateDataObject.battle_life_time = privateData.get("battle_life_time").getAsLong();
+            if(!privateData.get("ban_info").isJsonNull()) {
+                privateDataObject.ban_info = privateData.get("ban_info").getAsString();
+            } else {
+                privateDataObject.ban_info = null;
+            }
+            dataObject.privateDataObject = privateDataObject;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -721,18 +814,14 @@ public class WargamingAPI {
         return JsonParser.parseString(response.toString());
     }
 
-    private @Nullable String POST(@NotNull String url, String[] name, String[] value) {
+    private @Nullable String POST(@NotNull String url, Map<String, String> requestHeaders) {
         //코드는 https://www.techiedelight.com/ko/send-http-post-request-java/ 참조함
         try (CloseableHttpClient httpclient = HttpClients.createDefault()){
             RequestBuilder builder = RequestBuilder.post()
                     .setUri(url);
-            for(int i = 0; i < name.length; i++) {
-                try {
-                    String parameterName = name[i];
-                    String parameterValue = value[i];
-                    builder.addParameter(parameterName, parameterValue);
-                } catch (Exception ignored) {
-                }
+
+            for(Map.Entry<String, String> header :requestHeaders.entrySet()) {
+                builder.addParameter(header.getKey(), header.getValue());
             }
             HttpUriRequest post = builder.build();
             try (CloseableHttpResponse response = httpclient.execute(post)) {
@@ -782,6 +871,17 @@ public class WargamingAPI {
         public long shots;                  //발사한 탄
         public long damage_received;        //받은 대미지
         public long damage_dealt;           //가한 대미지
+    }
+
+    public static class PrivateDataObject {
+        public int gold;
+        public int free_xp;
+        public long ban_time;
+        public boolean is_premium;
+        public long credits;
+        public long premium_expires_at;
+        public long battle_life_time;
+        public String ban_info;
     }
 
     /** @noinspection unused*/
@@ -1063,8 +1163,12 @@ public class WargamingAPI {
     }
 
     public static class DataObject {
-        public AllDataObject allDataObject;
-        public RatingDataObject ratingDataObject;
+        public long created_at = 0;
+        public long last_battle_time = 0;
+        public String nickName = null;
+        public AllDataObject allDataObject = null;
+        public RatingDataObject ratingDataObject = null;
+        public PrivateDataObject privateDataObject = null;
     }
 
     public static class AchievementData {

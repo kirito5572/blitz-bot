@@ -42,15 +42,17 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         String id = null;
+        String token = null;
         int option = 5;
 
         int game_type = 3;
         if(args.isEmpty()) {
             try {
-                ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM wargamingUserId WHERE discordId = ?",
+                ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE discordId = ?",
                         new int[]{wargamingConnector.TEXT}, new String[]{event.getAuthor().getId()});
                 if(resultSet.next()) {
-                    id = resultSet.getString("userId");
+                    id = resultSet.getString("Id");
+                    token = resultSet.getString("token");
                 } else {
                     event.getChannel().sendMessage("검색할 유저명을 입력해주십시오").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
                     return;
@@ -63,8 +65,14 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
             if(args.size() == 1) {
                 try {
                     id = wargamingAPI.getWargamingPlayer(args.get(0));
-                    option = ALL;
-                    game_type = ALL;
+                    if(id == null) {
+                        throw new SQLException("의도성 에러");
+                    }
+                    ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ?",
+                            new int[]{wargamingConnector.TEXT}, new String[]{id});
+                    if(resultSet.next()) {
+                        token = resultSet.getString("token");
+                    }
                 } catch (SQLException sqlException) {
                     sqlException.printStackTrace();
                     event.getChannel().sendMessage("유저 검색중 에러가 발생했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
@@ -73,6 +81,14 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
             if(args.size() >= 2) {
                 try {
                     id = wargamingAPI.getWargamingPlayer(args.get(0));
+                    if(id == null) {
+                        throw new SQLException("의도성 에러");
+                    }
+                    ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ?",
+                            new int[]{wargamingConnector.TEXT}, new String[]{id});
+                    if(resultSet.next()) {
+                        token = resultSet.getString("token");
+                    }
                 } catch (SQLException sqlException) {
                     sqlException.printStackTrace();
                     event.getChannel().sendMessage("유저 검색중 에러가 발생했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
@@ -101,7 +117,8 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
                     case "랭크" -> game_type = RANK;
                 }
             }
-        } else {
+        }
+        else {
             if(args.size() >= 1) {
                 game_type = ALL;
                 switch (args.get(0)) {
@@ -130,6 +147,10 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
             }
         }
 
+        if(token != null && token.length() > 10) {
+            token = null;
+        }
+
         logger.info("option :" + option + ", game_type: "+ game_type + ", id:" + id);
 
         //이제... 대망의 값 가져오기!
@@ -141,7 +162,7 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
         Date today = calendar.getTime();
         EmbedBuilder builder = EmbedUtils.getDefaultEmbed();
         if(option == ALL) {
-            WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(id, today);
+            WargamingAPI.DataObject dataObject = wargamingAPI.getUserPersonalData(id, today, token);
             if(dataObject == null) {
                 event.getChannel().sendMessage("전적을 불러오던중 에러가 발생했습니다.").queue(message ->
                         message.delete().queueAfter(10, TimeUnit.SECONDS));
@@ -205,7 +226,6 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
                         .addField("평균 대미지", String.valueOf(damageAvg), true)
                         .addField("피해 비율", String.format("%.2f", damageRadio * 100 / 100.0), true)
                         .setFooter(args.get(0));
-                return;
             }
             if(game_type == AVG) {
                 int battles = dataObject.allDataObject.battles - dataObject.ratingDataObject.battles;
@@ -268,7 +288,6 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
                         .addField("평균 대미지", String.valueOf(damageAvg), true)
                         .addField("피해 비율", String.format("%.2f", damageRadio * 100 / 100.0), true)
                         .setFooter(args.get(0));
-                return;
             }
             if(game_type == RANK) {
                 int battles = dataObject.ratingDataObject.battles;
@@ -341,36 +360,37 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
                     builder.addField("검증 전투 완료까지 남은 횟수", String.valueOf(reCalBattleLeft), false)
                             .addField("검증 전투 최초 시작 시간", sdf.format(date), false);
                 }
-            } else {
-                event.getChannel().sendMessage("게임 모드가 정확히 선택되지 않았습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
-                return;
             }
-        } else if(option == MONTH1) {
+        }
+        else if(option == MONTH1) {
             calendar.add(Calendar.DAY_OF_MONTH, -30);
             Date month = calendar.getTime();
             logger.info("30일 builder 들어감");
-            builder = monthBuilder(game_type, id, today, month, builder, args, "30일");
+            builder = monthBuilder(game_type, id, today, month, builder, args, "30일", token);
             if(builder == null) {
                 event.getChannel().sendMessage("데이터 조회에 실패했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
                 return;
             }
-        } else if(option == MONTH2) {
+        }
+        else if(option == MONTH2) {
             calendar.add(Calendar.DAY_OF_MONTH, -60);
             Date month = calendar.getTime();
-            builder = monthBuilder(game_type, id, today, month, builder, args, "60일");
+            builder = monthBuilder(game_type, id, today, month, builder, args, "60일", token);
             if(builder == null) {
                 event.getChannel().sendMessage("데이터 조회에 실패했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
                 return;
             }
-        } else if(option == MONTH3) {
+        }
+        else if(option == MONTH3) {
             calendar.add(Calendar.DAY_OF_MONTH, -90);
             Date month = calendar.getTime();
-            builder = monthBuilder(game_type, id, today, month, builder, args, "90일");
+            builder = monthBuilder(game_type, id, today, month, builder, args, "90일", token);
             if(builder == null) {
                 event.getChannel().sendMessage("데이터 조회에 실패했습니다.").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
                 return;
             }
-        } else if(option == IMAGE) {
+        }
+        else if(option == IMAGE) {
             ImageCreator imageCreator;
             try {
                 imageCreator = new ImageCreator();
@@ -385,9 +405,9 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
             calendar.add(Calendar.DAY_OF_MONTH, -30);
             Date month3 = calendar.getTime();
             WargamingAPI.DataObject today_data = wargamingAPI.getUserPersonalData(id);
-            WargamingAPI.DataObject month1_data = wargamingAPI.getUserPersonalData(id, month1);
-            WargamingAPI.DataObject month2_data = wargamingAPI.getUserPersonalData(id, month2);
-            WargamingAPI.DataObject month3_data = wargamingAPI.getUserPersonalData(id, month3);
+            WargamingAPI.DataObject month1_data = wargamingAPI.getUserPersonalData(id, month1, token);
+            WargamingAPI.DataObject month2_data = wargamingAPI.getUserPersonalData(id, month2, token);
+            WargamingAPI.DataObject month3_data = wargamingAPI.getUserPersonalData(id, month3, token);
             if(today_data == null || month1_data == null || month2_data == null || month3_data == null) {
                 event.getChannel().sendMessage("전적을 불러오던중 에러가 발생했습니다.").queue(message ->
                         message.delete().queueAfter(10, TimeUnit.SECONDS));
@@ -403,18 +423,19 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
+        }
+        else {
             return;
         }
         event.getChannel().sendMessageEmbeds(builder.build()).queue();
     }
 
-    private @Nullable EmbedBuilder monthBuilder(int game_type, String id, @NotNull Date today, @NotNull Date month, @NotNull EmbedBuilder builder, @NotNull List<String> args, String title) {
-        WargamingAPI.DataObject today_data = wargamingAPI.getUserPersonalData(id, today);
-        WargamingAPI.DataObject month_data = wargamingAPI.getUserPersonalData(id, month);
+    private @Nullable EmbedBuilder monthBuilder(int game_type, String id, @NotNull Date today, @NotNull Date month, @NotNull EmbedBuilder builder, @NotNull List<String> args, String title, @Nullable String token) {
+        WargamingAPI.DataObject today_data = wargamingAPI.getUserPersonalData(id, today, token);
+        WargamingAPI.DataObject month_data = wargamingAPI.getUserPersonalData(id, month, token);
         if(month_data == null) {
             //X일 이전 데이터가 없을 경우
-            month_data = wargamingAPI.getUserPersonalData(id, month);
+            month_data = wargamingAPI.getUserPersonalData(id, month, token);
         }
         if(today_data == null || month_data == null) {
             if(today_data == null) logger.error("today_data is null(SearchPlayerOverAllStatCommand:303)");
@@ -632,6 +653,17 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
             return null;
         }
         return builder;
+    }
+
+    private @Nullable String TokenFinder(@NotNull String discordId, @NotNull String wargamingId) throws SQLException {
+        String returnToken = null;
+        ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ? AND discordId = ?",
+                new int[]{wargamingConnector.INTEGER, wargamingConnector.INTEGER},
+                new String[]{wargamingId, discordId});
+        if(resultSet.next()) {
+            returnToken = resultSet.getString("token");
+        }
+        return returnToken;
     }
 
     @Override
