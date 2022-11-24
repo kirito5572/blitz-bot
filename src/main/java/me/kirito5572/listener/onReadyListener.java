@@ -49,16 +49,19 @@ public class onReadyListener extends ListenerAdapter {
         } else if(App.appMode == App.APP_STABLE) {
             autoActivityChangeModule(event);
         }
-
+        autoTranslationDetector(event);
         TimerTask module = new TimerTask() {
             @Override
             public void run() {
+                /*
                 try {
-                    wargamingAutoTokenListenerModule(new Date(), event);
                     autoTranslationDetector(event);
+                    wargamingAutoTokenListenerModule(new Date(), event);
                 } catch (SQLException sqlException) {
                     sqlException.printStackTrace();
                 }
+
+                 */
             }
         };
         new Timer().scheduleAtFixedRate(module, 0, 1000);
@@ -305,17 +308,17 @@ public class onReadyListener extends ListenerAdapter {
             return;
         }
 
-        TextChannel outputNoticeChannel = outputGuild.getTextChannelById("827040899174236171");
-        TextChannel outputGameNewsChannel = outputGuild.getTextChannelById("827040924722397216");
-        TextChannel outputWorkOnProgressChannel = outputGuild.getTextChannelById("827040988488925185");
+        TextChannel outputNoticeChannel = outputGuild.getTextChannelById(outputChannelsDebugs[0]);
+        TextChannel outputGameNewsChannel = outputGuild.getTextChannelById(outputChannelsDebugs[1]);
+        TextChannel outputWorkOnProgressChannel = outputGuild.getTextChannelById(outputChannelsDebugs[2]);
         if(outputNoticeChannel == null || outputGameNewsChannel == null || outputWorkOnProgressChannel == null) {
             return;
         }
 
         try {
-            messageCheckingModule(inputNoticeChannel, outputNoticeChannel);
+            //messageCheckingModule(inputNoticeChannel, outputNoticeChannel);
             messageCheckingModule(inputGameNewsChannel, outputGameNewsChannel);
-            messageCheckingModule(inputWorkOnProgressChannel, outputWorkOnProgressChannel);
+            //messageCheckingModule(inputWorkOnProgressChannel, outputWorkOnProgressChannel);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -327,21 +330,28 @@ public class onReadyListener extends ListenerAdapter {
             Message message = input.getIterableHistory()
                     .takeAsync(1)
                     .get().get(0);
-            String inputMessage = message.getContentRaw();
+            String inputMessage = message.getContentDisplay();
             List<Message.Attachment> file = message.getAttachments();
             List<File> downloadFile = new ArrayList<>();
             for(Message.Attachment attachment : file) {
                 if(attachment.isImage()) {
                     downloadFile.add(attachment.downloadToFile().get());
+                } else if(attachment.isVideo()) {
+                    downloadFile.add(attachment.downloadToFile().get());
                 }
             }
+            //TODO 부가적으로 <@id>에 대한 멘션 처리가 제대로 진행되지 않는 문제 또한 수정이 필요합니다.
+
             String outputMessage = googleAPI.googleTranslateModule(inputMessage);
-            MessageAction messageAction = output.sendMessage(outputMessage);
+            MessageAction messageAction = output.sendMessage(input.getName() + "\n" + outputMessage);
             for(File uploadFile : downloadFile) {
                 messageAction = messageAction.addFile(uploadFile);
             }
-            messageAction.queue();
-            message.delete().queue();
+            messageAction.override(true).queue();
+            for(File uploadFile : downloadFile) {
+                uploadFile.delete();
+            }
+            //message.delete().queue();
         }
     }
 

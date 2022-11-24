@@ -2,10 +2,10 @@ package me.kirito5572.objects;
 
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
-import com.google.cloud.translate.Translation;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -18,13 +18,17 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GoogleAPI {
     private static final Logger logger = LoggerFactory.getLogger(GoogleAPI.class);
     private final String Key;
+    private final String projectId = "";
     /** @noinspection unused*/
     public GoogleAPI(String Key) {
         this.Key = Key;
+
     }
     @Nullable
     public String[] @Nullable[] Search(@NotNull String name) {
@@ -69,9 +73,81 @@ public class GoogleAPI {
         return null;
     }
 
+    private String translator(String input) {
+        return TranslateOptions.newBuilder().setQuotaProjectId("youtube-search-api-362813").build().getService()
+                .translate(
+                        input,
+                        Translate.TranslateOption.sourceLanguage("en"),
+                        Translate.TranslateOption.targetLanguage("ko"),
+                        Translate.TranslateOption.format("text")
+                ).getTranslatedText();
+    }
+
+    private String translationInputExceptionHandling (String input) {
+        String output = null;
+        String[] handlingWord = new String[] {
+                "@here", "@everyone"
+        };
+
+        //특정 단어 제외
+        boolean isTranslate = false;
+        for(String word : handlingWord) {
+            if(input.contains(word)) {
+                output = word + translator(input.replace(word, ""));
+                isTranslate = true;
+            }
+        }
+
+        //url 제외
+        String url = urlChecker(input);
+        if(url != null) {
+            String replaceUrl = input.replace(url, "");
+            output = translator(replaceUrl) + url;
+            isTranslate = true;
+        }
+        if(!isTranslate) {
+            output = translator(input);
+        }
+
+        return output;
+    }
+
+    private String urlChecker (@NotNull String input) {
+        UrlValidator urlValidator = new UrlValidator();
+        String url = extractUrl(input);
+        if(url != null)
+            if(urlValidator.isValid(url))
+                return url;
+            else
+                return null;
+        else
+            return null;
+    }
+
+    private String extractUrl(String content){
+        try {
+            String REGEX = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+            Pattern p = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
+            Matcher m = p.matcher(content);
+            if (m.find()) {
+                return m.group();
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public String googleTranslateModule(String inputString) {
-        Translate translate = TranslateOptions.newBuilder().setApiKey(Key).build().getService();
-        Translation translation = translate.translate(inputString, Translate.TranslateOption.sourceLanguage("en"), Translate.TranslateOption.targetLanguage("ko"));
-        return translation.getTranslatedText();
+        String[] inputStringList = inputString.split("\n");
+        StringBuilder builder = new StringBuilder();
+        for(String input : inputStringList) {
+            if(input.length() > 1) {
+                builder.append(translationInputExceptionHandling(input)).append("\n");
+            } else {
+                builder.append("\n");
+            }
+        }
+        return builder.toString();
     }
 }
