@@ -49,22 +49,26 @@ public class onReadyListener extends ListenerAdapter {
         } else if(App.appMode == App.APP_STABLE) {
             autoActivityChangeModule(event);
         }
-        autoTranslationDetector(event);
-        TimerTask module = new TimerTask() {
+        TimerTask transModule = new TimerTask() {
             @Override
             public void run() {
-                /*
+                autoTranslationDetector(event);
+            }
+        };
+        new Timer().scheduleAtFixedRate(transModule, 0, 5000);
+
+        TimerTask tokenReNewModule = new TimerTask() {
+            @Override
+            public void run() {
                 try {
                     autoTranslationDetector(event);
                     wargamingAutoTokenListenerModule(new Date(), event);
                 } catch (SQLException sqlException) {
                     sqlException.printStackTrace();
                 }
-
-                 */
             }
         };
-        new Timer().scheduleAtFixedRate(module, 0, 1000);
+        new Timer().scheduleAtFixedRate(tokenReNewModule, 0, 1000);
 
         final int[] i = {0};
         try {
@@ -278,7 +282,7 @@ public class onReadyListener extends ListenerAdapter {
 
     private void autoTranslationDetector(ReadyEvent event) {
         final String inputGuildId = "665581943382999048";
-        final String outputGuildId = "665581943382999048";  //826704284003205160
+        final String outputGuildId = "826704284003205160";
 
         final String[] inputChannels = new String[] {
                 "1039543294306287687", "827542008112480297", "1039543108888711178"
@@ -308,17 +312,17 @@ public class onReadyListener extends ListenerAdapter {
             return;
         }
 
-        TextChannel outputNoticeChannel = outputGuild.getTextChannelById(outputChannelsDebugs[0]);
-        TextChannel outputGameNewsChannel = outputGuild.getTextChannelById(outputChannelsDebugs[1]);
-        TextChannel outputWorkOnProgressChannel = outputGuild.getTextChannelById(outputChannelsDebugs[2]);
+        TextChannel outputNoticeChannel = outputGuild.getTextChannelById(outputChannels[0]);
+        TextChannel outputGameNewsChannel = outputGuild.getTextChannelById(outputChannels[1]);
+        TextChannel outputWorkOnProgressChannel = outputGuild.getTextChannelById(outputChannels[2]);
         if(outputNoticeChannel == null || outputGameNewsChannel == null || outputWorkOnProgressChannel == null) {
             return;
         }
 
         try {
-            //messageCheckingModule(inputNoticeChannel, outputNoticeChannel);
+            messageCheckingModule(inputNoticeChannel, outputNoticeChannel);
             messageCheckingModule(inputGameNewsChannel, outputGameNewsChannel);
-            //messageCheckingModule(inputWorkOnProgressChannel, outputWorkOnProgressChannel);
+            messageCheckingModule(inputWorkOnProgressChannel, outputWorkOnProgressChannel);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -340,18 +344,31 @@ public class onReadyListener extends ListenerAdapter {
                     downloadFile.add(attachment.downloadToFile().get());
                 }
             }
-            //TODO 부가적으로 <@id>에 대한 멘션 처리가 제대로 진행되지 않는 문제 또한 수정이 필요합니다.
 
-            String outputMessage = googleAPI.googleTranslateModule(inputMessage);
-            MessageAction messageAction = output.sendMessage(input.getName() + "\n" + outputMessage);
-            for(File uploadFile : downloadFile) {
-                messageAction = messageAction.addFile(uploadFile);
+            MessageAction messageAction = null;
+            if(inputMessage.length() > 1) {
+                String outputMessage = googleAPI.googleTranslateModule(inputMessage, input.getGuild());
+                messageAction = output.sendMessage(input.getName() + "\n" + outputMessage);
+                for(File uploadFile : downloadFile) {
+                    messageAction = messageAction.addFile(uploadFile);
+                }
+            } else {
+                boolean first = false;
+                for(File uploadFile : downloadFile) {
+                    if(first)
+                        messageAction = messageAction.addFile(uploadFile);
+                    else
+                        messageAction = output.sendFile(uploadFile);
+                        first = true;
+                }
             }
-            messageAction.override(true).queue();
+            if(messageAction != null) {
+                messageAction.override(true).queue();
+            }
             for(File uploadFile : downloadFile) {
                 uploadFile.delete();
             }
-            //message.delete().queue();
+            message.delete().queue();
         }
     }
 

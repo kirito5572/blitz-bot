@@ -161,6 +161,7 @@ public class App {
         MuteListener muteListener = new MuteListener(mySqlConnector);
         onReadyListener onReadyListener = new onReadyListener(mySqlConnector, sqliteConnector, wargamingAPI, googleAPI);
         DirectMessageListener directMessageListener = new DirectMessageListener(mySqlConnector, sqliteConnector, wargamingAPI);
+        EmoteClickGiveRoleListener emoteClickGiveRoleListener = new EmoteClickGiveRoleListener();
 
         EventListener eventListener = new EventListener(mySqlConnector);
 
@@ -171,7 +172,8 @@ public class App {
             JDABuilder.createDefault(TOKEN)
                     .setAutoReconnect(true)
                     .addEventListeners(listener, giveRoleListener, filterListener, logListener,
-                            muteListener, messagePinListener, onReadyListener, directMessageListener, eventListener)
+                            muteListener, messagePinListener, onReadyListener, directMessageListener,
+                            eventListener, emoteClickGiveRoleListener)
                     .setEnabledIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                     .setChunkingFilter(ChunkingFilter.ALL)
                     .build().awaitReady();
@@ -181,6 +183,12 @@ public class App {
         } catch (@NotNull LoginException | InterruptedException e) {
             logger.error("의도치 않은 예외 발생" + e);
         }
+        
+        //TODO Exception in thread "Timer-2" java.lang.NullPointerException: Cannot invoke "com.google.gson.JsonElement.getAsJsonObject()" because the return value of "com.google.gson.JsonObject.get(String)" is null
+        //	at me.kirito5572.objects.WargamingAPI.getUserPersonalData(WargamingAPI.java:488)
+        //	at me.kirito5572.listener.onReadyListener$4.run(onReadyListener.java:145)
+        //	at java.base/java.util.TimerThread.mainLoop(Timer.java:566)
+        //	at java.base/java.util.TimerThread.run(Timer.java:516) 버그 고치기
     }
 
     @SuppressWarnings("InstantiationOfUtilityClass")

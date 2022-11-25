@@ -5,6 +5,8 @@ import com.google.cloud.translate.TranslateOptions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +26,6 @@ import java.util.regex.Pattern;
 public class GoogleAPI {
     private static final Logger logger = LoggerFactory.getLogger(GoogleAPI.class);
     private final String Key;
-    private final String projectId = "";
     /** @noinspection unused*/
     public GoogleAPI(String Key) {
         this.Key = Key;
@@ -83,7 +84,11 @@ public class GoogleAPI {
                 ).getTranslatedText();
     }
 
-    private String translationInputExceptionHandling (String input) {
+    private String translationInputExceptionHandling (String input, Guild guild) {
+        Role role = null;
+        if(guild.getId().equals("826704284003205160")) {
+            role = guild.getRoleById("1045683935872552980"); //자동번역알림 역할
+        }
         String output = null;
         String[] handlingWord = new String[] {
                 "@here", "@everyone"
@@ -93,7 +98,10 @@ public class GoogleAPI {
         boolean isTranslate = false;
         for(String word : handlingWord) {
             if(input.contains(word)) {
-                output = word + translator(input.replace(word, ""));
+                if(role != null)
+                    output = role.getAsMention() + translator(input.replace(word, ""));
+                else
+                    output = translator(input.replace(word, ""));
                 isTranslate = true;
             }
         }
@@ -138,12 +146,12 @@ public class GoogleAPI {
         }
     }
 
-    public String googleTranslateModule(String inputString) {
+    public String googleTranslateModule(String inputString, Guild guild) {
         String[] inputStringList = inputString.split("\n");
         StringBuilder builder = new StringBuilder();
         for(String input : inputStringList) {
             if(input.length() > 1) {
-                builder.append(translationInputExceptionHandling(input)).append("\n");
+                builder.append(translationInputExceptionHandling(input, guild)).append("\n");
             } else {
                 builder.append("\n");
             }
