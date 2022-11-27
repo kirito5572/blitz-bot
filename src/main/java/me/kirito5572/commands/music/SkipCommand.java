@@ -58,7 +58,7 @@ public class SkipCommand implements ICommand {
                         builder.append(traceElement.toString()).append("\n");
                     }
                     event.getChannel().sendMessage("에러가 발생했습니다.\n" +
-                            builder.toString()).queue();
+                            builder).queue();
                 }
             }
         }

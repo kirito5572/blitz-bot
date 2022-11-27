@@ -78,7 +78,7 @@ public class EvalCommand implements ICommand {
     }
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
-        if(!Objects.requireNonNull(event.getMember()).getId().equals("284508374924787713")) {
+        if(!Objects.requireNonNull(event.member()).getId().equals("284508374924787713")) {
             return;
         }
         if (args.isEmpty()) {
@@ -94,12 +94,12 @@ public class EvalCommand implements ICommand {
             engine.setProperty("args", args);
             engine.setProperty("event", event);
             engine.setProperty("channel", event.getChannel());
-            engine.setProperty("message", event.getMessage());
+            engine.setProperty("message", event.message());
             engine.setProperty("jda", event.getJDA());
             engine.setProperty("guild", event.getGuild());
-            engine.setProperty("member", event.getMember());
+            engine.setProperty("member", event.member());
 
-            String script = imports + event.getMessage().getContentRaw().split("\\s+", 2)[1];
+            String script = imports + event.message().getContentRaw().split("\\s+", 2)[1];
             Object out = engine.evaluate(script);
 
             event.getChannel().sendMessage(out == null ? "에러 없이 실행이 완료되었습니다." : out.toString()).queue();

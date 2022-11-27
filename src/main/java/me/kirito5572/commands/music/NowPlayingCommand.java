@@ -21,7 +21,7 @@ public class NowPlayingCommand implements ICommand {
     /** @noinspection unused*/
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
-        TextChannel channel = event.getTextChannel();
+        TextChannel channel = event.textChannel();
         PlayerManager playerManager = PlayerManager.getInstance();
         GuildMusicManager musicManager = playerManager.getGuildMusicManager(Objects.requireNonNull(event.getGuild()));
         AudioPlayer player = musicManager.player;

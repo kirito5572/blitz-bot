@@ -110,30 +110,29 @@ public class onReadyListener extends ListenerAdapter {
 
     private void wargamingAutoTokenListenerModule(@NotNull Date date,@NotNull ReadyEvent event) throws SQLException {
         long time = date.getTime();
-        ResultSet resultSet = sqliteConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE renew_time < ?",
+        try (ResultSet resultSet = sqliteConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE renew_time < ?",
                 new int[]{sqliteConnector.INTEGER},
-                new String[]{String.valueOf(time)});
-        if(resultSet.next()) {
-            boolean isSuccess = wargamingAPI.reNewToken(resultSet.getString("token"));
-            if(!isSuccess) {
-                logger.error("워게이밍 유저 토큰 갱신에 실패했습니다.");
+                new String[]{String.valueOf(time)})) {
+            if (resultSet.next()) {
+                boolean isSuccess = wargamingAPI.reNewToken(resultSet.getString("token"));
+                if (!isSuccess) {
+                    logger.error("워게이밍 유저 토큰 갱신에 실패했습니다.");
+                }
             }
-        }
-        resultSet = sqliteConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE end_time < ?",
-                new int[]{sqliteConnector.INTEGER},
-                new String[]{String.valueOf(time)});
-        if(resultSet.next()) {
-            Objects.requireNonNull(event.getJDA().getUserById(resultSet.getString("Id"))).openPrivateChannel().queue(privateChannel -> {
-                privateChannel.sendMessage("등록하신 워게이밍 계정의 토큰키가 자동 갱신에 실패하여 만료되었습니다.\n" +
-                        "부득이한 경우지만 다시한번 갱신을 부탁드리겠습니다.").queue();
-            });
+            try (ResultSet resultSet1 = sqliteConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE end_time < ?",
+                    new int[]{sqliteConnector.INTEGER},
+                    new String[]{String.valueOf(time)})) {
+                if (resultSet1.next()) {
+                    Objects.requireNonNull(event.getJDA().getUserById(resultSet.getString("Id"))).openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("등록하신 워게이밍 계정의 토큰키가 자동 갱신에 실패하여 만료되었습니다.\n" +
+                            "부득이한 경우지만 다시한번 갱신을 부탁드리겠습니다.").queue());
+                }
+            }
         }
     }
 
     private void wargamingUserDataListenerModule(@NotNull Date date) {
-        ResultSet resultSet;
-        try {
-            resultSet = sqliteConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation", new int[]{}, new String[]{});
+        try (ResultSet resultSet = sqliteConnector.Select_Query_Wargaming(
+                "SELECT * FROM accountInfomation", new int[]{}, new String[]{})) {
             Timer timer = new Timer();
             TimerTask timerTask = new TimerTask() {
                 @Override
@@ -156,7 +155,7 @@ public class onReadyListener extends ListenerAdapter {
                         } else {
                             timer.cancel();
                         }
-                    } catch (@NotNull SQLException exception) {
+                    } catch (@NotNull NullPointerException | @NotNull SQLException exception) {
                         exception.printStackTrace();
                     }
                 }
@@ -287,7 +286,7 @@ public class onReadyListener extends ListenerAdapter {
         final String[] inputChannels = new String[] {
                 "1039543294306287687", "827542008112480297", "1039543108888711178"
         };
-        final String[] outputChannelsDebugs = new String[] {
+        @SuppressWarnings("unused") final String[] outputChannelsDebugs = new String[] {
                 "671515746119188492", "671515746119188492", "671515746119188492"
         };
 
@@ -357,16 +356,19 @@ public class onReadyListener extends ListenerAdapter {
                 for(File uploadFile : downloadFile) {
                     if(first)
                         messageAction = messageAction.addFile(uploadFile);
-                    else
+                    else {
                         messageAction = output.sendFile(uploadFile);
                         first = true;
+                    }
                 }
             }
             if(messageAction != null) {
                 messageAction.override(true).queue();
             }
             for(File uploadFile : downloadFile) {
-                uploadFile.delete();
+                if(uploadFile.exists())
+                    if(!uploadFile.delete())
+                        logger.warn("파일 삭제 실패");
             }
             message.delete().queue();
         }

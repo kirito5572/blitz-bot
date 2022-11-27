@@ -5,6 +5,8 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -13,6 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * This class schedules tracks for the audio player. It contains the queue of tracks.
  */
 public class TrackScheduler extends AudioEventAdapter {
+    private final static Logger logger = LoggerFactory.getLogger(TrackScheduler.class);
     private final AudioPlayer player;
     @NotNull
     private final BlockingQueue<AudioTrack> queue;
@@ -36,7 +39,8 @@ public class TrackScheduler extends AudioEventAdapter {
         // something is playing, it returns false and does nothing. In that case the player was already playing so this
         // track goes to the queue instead.
         if (!player.startTrack(track, true)) {
-            queue.offer(track);
+            if(queue.offer(track))
+                logger.warn("트랙 추가 실패");
         }
     }
 

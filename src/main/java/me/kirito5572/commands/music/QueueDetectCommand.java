@@ -21,7 +21,7 @@ public class QueueDetectCommand implements ICommand {
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         new Thread(() -> {
-            TextChannel channel = event.getTextChannel();
+            TextChannel channel = event.textChannel();
             PlayerManager playerManager = PlayerManager.getInstance();
             GuildMusicManager musicManager = playerManager.getGuildMusicManager(Objects.requireNonNull(event.getGuild()));
             BlockingQueue<AudioTrack> queue = musicManager.scheduler.getQueue();

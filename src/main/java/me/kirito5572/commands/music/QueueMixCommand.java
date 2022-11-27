@@ -24,7 +24,7 @@ public class QueueMixCommand implements ICommand {
         Collections.shuffle(queueList, random);
         queue.clear();
         queue.addAll(queueList);
-        event.getTextChannel().sendMessage("재생 목록이 셔플되었습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
+        event.textChannel().sendMessage("재생 목록이 셔플되었습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
     }
 
     /** @noinspection unused*/

@@ -47,9 +47,8 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
 
         int game_type = 3;
         if(args.isEmpty()) {
-            try {
-                ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE discordId = ?",
-                        new int[]{wargamingConnector.TEXT}, new String[]{event.getAuthor().getId()});
+            try (ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE discordId = ?",
+                        new int[]{wargamingConnector.TEXT}, new String[]{event.getAuthor().getId()})){
                 if(resultSet.next()) {
                     id = resultSet.getString("Id");
                     token = resultSet.getString("token");
@@ -68,10 +67,11 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
                     if(id == null) {
                         throw new SQLException("의도성 에러");
                     }
-                    ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ?",
-                            new int[]{wargamingConnector.TEXT}, new String[]{id});
-                    if(resultSet.next()) {
-                        token = resultSet.getString("token");
+                    try (ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ?",
+                            new int[]{wargamingConnector.TEXT}, new String[]{id})){
+                        if (resultSet.next()) {
+                            token = resultSet.getString("token");
+                        }
                     }
                 } catch (SQLException sqlException) {
                     sqlException.printStackTrace();
@@ -84,10 +84,11 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
                     if(id == null) {
                         throw new SQLException("의도성 에러");
                     }
-                    ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ?",
-                            new int[]{wargamingConnector.TEXT}, new String[]{id});
-                    if(resultSet.next()) {
-                        token = resultSet.getString("token");
+                    try(ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ?",
+                            new int[]{wargamingConnector.TEXT}, new String[]{id})) {
+                        if (resultSet.next()) {
+                            token = resultSet.getString("token");
+                        }
                     }
                 } catch (SQLException sqlException) {
                     sqlException.printStackTrace();
@@ -655,13 +656,15 @@ public class SearchPlayerOverAllStatCommand implements ICommand{
         return builder;
     }
 
+    @SuppressWarnings("unused")
     private @Nullable String TokenFinder(@NotNull String discordId, @NotNull String wargamingId) throws SQLException {
         String returnToken = null;
-        ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ? AND discordId = ?",
+        try(ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ? AND discordId = ?",
                 new int[]{wargamingConnector.INTEGER, wargamingConnector.INTEGER},
-                new String[]{wargamingId, discordId});
-        if(resultSet.next()) {
-            returnToken = resultSet.getString("token");
+                new String[]{wargamingId, discordId})) {
+            if (resultSet.next()) {
+                returnToken = resultSet.getString("token");
+            }
         }
         return returnToken;
     }

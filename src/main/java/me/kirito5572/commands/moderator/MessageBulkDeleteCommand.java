@@ -20,9 +20,9 @@ public class MessageBulkDeleteCommand implements ICommand {
 
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
-        TextChannel channel = event.getTextChannel();
+        TextChannel channel = event.textChannel();
         Member selfMember = Objects.requireNonNull(event.getGuild()).getSelfMember();
-        Member member = event.getMember();
+        Member member = event.member();
         if(!selfMember.hasPermission(Permission.MESSAGE_MANAGE)) {
             channel.sendMessage("봇이 메세지를 삭제할 권한이 없습니다.").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
             return;

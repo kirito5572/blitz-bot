@@ -25,7 +25,7 @@ public class SQLiteQueryCommand implements ICommand {
 
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
-        if(!Objects.requireNonNull(event.getMember()).getId().equals("284508374924787713")) {
+        if(!Objects.requireNonNull(event.member()).getId().equals("284508374924787713")) {
             return;
         }
         if (args.isEmpty()) {
@@ -54,53 +54,51 @@ public class SQLiteQueryCommand implements ICommand {
                 break;
             case "SELECT":
             case "select":
-                try {
-                    ResultSet resultSet = sqliteConnector.Select_Query_Sqlite(SQLQuery, new int[0], new String[0]);
+                try (ResultSet resultSet = sqliteConnector.Select_Query_Sqlite(SQLQuery, new int[0], new String[0])) {
                     if(resultSet == null) {
                         event.getChannel().sendMessage("NO DATA in TABLE").queue();
                         return;
                     }
                     @Language("SQLite") String countQuery = SQLQuery.replaceFirst("\\*", "").replaceFirst("SELECT", "SELECT COUNT(*) ");
                     System.out.println(countQuery);
-                    ResultSet countSet = sqliteConnector.Select_Query_Sqlite(countQuery, new int[0], new String[0]);
-                    countSet.next();
-                    ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-                    int columnCount = resultSetMetaData.getColumnCount();
-                    int rowCount = countSet.getInt(1) + 1;
-                    String[][] returnData = new String[rowCount][columnCount];
-                    int i;
-                    for(i = 1; i <= columnCount; i++) {
-                        returnData[0][i - 1] = resultSetMetaData.getColumnName(i);
-                    }
-                    i = 1;
-                    while(resultSet.next()) {
-                        for(int j = 1; j < columnCount; j++) {
-                            returnData[i][j - 1] = resultSet.getString(j);
+                    try (ResultSet countSet = sqliteConnector.Select_Query_Sqlite(countQuery, new int[0], new String[0])) {
+                        countSet.next();
+                        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+                        int columnCount = resultSetMetaData.getColumnCount();
+                        int rowCount = countSet.getInt(1) + 1;
+                        String[][] returnData = new String[rowCount][columnCount];
+                        int i;
+                        for (i = 1; i <= columnCount; i++) {
+                            returnData[0][i - 1] = resultSetMetaData.getColumnName(i);
                         }
-                        i++;
-                    }
-                    StringBuilder allBuilder = new StringBuilder();
-                    StringBuilder insideBuilder = new StringBuilder();
-                    for(String[] data : returnData) {
-                        for(String s : data) {
-                            insideBuilder.append(s).append(" | ");
+                        i = 1;
+                        while (resultSet.next()) {
+                            for (int j = 1; j < columnCount; j++) {
+                                returnData[i][j - 1] = resultSet.getString(j);
+                            }
+                            i++;
                         }
-                        insideBuilder.append("\n");
-                        String insideString = insideBuilder.toString();
-                        if(insideString.length() + allBuilder.length() >= 1980) {
-                            allBuilder.insert(0, "```sql\n");
-                            allBuilder.append("\n```");
-                            event.getChannel().sendMessage(allBuilder.toString()).queue();
-                            allBuilder.setLength(0);
+                        StringBuilder allBuilder = new StringBuilder();
+                        StringBuilder insideBuilder = new StringBuilder();
+                        for (String[] data : returnData) {
+                            for (String s : data) {
+                                insideBuilder.append(s).append(" | ");
+                            }
+                            insideBuilder.append("\n");
+                            String insideString = insideBuilder.toString();
+                            if (insideString.length() + allBuilder.length() >= 1980) {
+                                allBuilder.insert(0, "```sql\n");
+                                allBuilder.append("\n```");
+                                event.getChannel().sendMessage(allBuilder.toString()).queue();
+                                allBuilder.setLength(0);
+                            }
+                            allBuilder.append(insideBuilder);
+                            insideBuilder.setLength(0);
                         }
-                        allBuilder.append(insideBuilder.toString());
-                        insideBuilder.setLength(0);
+                        allBuilder.insert(0, "```sql\n");
+                        allBuilder.append("\n```");
+                        event.getChannel().sendMessage(allBuilder.toString()).queue();
                     }
-                    allBuilder.insert(0, "```sql\n");
-                    allBuilder.append("\n```");
-                    event.getChannel().sendMessage(allBuilder.toString()).queue();
-
-
                 } catch (SQLException sqlException) {
                     sqlException.printStackTrace();
                     String a = sqlException.getMessage();

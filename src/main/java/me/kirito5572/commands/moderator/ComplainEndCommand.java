@@ -34,7 +34,7 @@ public class ComplainEndCommand implements ICommand {
                 User user = event.getJDA().getUserById(event.getChannel().getName());
                 if(user == null) {
                     event.getChannel().sendMessage("""
-                                    봇이 이 유저를 더 이상 찾을수 없습니다. 
+                                    봇이 이 유저를 더 이상 찾을수 없습니다.
                                     \\종료 또는 !종료를 사용하여 채팅을 종료하여 주세요.""").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
                     break;
                 }
@@ -44,7 +44,7 @@ public class ComplainEndCommand implements ICommand {
                 try (ResultSet resultSet = mySqlConnector.Select_Query("SELECT * FROM blitz_bot.ComplainLog" +
                                 " WHERE userId = ? ORDER BY Complain_int DESC LIMIT 1",
                         new int[]{mySqlConnector.STRING},
-                        new String[]{event.getTextChannel().getName()})) {
+                        new String[]{event.textChannel().getName()})) {
                     if(!resultSet.next()) {
                         return;
                     }
@@ -72,7 +72,7 @@ public class ComplainEndCommand implements ICommand {
                             .addField("대상 유저","<@" + resultSet.getString("userId") + ">",true)
                             .addField("시작 시간", startDate, true)
                             .addField("종료 시간", endDate,true)
-                            .setFooter(event.getMember().getNickname(), event.getMember().getAvatarUrl());
+                            .setFooter(event.member().getNickname(), event.member().getAvatarUrl());
 
                 } catch (SQLException e) {
                     logger.error(e.getMessage());
@@ -83,10 +83,10 @@ public class ComplainEndCommand implements ICommand {
 
                 Objects.requireNonNull(event.getGuild().getTextChannelById("1005116735164264488")).sendMessageEmbeds(builder.build()).queue();
 
-                event.getTextChannel().delete().queue();
+                event.textChannel().delete().queue();
 
                 user.openPrivateChannel().flatMap(channel -> channel.sendMessage("""
-                                채팅이 종료되었습니다. 
+                                채팅이 종료되었습니다.
                                 추가적인 채팅을 원하실경우 다시 이모지를 추가해주십시오.""")).queue();
                 break;
             }

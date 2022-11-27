@@ -126,7 +126,7 @@ public class giveRoleListener extends ListenerAdapter {
      * @param member the member who check
      *
      * @return ban/error/true/false
-     *     if ban, need ban
+     *     if banned, need ban
      *     if error, Unknown Member
      *     if true, Member is cooldown now, and return with time data
      *     if false, Member is clear
@@ -135,16 +135,15 @@ public class giveRoleListener extends ListenerAdapter {
     private String confirmCoolDown(@NotNull Member member) {
         long time = System.currentTimeMillis() / 1000;
         int min = 60, hour = 3600, day = 86400;
-        try {
-            //[0] = 확인할 시간, [1] = 이모지 반복 횟수 [2] = 처벌시간  3*day = 3일 6*hour = 6시간
-            int[][] check_time = {{10, 3, 0}, {hour, 10, 0}, {day, 20, 0}, {30*day, 40, 0}};
-            check_time[0][2] = 5*min;
-            check_time[1][2] = 6*hour;
-            check_time[2][2] = 7*day;
-            for(int i = 0; i < 4; i++) {
-                ResultSet resultSet = sqliteConnector.Select_Query_Sqlite("SELECT COUNT(*) FROM JoinDataTable where approveTime > ? AND approveTime < ? AND userId = ?;;",
-                        new int[]{sqliteConnector.TEXT, sqliteConnector.TEXT, sqliteConnector.TEXT},
-                        new String[]{String.valueOf(time - check_time[i][0]), String.valueOf(time), member.getId()});
+        //[0] = 확인할 시간, [1] = 이모지 반복 횟수 [2] = 처벌시간  3*day = 3일 6*hour = 6시간
+        int[][] check_time = {{10, 3, 0}, {hour, 10, 0}, {day, 20, 0}, {30*day, 40, 0}};
+        check_time[0][2] = 5*min;
+        check_time[1][2] = 6*hour;
+        check_time[2][2] = 7*day;
+        for(int i = 0; i < 4; i++) {
+            try (ResultSet resultSet = sqliteConnector.Select_Query_Sqlite("SELECT COUNT(*) FROM JoinDataTable where approveTime > ? AND approveTime < ? AND userId = ?;;",
+                    new int[]{sqliteConnector.TEXT, sqliteConnector.TEXT, sqliteConnector.TEXT},
+                    new String[]{String.valueOf(time - check_time[i][0]), String.valueOf(time), member.getId()})) {
                 resultSet.next();
                 if (resultSet.getInt(1) >= check_time[i][1]) {
                     if(i == 3) {
@@ -156,11 +155,11 @@ public class giveRoleListener extends ListenerAdapter {
                             new String[]{member.getId(), String.valueOf(end_time)});
                     return "true/" + check_time[i][0] + "#" + resultSet.getRow();
                 }
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
+                logger.error("에러발생!! giveRoleListener#onGuildMessageReactionAdd#cool-time");
+                return "error";
             }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-            logger.error("에러발생!! giveRoleListener#onGuildMessageReactionAdd#cool-time");
-            return "error";
         }
         return "false";
     }
@@ -171,15 +170,13 @@ public class giveRoleListener extends ListenerAdapter {
      *
      * @return 0 or timeData(unix time)
      * if 0, no cooldown
-     * if timeData, the time the cooldown is end
+     * if timeData, the time the cooldown ended
      */
 
     private long isBan(@NotNull Member member) {
-        try {
-            ResultSet resultSet = sqliteConnector.Select_Query_Sqlite("SELECT * FROM GiveRoleBanTable where userId = ?;",
+        try (ResultSet resultSet = sqliteConnector.Select_Query_Sqlite("SELECT * FROM GiveRoleBanTable where userId = ?;",
                     new int[]{sqliteConnector.TEXT},
-                    new String[]{member.getId()});
-
+                    new String[]{member.getId()})) {
             if (resultSet.next()) {
                 return resultSet.getLong("endTime");
             }

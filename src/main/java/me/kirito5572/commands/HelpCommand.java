@@ -47,7 +47,7 @@ public class HelpCommand implements ICommand {
 
 
 
-                Member member = event.getMember();
+                Member member = event.member();
 
         if(command.isAdminOnly()) {
             if(Objects.requireNonNull(event.getGuild()).getId().equals("826704284003205160")) {
@@ -113,7 +113,7 @@ public class HelpCommand implements ICommand {
         adminOnlyCommand.forEach((strings, commands) -> builder2.addField(Arrays.toString(commands.iCommand.getInvoke()), commands.iCommand.getSmallHelp(), false));
         musicOnlyCommand.forEach((strings, commands) -> builder3.addField(Arrays.toString(commands.iCommand.getInvoke()), commands.iCommand.getSmallHelp(), false));
         normalCommand.forEach((strings, commands) -> builder.addField(Arrays.toString(commands.iCommand.getInvoke()), commands.iCommand.getSmallHelp(), false));
-        Member member = event.getMember();
+        Member member = event.member();
         assert member != null;
         event.getChannel().sendMessageEmbeds(builder.build()).queue();
         event.getChannel().sendMessageEmbeds(builder3.build()).queue();
@@ -164,6 +164,7 @@ public class HelpCommand implements ICommand {
 }
 
 class ICommands {
+    @SuppressWarnings("unused")
     final String[] invoke;
     final ICommand iCommand;
     ICommands(String[] value1, ICommand iCommand) {

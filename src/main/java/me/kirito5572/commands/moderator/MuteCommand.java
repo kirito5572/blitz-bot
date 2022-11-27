@@ -34,7 +34,7 @@ public class MuteCommand implements ICommand {
 
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
-        Member member = event.getMember();
+        Member member = event.member();
         assert member != null;
         if (!member.getRoles().contains(Objects.requireNonNull(event.getGuild()).getRoleById("827009999145926657"))) {
             if (!member.getRoles().contains(event.getGuild().getRoleById("827010848442548254"))) {

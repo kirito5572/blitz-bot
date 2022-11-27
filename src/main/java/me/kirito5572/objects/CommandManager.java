@@ -6,9 +6,6 @@ import me.kirito5572.commands.HelpCommand;
 import me.kirito5572.commands.PingCommand;
 import me.kirito5572.commands.admin.EvalCommand;
 import me.kirito5572.commands.admin.SQLiteQueryCommand;
-import me.kirito5572.commands.blitz.AccountLinkCommand;
-import me.kirito5572.commands.blitz.SearchClanInfoCommand;
-import me.kirito5572.commands.blitz.SearchPlayerOverAllStatCommand;
 import me.kirito5572.commands.moderator.*;
 import me.kirito5572.commands.music.*;
 import net.dv8tion.jda.api.JDA;
@@ -59,9 +56,9 @@ public class CommandManager {
         addCommand(new UnBanCommand());
         addCommand(new KickCommand());
 
-        addCommand(new SearchPlayerOverAllStatCommand(sqliteConnector, wargamingAPI));
-        addCommand(new SearchClanInfoCommand(wargamingAPI));
-        addCommand(new AccountLinkCommand(wargamingAPI));
+        //addCommand(new SearchPlayerOverAllStatCommand(sqliteConnector, wargamingAPI));
+        //addCommand(new SearchClanInfoCommand(wargamingAPI));
+        //addCommand(new AccountLinkCommand(wargamingAPI));
 
         //music commands
         addCommand(new JoinCommand());

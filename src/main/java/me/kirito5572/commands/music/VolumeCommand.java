@@ -34,7 +34,7 @@ public class VolumeCommand implements ICommand {
             return;
         }
 
-        GuildVoiceState memberVoiceState = Objects.requireNonNull(event.getMember()).getVoiceState();
+        GuildVoiceState memberVoiceState = Objects.requireNonNull(event.member()).getVoiceState();
 
         assert memberVoiceState != null;
         if(!memberVoiceState.inVoiceChannel()) {

@@ -370,7 +370,7 @@ public class LogListener extends ListenerAdapter {
      *
      * @param embedBuilder the EmbedBuilder which is use addField with split data
      * @param data the message string to be split
-     * @param messageId the messageId which is modify message's id
+     * @param messageId the messageId which is modifying message's id
      *                  input null if the message which is before modification is null
      * @param name the name
      */

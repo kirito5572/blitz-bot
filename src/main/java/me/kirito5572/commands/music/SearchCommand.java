@@ -33,8 +33,8 @@ public class SearchCommand implements ICommand {
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
         new Thread(() -> {
             AudioManager audioManager = Objects.requireNonNull(event.getGuild()).getAudioManager();
-            TextChannel channel = event.getTextChannel();
-            GuildVoiceState memberVoiceState = Objects.requireNonNull(event.getMember()).getVoiceState();
+            TextChannel channel = event.textChannel();
+            GuildVoiceState memberVoiceState = Objects.requireNonNull(event.member()).getVoiceState();
             assert memberVoiceState != null;
             VoiceChannel voiceChannel = memberVoiceState.getChannel();
             if(!audioManager.isConnected()) {

@@ -86,7 +86,7 @@ public class PingCommand implements ICommand {
                         "ms / " + sqliteTimeString + "ms / " + wargamingTimeString + "ms", false)
                 .setFooter("1분후 삭제됩니다.");
 
-        event.getTextChannel().sendMessageEmbeds(embedBuilder.build()).queue(message -> message.delete().queueAfter(1, TimeUnit.MINUTES));
+        event.textChannel().sendMessageEmbeds(embedBuilder.build()).queue(message -> message.delete().queueAfter(1, TimeUnit.MINUTES));
 
     }
 

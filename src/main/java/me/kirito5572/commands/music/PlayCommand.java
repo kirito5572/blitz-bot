@@ -29,9 +29,9 @@ public class PlayCommand implements ICommand {
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
 
-        TextChannel channel = event.getTextChannel();
+        TextChannel channel = event.textChannel();
         AudioManager audioManager = Objects.requireNonNull(event.getGuild()).getAudioManager();
-        GuildVoiceState memberVoiceState = Objects.requireNonNull(event.getMember()).getVoiceState();
+        GuildVoiceState memberVoiceState = Objects.requireNonNull(event.member()).getVoiceState();
         assert memberVoiceState != null;
         VoiceChannel voiceChannel = memberVoiceState.getChannel();
         PlayerManager playerManager = PlayerManager.getInstance();
@@ -128,7 +128,7 @@ public class PlayCommand implements ICommand {
             };
             timer.scheduleAtFixedRate(task, 0, 1000);
         }
-        manager.loadAndPlay(event.getTextChannel(), input);
+        manager.loadAndPlay(event.textChannel(), input);
 
         musicManager = manager.getGuildMusicManager(Objects.requireNonNull(event.getGuild()));
         BlockingQueue<AudioTrack> queue = musicManager.scheduler.getQueue();

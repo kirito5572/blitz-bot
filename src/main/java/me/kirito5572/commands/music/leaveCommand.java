@@ -20,7 +20,7 @@ public class leaveCommand implements ICommand {
     /** @noinspection unused*/
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
-        TextChannel channel = event.getTextChannel();
+        TextChannel channel = event.textChannel();
         AudioManager audioManager = Objects.requireNonNull(event.getGuild()).getAudioManager();
         PlayerManager playerManager = PlayerManager.getInstance();
         GuildMusicManager musicManager = playerManager.getGuildMusicManager(event.getGuild());
@@ -34,7 +34,7 @@ public class leaveCommand implements ICommand {
             channel.sendMessage("봇이 보이스 채널에 있지 않습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }
-        if(!voiceChannel.getMembers().contains(event.getMember())) {
+        if(!voiceChannel.getMembers().contains(event.member())) {
             channel.sendMessage("봇과 같은 보이스 채널에 있어야 합니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));
             return;
         }

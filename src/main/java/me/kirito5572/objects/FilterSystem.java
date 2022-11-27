@@ -105,7 +105,7 @@ public class FilterSystem {
     }
 
     public boolean commandAuthorityCheck(@NotNull List<String> args, @NotNull EventPackage event, boolean isWhiteList) {
-        Member member = event.getMember();
+        Member member = event.member();
         assert member != null;
         Guild guild = event.getGuild();
         Role role = guild.getRoleById("827009999145926657");

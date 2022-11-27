@@ -25,7 +25,7 @@ public class MessagePinCommand implements ICommand {
 
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
-        Member member = event.getMember();
+        Member member = event.member();
         assert member != null;
         if (!member.getRoles().contains(Objects.requireNonNull(event.getGuild()).getRoleById("827009999145926657"))) {
             if (!member.getRoles().contains(event.getGuild().getRoleById("827010848442548254"))) {
@@ -42,8 +42,8 @@ public class MessagePinCommand implements ICommand {
                 EmbedBuilder builder = EmbedUtils.getDefaultEmbed()
                         .setTitle("고정된 메세지")
                         .setColor(Color.GREEN)
-                        .setDescription(event.getMessage().getContentRaw().substring(2));
-                List<Message.Attachment> attachments = event.getMessage().getAttachments();
+                        .setDescription(event.message().getContentRaw().substring(2));
+                List<Message.Attachment> attachments = event.message().getAttachments();
                 if(!attachments.isEmpty()) {
                     if(attachments.get(0).isImage()) {
                         builder.setImage(attachments.get(0).getUrl());
@@ -63,7 +63,7 @@ public class MessagePinCommand implements ICommand {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        event.getTextChannel().deleteMessageById(event.getMessage().getId()).queue();
+        event.textChannel().deleteMessageById(event.message().getId()).queue();
     }
 
     @Override

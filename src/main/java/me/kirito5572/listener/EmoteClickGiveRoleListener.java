@@ -6,12 +6,8 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EmoteClickGiveRoleListener extends ListenerAdapter {
-    private final Logger logger = LoggerFactory.getLogger(EmoteClickGiveRoleListener.class);
-
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
         if(!event.getGuild().getId().equals("826704284003205160"))

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class KickCommand implements ICommand {
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
-        TextChannel channel = event.getTextChannel();
+        TextChannel channel = event.textChannel();
 
         if(args.isEmpty()) {
             event.getChannel().sendMessage("유저명이 입력되지 않았습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));

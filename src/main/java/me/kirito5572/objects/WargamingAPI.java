@@ -293,40 +293,42 @@ public class WargamingAPI {
 
     public @Nullable String getWargamingPlayer(String nickname) throws SQLException {
         String id;
-        ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE nickname = ?",
-                new int[]{wargamingConnector.TEXT}, new String[]{nickname});
-        if (resultSet.next()) {
-            id = resultSet.getString("Id");
-        } else {
-            String apiURL = "https://api.wotblitz.asia/wotb/account/list/";
-            apiURL += "?application_id=" + token;
-            apiURL += "&search=" + nickname;
-            try {
-                JsonElement element = GET(apiURL);
-                JsonArray array = element.getAsJsonObject().get("data").getAsJsonArray();
-                if (array.size() == 1) {
-                    id = array.get(0).getAsJsonObject().get("account_id").getAsString();
-                } else {
+        try (ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE nickname = ?",
+                new int[]{wargamingConnector.TEXT}, new String[]{nickname})) {
+            if (resultSet.next()) {
+                id = resultSet.getString("Id");
+            } else {
+                String apiURL = "https://api.wotblitz.asia/wotb/account/list/";
+                apiURL += "?application_id=" + token;
+                apiURL += "&search=" + nickname;
+                try {
+                    JsonElement element = GET(apiURL);
+                    JsonArray array = element.getAsJsonObject().get("data").getAsJsonArray();
+                    if (array.size() == 1) {
+                        id = array.get(0).getAsJsonObject().get("account_id").getAsString();
+                    } else {
+                        return null;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                     return null;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-            ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ?",
-                    new int[]{wargamingConnector.INTEGER}, new String[]{id});
-            if (resultSet1.next()) {
-                wargamingConnector.Insert_Query_Wargaming("UPDATE accountInfomation SET nickname = ? WHERE Id = ?",
-                        new int[]{wargamingConnector.TEXT, wargamingConnector.INTEGER}, new String[]{nickname, id});
-            } else {
-                wargamingConnector.Insert_Query_Wargaming("INSERT INTO accountInfomation (nickname, Id) VALUES (?, ?)",
-                        new int[]{wargamingConnector.TEXT, wargamingConnector.INTEGER}, new String[]{nickname, id});
-                wargamingConnector.Insert_Query_Wargaming("create table `" + id + "` \n" +
-                                "(\n" +
-                                "\tinput_time text,\n" +
-                                "\tdata text \n"+
-                                ");",
-                        new int[]{}, new String[]{});
+                try (ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ?",
+                        new int[]{wargamingConnector.INTEGER}, new String[]{id})) {
+                    if (resultSet1.next()) {
+                        wargamingConnector.Insert_Query_Wargaming("UPDATE accountInfomation SET nickname = ? WHERE Id = ?",
+                                new int[]{wargamingConnector.TEXT, wargamingConnector.INTEGER}, new String[]{nickname, id});
+                    } else {
+                        wargamingConnector.Insert_Query_Wargaming("INSERT INTO accountInfomation (nickname, Id) VALUES (?, ?)",
+                                new int[]{wargamingConnector.TEXT, wargamingConnector.INTEGER}, new String[]{nickname, id});
+                        wargamingConnector.Insert_Query_Wargaming("create table `" + id + "` \n" +
+                                        "(\n" +
+                                        "\tinput_time text,\n" +
+                                        "\tdata text \n" +
+                                        ");",
+                                new int[]{}, new String[]{});
+                    }
+                }
             }
         }
         return id;
@@ -335,11 +337,72 @@ public class WargamingAPI {
     public @Nullable DataObject getUserPersonalData(String id, @NotNull Date date, @Nullable String token) {
         //TODO token 으로 조회하기 구현하기, token 값이 null 이면 없는거임
         DataObject dataObject = new DataObject();
-        ResultSet resultSet = null;
-        try {
-            resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM `" + id + "` WHERE input_time = ?",
+        try (ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM `" + id + "` WHERE input_time = ?",
                     new int[]{wargamingConnector.TEXT},
-                    new String[]{ String.valueOf(date.getTime())});
+                    new String[]{ String.valueOf(date.getTime())})) {
+            if (resultSet != null) {
+                try {
+                    Calendar calendar = new GregorianCalendar();
+                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                    if (resultSet.next()) {
+                        //조회를 하려고 하는 날(date)에 데이터가 있을 경우
+                        if (date.getTime() == calendar.getTime().getTime()) {
+                            //조회를 하려고 하는 날(date)이 오늘 인 경우
+                            if (token == null) {
+                                dataObject = getUserPersonalData(id);
+                            } else {
+                                dataObject = getUserPersonalData(id, token);
+                            }
+                        } else {
+                            dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
+                        }
+                    } else {
+                        //조회를 하려고 하는 날(date)에 데이터가 없을 경우
+                        //그런데 그 날이 오늘 인 경우
+                        if (date.getTime() == calendar.getTime().getTime()) {
+                            if (token == null) {
+                                dataObject = getUserPersonalData(id);
+                            } else {
+                                dataObject = getUserPersonalData(id, token);
+                            }
+                            String json = new Gson().toJson(dataObject);
+                            wargamingConnector.Insert_Query_Wargaming("INSERT INTO `" + id + "` (input_time, data) VALUES (?, ?)",
+                                    new int[]{wargamingConnector.TEXT, wargamingConnector.TEXT},
+                                    new String[]{String.valueOf(date.getTime()), json});
+                        } else if (date.getTime() < calendar.getTime().getTime()) {
+                            //인접한 날짜의 데이터를 가져온다
+                            try (ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming(
+                                        "SELECT input_time, ABS(input_time - " + date.getTime() + ") AS Distance " +
+                                                "FROM `" + id + "` ORDER BY Distance LIMIT 1",
+                                        new int[]{}, new String[]{})){
+                                if (resultSet1.next()) {
+                                    //데이터가 존재할 경우
+                                    try(ResultSet resultSet2 = wargamingConnector.Select_Query_Wargaming(
+                                            "SELECT * FROM `" + id + "` WHERE input_time = ?",
+                                            new int[]{wargamingConnector.TEXT}, new String[]{resultSet1.getString("input_time")})) {
+                                        if (resultSet2.next()) {
+                                            dataObject = new Gson().fromJson(resultSet2.getString("data"), DataObject.class);
+                                        } else {
+                                            return null;
+                                        }
+                                    }
+                                }
+                            } catch (SQLException ignored) {
+                            }
+                            //만약 데이터가 존재하지 않을 경우
+                            // = 오늘 최초 조회를 진행 한 경우이므로 위의 if에 빠지게 된다
+                        }
+                    }
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
+                }
+            } else {
+                //테이블이 아예 존재하지 않을 경우
+                return null;
+            }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
             //최초 조회 유저!
@@ -358,72 +421,10 @@ public class WargamingAPI {
                 return null;
             }
         }
-        if(resultSet != null) {
-            try {
-                Calendar calendar = new GregorianCalendar();
-                calendar.set(Calendar.HOUR_OF_DAY, 0);
-                calendar.set(Calendar.MINUTE, 0);
-                calendar.set(Calendar.SECOND, 0);
-                calendar.set(Calendar.MILLISECOND, 0);
-                if(resultSet.next()) {
-                    //조회를 하려고 하는 날(date)에 데이터가 있을 경우
-                    if(date.getTime() == calendar.getTime().getTime()) {
-                        //조회를 하려고 하는 날(date)이 오늘 인 경우
-                        if(token == null) {
-                            dataObject = getUserPersonalData(id);
-                        } else {
-                            dataObject = getUserPersonalData(id, token);
-                        }
-                    } else {
-                        dataObject = new Gson().fromJson(resultSet.getString("data"), DataObject.class);
-                    }
-                } else {
-                    //조회를 하려고 하는 날(date)에 데이터가 없을 경우
-                    //그런데 그 날이 오늘 인 경우
-                    if(date.getTime() == calendar.getTime().getTime()) {
-                        if(token == null) {
-                            dataObject = getUserPersonalData(id);
-                        } else {
-                            dataObject = getUserPersonalData(id, token);
-                        }
-                        String json = new Gson().toJson(dataObject);
-                        wargamingConnector.Insert_Query_Wargaming("INSERT INTO `" + id + "` (input_time, data) VALUES (?, ?)",
-                                new int[]{wargamingConnector.TEXT, wargamingConnector.TEXT},
-                                new String[]{String.valueOf(date.getTime()), json});
-                    } else if(date.getTime() < calendar.getTime().getTime()) {
-                        //인접한 날짜의 데이터를 가져온다
-                        try {
-                            ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming(
-                                    "SELECT input_time, ABS(input_time - " + date.getTime() + ") AS Distance " +
-                                            "FROM `" + id + "` ORDER BY Distance LIMIT 1",
-                                    new int[]{}, new String[]{});
-                            if (resultSet1.next()) {
-                                //데이터가 존재할 경우
-                                ResultSet resultSet2 = wargamingConnector.Select_Query_Wargaming(
-                                        "SELECT * FROM `" + id + "` WHERE input_time = ?",
-                                        new int[]{wargamingConnector.TEXT}, new String[]{resultSet1.getString("input_time")});
-                                if(resultSet2.next()) {
-                                    dataObject = new Gson().fromJson(resultSet2.getString("data"), DataObject.class);
-                                } else {
-                                    return null;
-                                }
-                            }
-                        } catch (SQLException ignored) {
-                        }
-                        //만약 데이터가 존재하지 않을 경우
-                        // = 오늘 최초 조회를 진행 한 경우이므로 위의 if에 빠지게 된다
-                    }
-                }
-            } catch (SQLException sqlException) {
-                sqlException.printStackTrace();
-            }
-        } else {
-            //테이블이 아예 존재하지 않을 경우
-            return null;
-        }
         return dataObject;
     }
 
+    @SuppressWarnings("unused")
     public @Nullable DataObject getUserPersonalData(String id) {
         DataObject dataObject = new DataObject();
         String apiURL = "https://api.wotblitz.asia/wotb/account/info/";
@@ -436,6 +437,7 @@ public class WargamingAPI {
             JsonObject statistics = object.get("statistics").getAsJsonObject();
             JsonObject clan = statistics.get("clan").getAsJsonObject();
             JsonObject rating = statistics.get("rating").getAsJsonObject();
+            //noinspection DuplicatedCode
             dataObject.created_at = object.get("created_at").getAsLong();
             dataObject.last_battle_time = object.get("last_battle_time").getAsLong();
             dataObject.nickName = object.get("nickname").getAsString();
@@ -476,6 +478,7 @@ public class WargamingAPI {
         return dataObject;
     }
 
+    @SuppressWarnings("unused")
     public @Nullable DataObject getUserPersonalData(String id, String access_token) {
         DataObject dataObject = new DataObject();
         String apiURL = "https://api.wotblitz.asia/wotb/account/info/";
@@ -485,12 +488,31 @@ public class WargamingAPI {
         apiURL += "&extra=statistics.rating&fields=created_at, nickname, last_battle_time, private, statistics.all, statistics.clan, statistics.rating&language=ko";
         try {
             JsonElement element = GET(apiURL);
-            JsonObject object = element.getAsJsonObject().get("data").getAsJsonObject().get(id).getAsJsonObject();
+            JsonObject object = element.getAsJsonObject();
+            if(!object.isJsonNull()) {
+                element = object.get("data");
+                if(!element.isJsonNull()) {
+                    object = element.getAsJsonObject();
+                    if (!object.isJsonNull()) {
+                        element = object.get(id);
+                        if (!element.isJsonNull())
+                            object = element.getAsJsonObject();
+                        else
+                            throw new NullPointerException("유저 전적 정보가 정상 갱신되지 않았습니다.");
+
+                    } else
+                        throw new NullPointerException("유저 전적 정보가 정상 갱신되지 않았습니다.");
+                } else
+                    throw new NullPointerException("유저 전적 정보가 정상 갱신되지 않았습니다.");
+
+            } else
+                throw new NullPointerException("유저 전적 정보가 정상 갱신되지 않았습니다.");
             System.out.println(object);
             JsonObject statistics = object.get("statistics").getAsJsonObject();
             JsonObject clan = statistics.get("clan").getAsJsonObject();
             JsonObject rating = statistics.get("rating").getAsJsonObject();
             JsonObject privateData = object.get("private").getAsJsonObject();
+            //noinspection DuplicatedCode
             dataObject.created_at = object.get("created_at").getAsLong();
             dataObject.last_battle_time = object.get("last_battle_time").getAsLong();
             dataObject.nickName = object.get("nickname").getAsString();
@@ -706,7 +728,7 @@ public class WargamingAPI {
 
     /** @noinspection unused*/
     public TournamentData @Nullable [] getTournamentData() {
-        TournamentData[] data = null;
+        TournamentData[] data;
         String apiURL = "https://api.wotblitz.asia/wotb/tournaments/list/";
         apiURL += "?application_id=" + token;
         apiURL += "&language=en&limit=10&status=upcoming&fields=start_at, end_at, registration_start_at, title, logo.original, registration_end_at";
@@ -754,7 +776,7 @@ public class WargamingAPI {
         return returnData;
     }
 
-    public @Nullable ClanData getClanData(@NotNull int clanId) {
+    public @Nullable ClanData getClanData(int clanId) {
         ClanData returnData = new ClanData();
         String apiURL = "https://api.wotblitz.asia/wotb/clans/info/";
         apiURL += "?application_id=" + token;
@@ -814,6 +836,7 @@ public class WargamingAPI {
         return JsonParser.parseString(response.toString());
     }
 
+    @SuppressWarnings("SameParameterValue")
     private @Nullable String POST(@NotNull String url, Map<String, String> requestHeaders) {
         //코드는 https://www.techiedelight.com/ko/send-http-post-request-java/ 참조함
         try (CloseableHttpClient httpclient = HttpClients.createDefault()){
@@ -833,6 +856,7 @@ public class WargamingAPI {
         }
     }
 
+    @SuppressWarnings("unused")
     public static class TournamentData {
         public String title;
         public String logo;
@@ -842,6 +866,7 @@ public class WargamingAPI {
         public long registration_end_at;
     }
 
+    @SuppressWarnings("unused")
     public static class RatingDataObject {
         public int battles;                 //전투수
         public int wins;                    //승리
@@ -860,6 +885,7 @@ public class WargamingAPI {
         public long damage_dealt;           //가한 대미지
     }
 
+    @SuppressWarnings("unused")
     public static class AllDataObject {
         public int battles;                 //전투수
         public int wins;                    //승리
@@ -873,6 +899,7 @@ public class WargamingAPI {
         public long damage_dealt;           //가한 대미지
     }
 
+    @SuppressWarnings("unused")
     public static class PrivateDataObject {
         public int gold;
         public int free_xp;
@@ -1162,6 +1189,7 @@ public class WargamingAPI {
         public int medalTournamentAutumnSeason;
     }
 
+    @SuppressWarnings("unused")
     public static class DataObject {
         public long created_at = 0;
         public long last_battle_time = 0;
@@ -1171,17 +1199,20 @@ public class WargamingAPI {
         public PrivateDataObject privateDataObject = null;
     }
 
+    @SuppressWarnings("unused")
     public static class AchievementData {
         public String achievement_id;
         public String section;
         public String name;
     }
 
+    @SuppressWarnings("unused")
     public static class DataObject_UserDamage {
         public long damage_received;
         public long damage_dealt;
     }
 
+    @SuppressWarnings("unused")
     public static class TankData {
         public int tier;
         public int tank_id;
@@ -1189,6 +1220,7 @@ public class WargamingAPI {
         public String nation;
     }
 
+    @SuppressWarnings("unused")
     public static class ClanSearchData {
         public String tag;
         public String name;
@@ -1197,6 +1229,7 @@ public class WargamingAPI {
         public int clan_id;
     }
 
+    @SuppressWarnings("unused")
     public static class ClanData {
         public ClanRecruitingOption recruiting_options;
         public int members_count;
@@ -1212,6 +1245,7 @@ public class WargamingAPI {
         public Map<Long, ClanMembers> members;
     }
 
+    @SuppressWarnings("unused")
     public static class ClanRecruitingOption {
         public int vehicles_level;
         public int wins_ratio;
@@ -1232,6 +1266,7 @@ public class WargamingAPI {
         public long id;
     }
 
+    @SuppressWarnings("unused")
     public Map<String, AchievementData> getAchievementMap() {
         return achievementMap;
     }

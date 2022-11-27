@@ -12,7 +12,6 @@ import java.sql.*;
 
 
 public class SQLITEConnector {
-    /** @noinspection FieldCanBeLocal*/
     private final Logger logger = LoggerFactory.getLogger(SQLITEConnector.class);
     private final MySQLConnector mySqlConnector;
     private static Connection sqliteConnection;
@@ -50,10 +49,12 @@ public class SQLITEConnector {
      *      is closed; {@code false} if it is still open
      * @throws SQLException if a database access error occurs
      */
+    @SuppressWarnings("unused")
     public boolean isConnectionClosedSqlite() throws SQLException {
         return sqliteConnection.isClosed();
     }
 
+    @SuppressWarnings("unused")
     public boolean isConnectionClosedWargaming() throws SQLException {
         return wargamingConnection.isClosed();
     }
@@ -96,6 +97,7 @@ public class SQLITEConnector {
         return statement.executeQuery();
     }
 
+    @SuppressWarnings("unused")
     public ResultSet Select_Query_Wargaming_Logger(@Language("SQLite") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
         logger.info(Query);
         PreparedStatement statement = wargamingConnection.prepareStatement(Query);
@@ -117,6 +119,7 @@ public class SQLITEConnector {
         return statement.execute();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public boolean Insert_Query_Wargaming(@Language("SQLite") String Query, int @NotNull [] dataType, String[] data) throws SQLException {
         logger.info(Query);
         PreparedStatement statement = wargamingConnection.prepareStatement(Query);

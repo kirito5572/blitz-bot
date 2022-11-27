@@ -110,7 +110,7 @@ public class filterListener extends ListenerAdapter {
             return;
         }
         rawMessage = rawMessage.trim().replaceAll("\\s+", " ");
-        String match = "[^\uAC00-\uD7A3xfe0-9a-zA-Z\s]";
+        String match = "[^\uAC00-\uD7A30-9a-zA-Z\s]";
         rawMessage = rawMessage.replaceAll(match, "");
         String MessageFormatting = rawMessage;
         boolean filter = false;

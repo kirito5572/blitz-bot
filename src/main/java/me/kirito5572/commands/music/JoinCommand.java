@@ -26,7 +26,7 @@ public class JoinCommand implements ICommand {
     /** @noinspection unused*/
     @Override
     public void handle(List<String> args, @NotNull EventPackage event) {
-        TextChannel channel = event.getTextChannel();
+        TextChannel channel = event.textChannel();
         AudioManager audioManager = Objects.requireNonNull(event.getGuild()).getAudioManager();
 
         if(audioManager.isConnected()) {
@@ -34,7 +34,7 @@ public class JoinCommand implements ICommand {
             return;
         }
 
-        GuildVoiceState memberVoiceState = Objects.requireNonNull(event.getMember()).getVoiceState();
+        GuildVoiceState memberVoiceState = Objects.requireNonNull(event.member()).getVoiceState();
 
         assert memberVoiceState != null;
         if(!memberVoiceState.inVoiceChannel()) {

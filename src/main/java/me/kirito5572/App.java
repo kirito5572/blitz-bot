@@ -27,6 +27,7 @@ public class App {
     public final static int APP_STABLE = 0;
     public final static int APP_BETA = 1;
     public  final static int APP_ALPHA = 2;
+    @SuppressWarnings("unused")
     private final static int APP_UNKNOWN = 3;
 
     private final static @NotNull String OSStringData = System.getProperty("os.name").toLowerCase();
@@ -78,10 +79,11 @@ public class App {
                 default -> throw new UnsupportedOSException("이 운영체제는 지원하지 않습니다.");
             };
             File file = new File(path);
-            FileReader fileReader = new FileReader(file);
-            int signalCh;
-            while ((signalCh = fileReader.read()) != -1) {
-                reader.append((char) signalCh);
+            try(FileReader fileReader = new FileReader(file)) {
+                int signalCh;
+                while ((signalCh = fileReader.read()) != -1) {
+                    reader.append((char) signalCh);
+                }
             }
         } catch (Exception e) {
             logger.error("예외 발생:\n" + e);
@@ -106,13 +108,13 @@ public class App {
         try {
             String location = new File(getClass().getProtectionDomain().getCodeSource().getLocation()
                     .toURI()).getAbsolutePath();
-
-            Attributes attribute = new JarFile(location).getManifest().getMainAttributes();
-            version = attribute.getValue("Version");
-            build_time = attribute.getValue("BuildDate");
-            build_os = attribute.getValue("BuildOS");
-            build_jdk = attribute.getValue("BuildJDK");
-
+            try(JarFile file = new JarFile(location)) {
+                Attributes attribute = file.getManifest().getMainAttributes();
+                version = attribute.getValue("Version");
+                build_time = attribute.getValue("BuildDate");
+                build_os = attribute.getValue("BuildOS");
+                build_jdk = attribute.getValue("BuildJDK");
+            }
         } catch (@NotNull URISyntaxException | IOException e){
             version = "alpha version";
             build_time = "alpha";
@@ -228,6 +230,7 @@ public class App {
      * @return the build os of discord bot
      */
 
+    @SuppressWarnings("unused")
     public static @NotNull String getBuild_os() {
         return build_os;
     }

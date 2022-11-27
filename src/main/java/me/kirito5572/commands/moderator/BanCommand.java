@@ -15,8 +15,8 @@ public class BanCommand implements ICommand {
     @Override
     public void handle(@NotNull List<String> args, @NotNull EventPackage event) {
 
-        TextChannel channel = event.getTextChannel();
-        Member member = event.getMember();
+        TextChannel channel = event.textChannel();
+        Member member = event.member();
         Member selfMember = event.getGuild().getSelfMember();
         if(args.isEmpty()) {
             event.getChannel().sendMessage("유저명이 입력되지 않았습니다.").queue(message -> message.delete().queueAfter(7, TimeUnit.SECONDS));

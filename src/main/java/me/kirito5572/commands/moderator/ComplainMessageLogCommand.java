@@ -29,14 +29,14 @@ public class ComplainMessageLogCommand implements ICommand {
         int ComplainInt;
         int dataPage = 0;
         if(args.size() == 0) {
-            event.getTextChannel().sendMessage("명령어 뒤에 조회할 번호를 입력해주세요").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
+            event.textChannel().sendMessage("명령어 뒤에 조회할 번호를 입력해주세요").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
             return;
         } else {
             boolean isDigit = args.get(0).chars().allMatch( Character::isDigit );
             if(isDigit) {
                 ComplainInt = Integer.parseInt(args.get(0));
             } else {
-                event.getTextChannel().sendMessage("""
+                event.textChannel().sendMessage("""
                             명령어 뒤에 값은 숫자만 입력해주세요.
                             예시: !로그 1""").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
                 return;
@@ -47,13 +47,13 @@ public class ComplainMessageLogCommand implements ICommand {
             if(isDigit) {
                 dataPage = (Integer.parseInt(args.get(1)) - 1);
             } else {
-                event.getTextChannel().sendMessage("""
+                event.textChannel().sendMessage("""
                             명령어 뒤에 값은 숫자만 입력해주세요.
                             예시: !로그 1 2""").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
                 return;
             }
             if(dataPage <= 0) {
-                event.getTextChannel().sendMessage("""
+                event.textChannel().sendMessage("""
                              2번째 인수의 값이 1보다 작은 값이 들어올수 없습니다.
                              최소 1 이상 입력해주세요""").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
                 return;
@@ -88,9 +88,9 @@ public class ComplainMessageLogCommand implements ICommand {
             }
             String sendData = messageBuilder.toString();
             if(sendData.length() < (dataPage * 2000)) {
-                event.getTextChannel().sendMessage("""
+                event.textChannel().sendMessage("""
                             해당 페이지만큼 글자수가 많지 않습니다.
-                            예시: !로그 1 """).queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
+                            예시: !로그 1""").queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS));
                 return;
             }
             int endLength = (((dataPage + 1) * 2000));

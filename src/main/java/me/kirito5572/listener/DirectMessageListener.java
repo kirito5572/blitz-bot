@@ -62,9 +62,8 @@ public class DirectMessageListener extends ListenerAdapter {
             if(account_id != tokenData.id) {
                 event.getChannel().sendMessage("입력한 토큰키의 소유 계정 ID와 신규 발급된 토큰키의 소유 계정 ID가 일치 하지 않습니다.").queue();
             }
-            try {
-                ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ?",
-                        new int[]{wargamingConnector.INTEGER}, new String[]{String.valueOf(tokenData.id)});
+            try (ResultSet resultSet = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE Id = ?",
+                        new int[]{wargamingConnector.INTEGER}, new String[]{String.valueOf(tokenData.id)})) {
                 if(resultSet.next()) {
                    //기존 조회했던 기록이 있거나, 등록된 wargamingID가 있는 경우 tokenData와 디코ID 업데이트
                     wargamingConnector.Insert_Query_Wargaming("UPDATE accountInfomation SET token = ? , end_time = ?, renew_time = ?, discordId = ? WHERE Id = ?",
@@ -72,21 +71,22 @@ public class DirectMessageListener extends ListenerAdapter {
                             new String[]{tokenData.token, String.valueOf(tokenData.endTime), String.valueOf(tokenData.reNewTime), event.getAuthor().getId(), String.valueOf(tokenData.id)});
                 } else {
                     //기존 등록된 wargamingID가 없는 경우
-                    ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE discordId = ?",
-                            new int[]{wargamingConnector.INTEGER}, new String[]{event.getAuthor().getId()});
-                    if(resultSet1.next()) {
-                        //그런데 discordID는 있는 경우 = 디코에 신규 ID로 덮어쓰기 할 경우
-                        wargamingConnector.Insert_Query_Wargaming("UPDATE accountInfomation SET token = ? , end_time = ?, renew_time = ?, Id = ? WHERE discordId = ?",
-                                new int[]{wargamingConnector.TEXT, wargamingConnector.INTEGER, wargamingConnector.INTEGER, wargamingConnector.INTEGER, wargamingConnector.INTEGER},
-                                new String[]{tokenData.token, String.valueOf(tokenData.endTime), String.valueOf(tokenData.reNewTime), String.valueOf(tokenData.id), event.getAuthor().getId()});
-                    } else {
-                        //기존 token 값이나 discordId 연동도 안되어 있는 경우
-                        wargamingConnector.Insert_Query_Wargaming("INSERT INTO accountInfomation (Id, token, end_time, renew_time) VALUES (?, ?, ?, ?)",
-                                new int[]{wargamingConnector.INTEGER, wargamingConnector.TEXT, wargamingConnector.INTEGER, wargamingConnector.INTEGER},
-                                new String[]{String.valueOf(tokenData.id), tokenData.token, String.valueOf(tokenData.endTime), String.valueOf(tokenData.reNewTime)});
+                    try (ResultSet resultSet1 = wargamingConnector.Select_Query_Wargaming("SELECT * FROM accountInfomation WHERE discordId = ?",
+                            new int[]{wargamingConnector.INTEGER}, new String[]{event.getAuthor().getId()})) {
+                        if(resultSet1.next()) {
+                            //그런데 discordID는 있는 경우 = 디코에 신규 ID로 덮어쓰기 할 경우
+                            wargamingConnector.Insert_Query_Wargaming("UPDATE accountInfomation SET token = ? , end_time = ?, renew_time = ?, Id = ? WHERE discordId = ?",
+                                    new int[]{wargamingConnector.TEXT, wargamingConnector.INTEGER, wargamingConnector.INTEGER, wargamingConnector.INTEGER, wargamingConnector.INTEGER},
+                                    new String[]{tokenData.token, String.valueOf(tokenData.endTime), String.valueOf(tokenData.reNewTime), String.valueOf(tokenData.id), event.getAuthor().getId()});
+                        } else {
+                            //기존 token 값이나 discordId 연동도 안되어 있는 경우
+                            wargamingConnector.Insert_Query_Wargaming("INSERT INTO accountInfomation (Id, token, end_time, renew_time) VALUES (?, ?, ?, ?)",
+                                    new int[]{wargamingConnector.INTEGER, wargamingConnector.TEXT, wargamingConnector.INTEGER, wargamingConnector.INTEGER},
+                                    new String[]{String.valueOf(tokenData.id), tokenData.token, String.valueOf(tokenData.endTime), String.valueOf(tokenData.reNewTime)});
+                        }
                     }
                 }
-                } catch (SQLException sqlException) {
+            } catch (SQLException sqlException) {
                 sqlException.printStackTrace();
                 event.getChannel().sendMessage("에러가 발생했습니다.").queue();
                 return;
@@ -152,7 +152,7 @@ public class DirectMessageListener extends ListenerAdapter {
         }
         if(i == 1) {
             event.getChannel().sendMessage("""
-                    처리 과정에서 에러가 발생하였습니다. 
+                    처리 과정에서 에러가 발생하였습니다.
                     <@284508374924787713>에게 문의부탁드립니다.""").queue();
             return;
         }
@@ -167,7 +167,7 @@ public class DirectMessageListener extends ListenerAdapter {
             } else {
                 event.getChannel().sendMessage("""
                     처리 과정에서 에러가 발생하였습니다.
-                    다시 한번 시도해 주시고, 그래도 안될경우 
+                    다시 한번 시도해 주시고, 그래도 안될경우
                     <@284508374924787713>에게 문의부탁드립니다.""").queue();
                 return;
             }
@@ -202,7 +202,7 @@ public class DirectMessageListener extends ListenerAdapter {
                 User user = event.getJDA().getUserById(event.getChannel().getId());
                 if(user == null) {
                     event.getChannel().sendMessage("""
-                                    봇이 이 유저를 더 이상 찾을수 없습니다. 
+                                    봇이 이 유저를 더 이상 찾을수 없습니다.
                                     \\종료 또는 !종료를 사용하여 채팅을 종료하여 주세요.""").queue();
                     break;
                 }
