@@ -12,11 +12,17 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
+import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildMuteEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
@@ -82,7 +88,7 @@ public class LogListener extends ListenerAdapter {
         if(isFile) {
             int i = 0;
             for (Message.Attachment attachment : files) {
-                if (attachment.isImage()) {
+                if (attachment.isImage() || attachment.isVideo()) {
                     i++;
                     File file;
                     try {
@@ -307,8 +313,116 @@ public class LogListener extends ListenerAdapter {
 
     @Override
     public void onGuildBan(@NotNull GuildBanEvent event) {
-        super.onGuildBan(event);
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
+        Date date = new Date();
+        User user = event.getUser();
+        EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
+        embedBuilder.setTitle("유저 차단 실행")
+                .setColor(new Color(200, 50, 50))
+                .setDescription(simpleDateFormat.format(date))
+                .addField("유저명", user.getAsMention(), false)
+                .setFooter(user.getId(), user.getAvatarUrl());
+        Objects.requireNonNull(event.getGuild().getTextChannelById("946362857795248188")).sendMessageEmbeds(embedBuilder.build()).queue();
     }
+
+    @Override
+    public void onGuildUnban(@NotNull GuildUnbanEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
+        Date date = new Date();
+        User user = event.getUser();
+        EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
+        embedBuilder.setTitle("유저 차단 해제")
+                .setColor(new Color(50, 200, 50))
+                .setDescription(simpleDateFormat.format(date))
+                .addField("유저명", user.getAsMention(), false)
+                .setFooter(user.getId(), user.getAvatarUrl());
+        Objects.requireNonNull(event.getGuild().getTextChannelById("946362857795248188")).sendMessageEmbeds(embedBuilder.build()).queue();
+    }
+
+    @Override
+    public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
+        Date date = new Date();
+        Member member = event.getMember();
+        EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
+        embedBuilder.setTitle("유저 보이스 채널 입장")
+                .setColor(new Color(50, 200, 50))
+                .setDescription(simpleDateFormat.format(date))
+                .addField("채널명", event.getChannelJoined().getAsMention(), false)
+                .addField("유저명", member.getAsMention(), false)
+                .setFooter(member.getId(), member.getAvatarUrl());
+        Objects.requireNonNull(event.getGuild().getTextChannelById("1046784597326835813")).sendMessageEmbeds(embedBuilder.build()).queue();
+    }
+
+    @Override
+    public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
+        Date date = new Date();
+        Member member = event.getMember();
+        EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
+        embedBuilder.setTitle("유저 보이스 채널 퇴장")
+                .setColor(new Color(200, 50, 50))
+                .setDescription(simpleDateFormat.format(date))
+                .addField("채널명", event.getChannelLeft().getAsMention(), false)
+                .addField("유저명", member.getAsMention(), false)
+                .setFooter(member.getId(), member.getAvatarUrl());
+        Objects.requireNonNull(event.getGuild().getTextChannelById("1046784597326835813")).sendMessageEmbeds(embedBuilder.build()).queue();
+    }
+
+    @Override
+    public void onGuildVoiceGuildMute(@NotNull GuildVoiceGuildMuteEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
+        Date date = new Date();
+        Member member = event.getMember();
+        EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
+        if(event.isGuildMuted())
+            embedBuilder.setTitle("유저 보이스 서버 뮤트")
+                    .setColor(new Color(200, 50, 50))
+                    .setDescription(simpleDateFormat.format(date))
+                    .addField("유저명", member.getAsMention(), false)
+                    .setFooter(member.getId(), member.getAvatarUrl());
+        else
+            embedBuilder.setTitle("유저 보이스 서버 뮤트 해제")
+                    .setColor(new Color(50, 200, 50))
+                    .setDescription(simpleDateFormat.format(date))
+                    .addField("유저명", member.getAsMention(), false)
+                    .setFooter(member.getId(), member.getAvatarUrl());
+        Objects.requireNonNull(event.getGuild().getTextChannelById("1046784597326835813")).sendMessageEmbeds(embedBuilder.build()).queue();
+    }
+
+    @Override
+    public void onGuildVoiceGuildDeafen(@NotNull GuildVoiceGuildDeafenEvent event) {
+        if(!event.getGuild().getId().equals("826704284003205160")) {
+            return;
+        }
+        Date date = new Date();
+        Member member = event.getMember();
+        EmbedBuilder embedBuilder = EmbedUtils.getDefaultEmbed();
+        if(event.isGuildDeafened())
+            embedBuilder.setTitle("유저 보이스 서버 음소거")
+                    .setColor(new Color(200, 50, 50))
+                    .setDescription(simpleDateFormat.format(date))
+                    .addField("유저명", member.getAsMention(), false)
+                    .setFooter(member.getId(), member.getAvatarUrl());
+        else
+            embedBuilder.setTitle("유저 보이스 서버 음소거 해제")
+                    .setColor(new Color(50, 200, 50))
+                    .setDescription(simpleDateFormat.format(date))
+                    .addField("유저명", member.getAsMention(), false)
+                    .setFooter(member.getId(), member.getAvatarUrl());
+        Objects.requireNonNull(event.getGuild().getTextChannelById("1046784597326835813")).sendMessageEmbeds(embedBuilder.build()).queue();
+    }
+
 
     /**
      * upload file to bot s3 cloud
